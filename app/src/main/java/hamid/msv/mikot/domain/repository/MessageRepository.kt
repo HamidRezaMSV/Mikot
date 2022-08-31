@@ -8,8 +8,8 @@ import hamid.msv.mikot.domain.model.Message
 interface MessageRepository {
     val createNewMessageResponse : LiveData<Task<Void>>
     val updateLastMessageResponse : LiveData<Task<Void>>
-    suspend fun createNewMessage(message: Message)
-    suspend fun getAllMessages() : Map<String, Any>
+    suspend fun createNewMessage(message: Message , child : String)
+    suspend fun getAllMessages(child : String) : Map<String, Any>
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>
 }

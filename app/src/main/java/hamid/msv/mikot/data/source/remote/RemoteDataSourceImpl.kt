@@ -57,8 +57,8 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
             .addOnCompleteListener { _signInResponse.postValue(it) }
     }
 
-    override suspend fun createNewMessage(message: Message) {
-        MESSAGE_DATABASE.push().setValue(message)
+    override suspend fun createNewMessage(message: Message , child : String) {
+        MESSAGE_DATABASE.child(child).push().setValue(message)
             .addOnCompleteListener { _createNewMessageResponse.postValue(it) }
     }
 
@@ -88,11 +88,11 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         )
     }
 
-    override suspend fun getAllMessages(): Map<String, Any> {
+    override suspend fun getAllMessages(child : String): Map<String, Any> {
         val result = MutableLiveData<List<Message>>()
         val databaseError = MutableLiveData<DatabaseError>()
 
-        MESSAGE_DATABASE.addValueEventListener(object : ValueEventListener{
+        MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 result.postValue(snapshot.getValue<List<Message>>())
             }

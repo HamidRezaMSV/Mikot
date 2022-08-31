@@ -16,9 +16,9 @@ interface RemoteDataSource {
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInDatabase(user : MikotUser)
     suspend fun signInUser(email:String , password : String)
-    suspend fun createNewMessage(message: Message)
+    suspend fun createNewMessage(message: Message,child : String)
     suspend fun getAllUsers() : Map<String, Any>
-    suspend fun getAllMessages() : Map<String, Any>
+    suspend fun getAllMessages(child : String) : Map<String, Any>
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>
 }

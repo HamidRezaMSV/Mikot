@@ -16,11 +16,11 @@ class MessageRepositoryImpl
     override val updateLastMessageResponse: LiveData<Task<Void>>
         get() = remoteDataSource.updateLastMessageResponse
 
-    override suspend fun createNewMessage(message: Message) {
-        remoteDataSource.createNewMessage(message)
+    override suspend fun createNewMessage(message: Message , child : String) {
+        remoteDataSource.createNewMessage(message , child)
     }
 
-    override suspend fun getAllMessages(): Map<String, Any> = remoteDataSource.getAllMessages()
+    override suspend fun getAllMessages(child : String): Map<String, Any> = remoteDataSource.getAllMessages(child)
 
 
     override suspend fun updateChatLastMessage(lastMessage: LastMessage) {
