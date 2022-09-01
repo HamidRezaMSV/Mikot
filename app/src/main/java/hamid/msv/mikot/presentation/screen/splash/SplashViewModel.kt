@@ -15,13 +15,13 @@ import javax.inject.Inject
 class SplashViewModel
 @Inject constructor(readOnBoardingUseCase: ReadOnBoardingUseCase) : ViewModel() {
 
-    private val _onBoardingState = MutableStateFlow(false)
-    val onBoardingState: StateFlow<Boolean>
-        get() = _onBoardingState
+    private val _onBoardingCompleted = MutableStateFlow(false)
+    val onBoardingCompleted: StateFlow<Boolean>
+        get() = _onBoardingCompleted
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _onBoardingState.value = readOnBoardingUseCase.execute().stateIn(viewModelScope).value
+            _onBoardingCompleted.value = readOnBoardingUseCase.execute().stateIn(viewModelScope).value
         }
     }
 
