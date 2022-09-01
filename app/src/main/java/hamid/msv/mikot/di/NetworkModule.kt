@@ -17,8 +17,4 @@ object NetworkModule {
     @Singleton
     fun provideFirebaseAuthentication() = FirebaseAuth.getInstance()
 
-    @Provides
-    @Singleton
-    fun provideFirebaseDatabase() = FirebaseDatabase.getInstance(FIREBASE_DATABASE_URL).reference
-
 }

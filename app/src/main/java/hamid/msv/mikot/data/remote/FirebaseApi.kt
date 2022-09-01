@@ -6,10 +6,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import hamid.msv.mikot.util.FIREBASE_DATABASE_URL
 import javax.inject.Inject
 
-@AndroidEntryPoint
 object FirebaseApi {
 
-    @Inject lateinit var database: DatabaseReference
+    private val database: DatabaseReference =
+        FirebaseDatabase.getInstance(FIREBASE_DATABASE_URL).reference
 
     val USER_DATABASE = database.child("users")
     val MESSAGE_DATABASE = database.child("messages")

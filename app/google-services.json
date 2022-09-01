@@ -1,20 +1,21 @@
 {
   "project_info": {
     "project_number": "860371327645",
+    "firebase_url": "https://mikot-6393a-default-rtdb.firebaseio.com",
     "project_id": "mikot-6393a",
     "storage_bucket": "mikot-6393a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:860371327645:android:ba7f7ec8012320555c1274",
+        "mobilesdk_app_id": "1:860371327645:android:20bc2e90ce0f15865c1274",
         "android_client_info": {
           "package_name": "hamid.msv.mikot"
         }
       },
       "oauth_client": [
         {
-          "client_id": "860371327645-fo35l4sk40nb8258l5fqg2m4ft9v3m4u.apps.googleusercontent.com",
+          "client_id": "860371327645-0rd6cg0128ab50s264icolsiqtv63cgn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "hamid.msv.mikot",

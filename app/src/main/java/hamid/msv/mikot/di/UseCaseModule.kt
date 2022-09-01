@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import hamid.msv.mikot.domain.repository.DataStoreRepository
 import hamid.msv.mikot.domain.repository.MessageRepository
 import hamid.msv.mikot.domain.repository.UserRepository
 import hamid.msv.mikot.domain.usecase.*
@@ -52,5 +53,15 @@ object UseCaseModule {
     @Singleton
     fun provideUpdateChatLastMessageUseCase(messageRepository: MessageRepository) =
         UpdateChatLastMessageUseCase(messageRepository)
+
+    @Provides
+    @Singleton
+    fun provideReadOnBoardingUseCase(dataStoreRepository: DataStoreRepository) =
+        ReadOnBoardingUseCase(dataStoreRepository)
+
+    @Provides
+    @Singleton
+    fun provideSaveOnBoardingUseCase(dataStoreRepository: DataStoreRepository) =
+        SaveOnBoardingUseCase(dataStoreRepository)
 
 }

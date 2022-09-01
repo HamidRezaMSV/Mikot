@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="hamid.msv.mikot">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".Application"
         android:allowBackup="true"
