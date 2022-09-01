@@ -18,7 +18,7 @@ import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.util.DATABASE_ERROR_KEY
 import hamid.msv.mikot.util.GET_ALL_MESSAGES_KEY
 import hamid.msv.mikot.util.GET_ALL_USERS_KEY
-import hamid.msv.mikot.util.GET_LAST_MESSAGE_KEY
+import hamid.msv.mikot.util.GET_LAST_MESSAGES_KEY
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val authentication: FirebaseAuth) : RemoteDataSource {
@@ -123,7 +123,7 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         })
 
         return mapOf(
-            GET_LAST_MESSAGE_KEY to result,
+            GET_LAST_MESSAGES_KEY to result,
             DATABASE_ERROR_KEY to databaseError
         )
     }
