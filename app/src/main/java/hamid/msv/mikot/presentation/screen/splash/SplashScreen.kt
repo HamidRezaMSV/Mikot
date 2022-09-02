@@ -29,6 +29,7 @@ fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel()
 ) {
     val onBoardingCompleted by viewModel.onBoardingCompleted.collectAsState()
+    val isLogin by viewModel.isLogin.collectAsState()
 
     LaunchedEffect(key1 = true) {
 
@@ -36,10 +37,13 @@ fun SplashScreen(
 
         navController.popBackStack()
         when{
-            !onBoardingCompleted -> { navController.navigate(Screen.Welcome.route) }
-            else -> {
-                // check login state
+            onBoardingCompleted -> {
+                when{
+                    isLogin -> { navController.navigate(Screen.Home.route) }
+                    else -> { navController.navigate(Screen.SignUp.route) }
+                }
             }
+            else -> { navController.navigate(Screen.Welcome.route) }
         }
     }
 
