@@ -36,8 +36,10 @@ fun SplashScreen(
 
         navController.popBackStack()
         when{
-            onBoardingCompleted -> { navController.navigate(Screen.Home.route) }
-            else -> { navController.navigate(Screen.Welcome.route) }
+            !onBoardingCompleted -> { navController.navigate(Screen.Welcome.route) }
+            else -> {
+                // check login state
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import hamid.msv.mikot.util.LOGIN_PREFERENCES_KEY
 import hamid.msv.mikot.util.ON_BOARDING_PREFERENCES_KEY
 import hamid.msv.mikot.util.dataStore
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ class DataStoreDataSourceImpl(context: Context) : DataStoreDataSource {
 
     private object PreferencesKey{
         val onBoardingKey = booleanPreferencesKey(ON_BOARDING_PREFERENCES_KEY)
+        val loginKey = booleanPreferencesKey(LOGIN_PREFERENCES_KEY)
     }
 
     private val dataStore = context.dataStore
@@ -32,6 +34,22 @@ class DataStoreDataSourceImpl(context: Context) : DataStoreDataSource {
             .map {
                 val onBoardingState = it[PreferencesKey.onBoardingKey] ?: false
                 onBoardingState
+            }
+    }
+
+    override suspend fun saveLoginState(isLogin: Boolean) {
+        dataStore.edit { it[PreferencesKey.loginKey] = isLogin }
+    }
+
+    override fun readLoginState(): Flow<Boolean> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) emit(emptyPreferences())
+                else throw exception
+            }
+            .map {
+                val loginState = it[PreferencesKey.loginKey] ?: false
+                loginState
             }
     }
 

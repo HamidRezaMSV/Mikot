@@ -14,4 +14,10 @@ class DataStoreRepositoryImpl
     override fun readOnBoardingState(): Flow<Boolean> =
         dataStoreDataSource.readOnBoardingState()
 
+    override suspend fun saveLoginState(isLogin: Boolean) =
+        dataStoreDataSource.saveLoginState(isLogin)
+
+    override fun readLoginState(): Flow<Boolean> =
+        dataStoreDataSource.readLoginState()
+
 }

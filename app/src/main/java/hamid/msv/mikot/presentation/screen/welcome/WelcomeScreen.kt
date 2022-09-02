@@ -74,7 +74,7 @@ fun WelcomeScreen(
             onFinishClicked = {
                 viewModel.saveOnBoardingState(completed = true)
                 navController.popBackStack()
-                navController.navigate(Screen.Home.route)
+                navController.navigate(Screen.SignUp.route)
             }
         )
     }

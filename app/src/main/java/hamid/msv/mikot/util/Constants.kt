@@ -14,5 +14,6 @@ const val GET_LAST_MESSAGES_KEY = "get_last_message"
 const val DATABASE_ERROR_KEY = "database_error"
 const val PREFERENCES_NAME = "mikot_preferences"
 const val ON_BOARDING_PREFERENCES_KEY = "on_boarding_key"
+const val LOGIN_PREFERENCES_KEY = "login_key"
 const val SPLASH_LOTTIE_ANIMATION_SPEED = 0.85f
 const val ON_BOARDING_PAGE_COUNT = 3

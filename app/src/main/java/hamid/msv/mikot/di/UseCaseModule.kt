@@ -64,4 +64,14 @@ object UseCaseModule {
     fun provideSaveOnBoardingUseCase(dataStoreRepository: DataStoreRepository) =
         SaveOnBoardingUseCase(dataStoreRepository)
 
+    @Provides
+    @Singleton
+    fun provideSaveLoginStateUseCase(dataStoreRepository: DataStoreRepository) =
+        SaveLoginStateUseCase(dataStoreRepository)
+
+    @Provides
+    @Singleton
+    fun provideReadLoginStateUseCase(dataStoreRepository: DataStoreRepository) =
+        ReadLoginStateUseCase(dataStoreRepository)
+
 }
