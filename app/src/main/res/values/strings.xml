@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Mikot</string>
+    <!--Welcome Screen-->
+    <string name="fist_description">Do you want to chat with your friends? \nDo it in Mikot easily</string>
+    <string name="second_description">Are you in a trip? \nuse Mikot to communicate with your family</string>
+    <string name="third_description">Share your files to your friends in Mikot fast and safe</string>
+    <string name="finish">Finish</string>
+    <!--Home Screen-->
 </resources>

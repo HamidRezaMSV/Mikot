@@ -1,10 +1,8 @@
 package hamid.msv.mikot.presentation.screen.splash
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.*
 import hamid.msv.mikot.R
+import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.splashAppNameColor
 import hamid.msv.mikot.util.SPLASH_LOTTIE_ANIMATION_SPEED
 import kotlinx.coroutines.delay
@@ -37,8 +36,8 @@ fun SplashScreen(
 
         navController.popBackStack()
         when{
-            onBoardingCompleted -> { Log.d("Hamid_hamid" , "home") }
-            else -> { Log.d("Hamid_hamid" , "welcome") }
+            onBoardingCompleted -> { navController.navigate(Screen.Home.route) }
+            else -> { navController.navigate(Screen.Welcome.route) }
         }
     }
 
