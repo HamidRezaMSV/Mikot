@@ -22,8 +22,8 @@ class UserRepositoryImpl
         remoteDataSource.signUpUser(email, password)
     }
 
-    override suspend fun saveNewUserInDatabase(user: MikotUser) {
-        remoteDataSource.saveNewUserInDatabase(user)
+    override suspend fun saveNewUserInFirebase(user: MikotUser) {
+        remoteDataSource.saveNewUserInFirebase(user)
     }
 
     override suspend fun signInUser(email: String, password: String) {

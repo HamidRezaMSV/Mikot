@@ -14,7 +14,7 @@ interface RemoteDataSource {
     val createNewMessageResponse : LiveData<Task<Void>>
     val updateLastMessageResponse : LiveData<Task<Void>>
     suspend fun signUpUser(email:String , password : String)
-    suspend fun saveNewUserInDatabase(user : MikotUser)
+    suspend fun saveNewUserInFirebase(user : MikotUser)
     suspend fun signInUser(email:String , password : String)
     suspend fun createNewMessage(message: Message,child : String)
     suspend fun getAllUsers() : Map<String, Any>

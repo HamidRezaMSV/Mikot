@@ -10,7 +10,7 @@ interface UserRepository {
     val saveNewUserResponse : LiveData<Task<Void>>
     val signInResponse : LiveData<Task<AuthResult>>
     suspend fun signUpUser(email:String , password : String)
-    suspend fun saveNewUserInDatabase(user : MikotUser)
+    suspend fun saveNewUserInFirebase(user : MikotUser)
     suspend fun signInUser(email:String , password : String)
     suspend fun getAllUsers() : Map<String, Any>
 }

@@ -27,11 +27,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import hamid.msv.mikot.Application
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
+import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
-import kotlinx.coroutines.delay
 
 @Composable
 fun RegisterScreen(
@@ -40,48 +41,50 @@ fun RegisterScreen(
 ) {
 
     val context = LocalContext.current
-    var executeRegisteringNow by remember { mutableStateOf(false) }
 
     RegisterContent(
         onRegisterClicked = {
             if (isInputDataValid(fullNameValue,userNameValue,passwordValue,confirmPasswordValue,emailValue,phoneNumberValue,context)){
-                executeRegisteringNow = true
+                viewModel.signUpUser(emailValue,passwordValue)
             }
         }
     )
 
-    LaunchedEffect(key1 = executeRegisteringNow){
-        if (executeRegisteringNow){
-            viewModel.signUpUser(emailValue,passwordValue)
-            delay(3000)
-            executeRegisteringNow = false
-        }
-    }
-
     viewModel.signUpResponse.observeAsState().value?.let {
         if (it.isSuccessful){
-            Log.d("Hamid_Hamid", "isSuccessful")
-            val user = MikotUser(
-                id = it.result.user!!.uid ,
-                fullName = fullNameValue ,
-                userName = userNameValue ,
-                password = passwordValue ,
-                email = emailValue ,
-                createAccountTime = System.currentTimeMillis().toString(),
-                phoneNumber = phoneNumberValue
-            )
-            viewModel.saveUserInFirebase(user)
+            if (executeOneTimeSignUp){
+                Log.d("Mikot_Register", "isSuccessful")
+                val user = MikotUser(
+                    id = it.result.user!!.uid ,
+                    fullName = fullNameValue ,
+                    userName = userNameValue ,
+                    password = passwordValue ,
+                    email = emailValue ,
+                    createAccountTime = System.currentTimeMillis().toString(),
+                    phoneNumber = phoneNumberValue
+                )
+                viewModel.saveUserInFirebase(user)
+                Application.currentUser = it.result.user
+                executeOneTimeSignUp = false
+            }
         }else{
-            Log.d("Hamid_Hamid", it.exception?.message.toString())
+            Log.d("Mikot_Register", it.exception?.message.toString())
             Toast.makeText(context,context.getString(R.string.connection_failed),Toast.LENGTH_SHORT).show()
         }
     }
 
     viewModel.saveUserInFirebaseResponse.observeAsState().value?.let {
         if (it.isSuccessful){
-            Log.d("Hamid_Hamid", "database isSuccessful")
+            if (executeOneTimeSaving){
+                Log.d("Mikot_Register", "database isSuccessful")
+                viewModel.saveLoginState(isLogin = true)
+                navController.popBackStack()
+                navController.navigate(Screen.Home.route)
+                executeOneTimeSaving = false
+            }
         }else{
-            Log.d("Hamid_Hamid", "database" + it.exception?.message.toString())
+            Log.d("Mikot_Register", "database" + it.exception?.message.toString())
+            Toast.makeText(context,context.getString(R.string.connection_failed),Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -200,6 +203,8 @@ fun RegisterContent(onRegisterClicked : () -> Unit) {
         }
 
         Spacer(modifier = Modifier.height(LARGE_PADDING))
+
+
     }
 }
 
@@ -298,3 +303,5 @@ var passwordValue = ""
 var confirmPasswordValue = ""
 var emailValue = ""
 var phoneNumberValue = ""
+var executeOneTimeSignUp = true
+var executeOneTimeSaving = true

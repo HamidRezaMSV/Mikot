@@ -36,8 +36,8 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideSaveUserInDatabaseUseCase(userRepository: UserRepository) =
-        SaveUserInDatabaseUseCase(userRepository)
+    fun provideSaveUserInFirebaseUseCase(userRepository: UserRepository) =
+        SaveUserInFirebaseUseCase(userRepository)
 
     @Provides
     @Singleton

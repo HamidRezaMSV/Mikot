@@ -48,8 +48,8 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
             .addOnCompleteListener { _signUpResponse.postValue(it) }
     }
 
-    override suspend fun saveNewUserInDatabase(user: MikotUser) {
-        USER_DATABASE.setValue(user).addOnCompleteListener { _saveNewUserResponse.postValue(it) }
+    override suspend fun saveNewUserInFirebase(user: MikotUser) {
+        USER_DATABASE.child(user.id).setValue(user).addOnCompleteListener { _saveNewUserResponse.postValue(it) }
     }
 
     override suspend fun signInUser(email:String , password : String) {
