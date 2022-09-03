@@ -5,6 +5,7 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import hamid.msv.mikot.Application
@@ -47,6 +49,10 @@ fun RegisterScreen(
             if (isInputDataValid(fullNameValue,userNameValue,passwordValue,confirmPasswordValue,emailValue,phoneNumberValue,context)){
                 viewModel.signUpUser(emailValue,passwordValue)
             }
+        },
+        onLoginClicked = {
+            navController.popBackStack()
+            navController.navigate(Screen.SignIn.route)
         }
     )
 
@@ -91,7 +97,7 @@ fun RegisterScreen(
 }
 
 @Composable
-fun RegisterContent(onRegisterClicked : () -> Unit) {
+fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit) {
 
     val fullName = remember { mutableStateOf("") }
     val userName = remember { mutableStateOf("") }
@@ -202,9 +208,27 @@ fun RegisterContent(onRegisterClicked : () -> Unit) {
             }
         }
 
-        Spacer(modifier = Modifier.height(LARGE_PADDING))
+        Spacer(modifier = Modifier.height(MEDIUM_PADDING))
 
+        OutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(REGISTER_BUTTON_HEIGHT),
+            onClick = { onLoginClicked() } ,
+            shape = RoundedCornerShape(size = REGISTER_BUTTON_CORNER_RADIUS),
+            colors = ButtonDefaults.outlinedButtonColors(
+                backgroundColor = Color.White ,
+                contentColor = MaterialTheme.colors.registerButtonBackgroundColor
+            ) ,
+            border = BorderStroke(width = 2.dp , color = MaterialTheme.colors.registerButtonBackgroundColor)
+        ) {
+            Text(
+                text = stringResource(id = R.string.have_account) ,
+                fontSize = MaterialTheme.typography.subtitle1.fontSize
+            )
+        }
 
+        Spacer(modifier = Modifier.height(EXTRA_MEDIUM_PADDING))
     }
 }
 

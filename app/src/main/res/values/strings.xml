@@ -8,6 +8,7 @@
     <string name="finish">Finish</string>
     <!--Register Screen-->
     <string name="register">Register</string>
+    <string name="have_account">Have an account? Login</string>
     <string name="full_name">Full Name</string>
     <string name="hint_full_name">Example : Hamid Reza Mousavi</string>
     <string name="user_name">Username</string>
