@@ -39,3 +39,11 @@ val Colors.welcomeDescriptionColor
 
 val Colors.finishButtonBackgroundColor
     @Composable get() = if (isLight) Red else Red
+
+val Colors.registerScreenContentColor
+    @Composable get() = if (isLight) Green else Green
+
+val Colors.registerButtonBackgroundColor
+    @Composable get() = if (isLight) Green else Green
+
+

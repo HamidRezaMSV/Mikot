@@ -5,5 +5,19 @@
     <string name="second_description">Are you in a trip? \nuse Mikot to communicate with your family</string>
     <string name="third_description">Share your files to your friends in Mikot fast and safe</string>
     <string name="finish">Finish</string>
-    <!--Home Screen-->
+    <!--Register Screen-->
+    <string name="register">Register</string>
+    <string name="full_name">Full Name</string>
+    <string name="hint_full_name">Example : Hamid Reza Mousavi</string>
+    <string name="user_name">Username</string>
+    <string name="hint_user_name">Example : HamidSM</string>
+    <string name="email">Email</string>
+    <string name="hint_email">Example : example@gmail.com</string>
+    <string name="password">Password</string>
+    <string name="hint_password">password must be at least 6 characters</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="hint_confirm_password">Enter your password again</string>
+    <string name="phoneNumber">Phone Number</string>
+    <string name="hint_phoneNumber">Example : 09123456789</string>
+    <string name="iran_pre_phone_number">09</string>
 </resources>

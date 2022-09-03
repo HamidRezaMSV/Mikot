@@ -17,3 +17,4 @@ const val ON_BOARDING_PREFERENCES_KEY = "on_boarding_key"
 const val LOGIN_PREFERENCES_KEY = "login_key"
 const val SPLASH_LOTTIE_ANIMATION_SPEED = 0.85f
 const val ON_BOARDING_PAGE_COUNT = 3
+const val PHONE_NUMBER_CHARACTER_COUNT = 11

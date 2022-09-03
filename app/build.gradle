@@ -101,4 +101,7 @@ dependencies {
     def ver = "0.24.7-alpha"
     implementation "com.google.accompanist:accompanist-pager:$ver"
     implementation "com.google.accompanist:accompanist-pager-indicators:$ver"
+
+    // LiveData for Compose
+    implementation 'androidx.compose.runtime:runtime-livedata:1.0.0-beta07'
 }
