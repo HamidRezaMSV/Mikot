@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Mikot</string>
+    <string name="connection_failed">Connection failed!</string>
     <!--Welcome Screen-->
     <string name="fist_description">Do you want to chat with your friends? \nDo it in Mikot easily</string>
     <string name="second_description">Are you in a trip? \nuse Mikot to communicate with your family</string>
@@ -20,4 +21,10 @@
     <string name="phoneNumber">Phone Number</string>
     <string name="hint_phoneNumber">Example : 09123456789</string>
     <string name="iran_pre_phone_number">09</string>
+    <string name="invalid_email_message">input email is in wrong format!</string>
+    <string name="invalid_password_message">password must be at least 6 characters</string>
+    <string name="invalid_name_message">full name can not be empty</string>
+    <string name="invalid_phone_message">phone number can not be empty</string>
+    <string name="invalid_username_message">username can not be empty</string>
+    <string name="invalid_confirm_password_message">confirm password is wrong!</string>
 </resources>

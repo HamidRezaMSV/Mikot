@@ -1,8 +1,9 @@
 package hamid.msv.mikot.presentation.screen.register
 
+import android.content.Context
 import android.util.Log
 import android.util.Patterns
-import androidx.compose.animation.core.SpringSpec
+import android.widget.Toast
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -12,9 +13,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,14 +25,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import hamid.msv.mikot.R
+import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
+import kotlinx.coroutines.delay
 
 @Composable
 fun RegisterScreen(
@@ -37,27 +39,52 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
 
-//    LaunchedEffect(key1 = true) {
-//        Log.d("Hamid_Hamid", "1")
-//
-//        viewModel.signUpUser(
-//            email = "h2.m799@gmail.com",
-//            password = "123456789"
-//        )
-//
-//        delay(3000)
-//
-//        getRegisterResponse(viewModel)
-//
-//    }
+    val context = LocalContext.current
+    var executeRegisteringNow by remember { mutableStateOf(false) }
 
-//    click : @Composable () -> Unit
-//    RegisterContent {
-//        LaunchedEffect(key1 = , block = )
-//    }
+    RegisterContent(
+        onRegisterClicked = {
+            if (isInputDataValid(fullNameValue,userNameValue,passwordValue,confirmPasswordValue,emailValue,phoneNumberValue,context)){
+                executeRegisteringNow = true
+            }
+        }
+    )
 
+    LaunchedEffect(key1 = executeRegisteringNow){
+        if (executeRegisteringNow){
+            viewModel.signUpUser(emailValue,passwordValue)
+            delay(3000)
+            executeRegisteringNow = false
+        }
+    }
 
-    RegisterContent(){}
+    viewModel.signUpResponse.observeAsState().value?.let {
+        if (it.isSuccessful){
+            Log.d("Hamid_Hamid", "isSuccessful")
+            val user = MikotUser(
+                id = it.result.user!!.uid ,
+                fullName = fullNameValue ,
+                userName = userNameValue ,
+                password = passwordValue ,
+                email = emailValue ,
+                createAccountTime = System.currentTimeMillis().toString(),
+                phoneNumber = phoneNumberValue
+            )
+            viewModel.saveUserInFirebase(user)
+        }else{
+            Log.d("Hamid_Hamid", it.exception?.message.toString())
+            Toast.makeText(context,context.getString(R.string.connection_failed),Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    viewModel.saveUserInFirebaseResponse.observeAsState().value?.let {
+        if (it.isSuccessful){
+            Log.d("Hamid_Hamid", "database isSuccessful")
+        }else{
+            Log.d("Hamid_Hamid", "database" + it.exception?.message.toString())
+        }
+    }
+
 }
 
 @Composable
@@ -75,7 +102,7 @@ fun RegisterContent(onRegisterClicked : () -> Unit) {
     LaunchedEffect(key1 = true){
         scrollState.animateScrollTo(
             scrollState.maxValue ,
-            tween(durationMillis = 1500 , delayMillis = 1000)
+            tween(durationMillis = 1000 , delayMillis = 1000)
         )
     }
 
@@ -151,7 +178,15 @@ fun RegisterContent(onRegisterClicked : () -> Unit) {
             elevation = REGISTER_BUTTON_ELEVATION
         ) {
             Button(
-                onClick = { onRegisterClicked() },
+                onClick = {
+                    fullNameValue = fullName.value.trim()
+                    userNameValue = userName.value.trim()
+                    passwordValue = password.value.trim()
+                    confirmPasswordValue = confirmPassword.value.trim()
+                    emailValue = email.value.trim()
+                    phoneNumberValue = phoneNumber.value.trim()
+                    onRegisterClicked()
+                    },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.registerButtonBackgroundColor,
                     contentColor = Color.White
@@ -180,7 +215,6 @@ fun RegisterTextField(
 
     var error by remember { mutableStateOf(false) }
     error = when{
-        isEmail -> { Patterns.EMAIL_ADDRESS.matcher(value.value).matches() }
         isPassword -> { value.value.length < 6 }
         isPhoneNumber -> { value.value.length != PHONE_NUMBER_CHARACTER_COUNT }
         else -> { false }
@@ -232,25 +266,35 @@ fun RegisterTextField(
     )
 }
 
-private fun getRegisterResponse(viewModel: RegisterViewModel) {
-    Log.d("Hamid_Hamid", "2")
-
-    var response : Task<AuthResult>? = null
-
-    viewModel.signUpResponse.observeForever {
-        response = it
+private fun isInputDataValid(
+    fullName:String,
+    userName:String,
+    password:String,
+    confirmPassword:String,
+    email:String,
+    phoneNumber:String,
+    context: Context
+) : Boolean{
+    val emailValidation = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    val passwordValidation = password.length >= 6
+    val confirmPasswordValidation = password.length >= 6 && confirmPassword == password
+    val fullNameValidation = fullName.isNotEmpty()
+    val userNameValidation = userName.isNotEmpty()
+    val phoneNumberValidation = phoneNumber.isNotEmpty()
+    when{
+        !emailValidation -> Toast.makeText(context,context.getString(R.string.invalid_email_message), Toast.LENGTH_SHORT).show()
+        !passwordValidation -> Toast.makeText(context,context.getString(R.string.invalid_password_message), Toast.LENGTH_SHORT).show()
+        !fullNameValidation -> Toast.makeText(context,context.getString(R.string.invalid_name_message), Toast.LENGTH_SHORT).show()
+        !userNameValidation -> Toast.makeText(context,context.getString(R.string.invalid_username_message), Toast.LENGTH_SHORT).show()
+        !phoneNumberValidation -> Toast.makeText(context,context.getString(R.string.invalid_phone_message), Toast.LENGTH_SHORT).show()
+        !confirmPasswordValidation -> Toast.makeText(context,context.getString(R.string.invalid_confirm_password_message), Toast.LENGTH_SHORT).show()
     }
-
-    Log.d("Hamid_Hamid", "3")
-    if (response?.isSuccessful == true) {
-        Log.d("Hamid_Hamid", "isSuccessful")
-    } else {
-        Log.d("Hamid_Hamid", "is not Successful")
-        Log.d("Hamid_Hamid", response?.exception?.message.toString())
-    }
-    Log.d("Hamid_Hamid", "4")
-
-    viewModel.signUpResponse.removeObserver {}
-
-    Log.d("Hamid_Hamid", "5")
+    return emailValidation && passwordValidation && fullNameValidation && userNameValidation && phoneNumberValidation && confirmPasswordValidation
 }
+
+var fullNameValue = ""
+var userNameValue = ""
+var passwordValue = ""
+var confirmPasswordValue = ""
+var emailValue = ""
+var phoneNumberValue = ""
