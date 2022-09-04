@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.FirebaseResponse
-import hamid.msv.mikot.domain.usecase.SaveLoginStateUseCase
+import hamid.msv.mikot.domain.usecase.SaveCurrentUserIdUseCase
 import hamid.msv.mikot.domain.usecase.SignInUserUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val saveLoginStateUseCase: SaveLoginStateUseCase,
+    private val saveCurrentUserIdUseCase: SaveCurrentUserIdUseCase,
     private val signInUserUseCase: SignInUserUseCase
 ): ViewModel() {
 
@@ -27,8 +27,8 @@ class LoginViewModel @Inject constructor(
         signInUserUseCase.execute(email, password)
             .onEach {
             if (it.isSuccessful){
-                saveLoginState()
-                Application.currentUser = it.result.user
+                it.result.user?.let { currentUser -> saveCurrentUserId(currentUser.uid) }
+                Application.currentUserId = it.result.user!!.uid
                 loginResponse.value = FirebaseResponse.SUCCESSFUL
             }else{
                 Log.d("Mikot_login", it.exception?.message.toString())
@@ -37,6 +37,6 @@ class LoginViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun saveLoginState() = viewModelScope.launch(Dispatchers.IO) { saveLoginStateUseCase.execute(true) }
+    private fun saveCurrentUserId(uid:String) = viewModelScope.launch(Dispatchers.IO) { saveCurrentUserIdUseCase.execute(uid) }
 
 }

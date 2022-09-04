@@ -19,4 +19,5 @@ const val SPLASH_LOTTIE_ANIMATION_SPEED = 0.85f
 const val ON_BOARDING_PAGE_COUNT = 3
 const val PHONE_NUMBER_CHARACTER_COUNT = 11
 const val REGISTER_PLACEHOLDER_ALPHA = 0.6f
+const val USER_IS_NOT_LOGIN = "user_is_not_login"
 const val NO_ERROR = "no_error"

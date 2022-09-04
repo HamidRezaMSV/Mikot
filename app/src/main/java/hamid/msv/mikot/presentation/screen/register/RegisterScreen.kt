@@ -71,7 +71,7 @@ fun RegisterScreen(
                     phoneNumber = phoneNumberValue
                 )
                 viewModel.saveUserInFirebase(user)
-                Application.currentUser = it.result.user
+                Application.currentUserId = it.result.user!!.uid
                 executeOneTimeSignUp = false
             }
         }else{
@@ -84,7 +84,7 @@ fun RegisterScreen(
         if (it.isSuccessful){
             if (executeOneTimeSaving){
                 Log.d("Mikot_Register", "database isSuccessful")
-                viewModel.saveLoginState(isLogin = true)
+                Application.currentUserId.let { user -> viewModel.saveCurrentUserUid(uid = user) }
                 navController.popBackStack()
                 navController.navigate(Screen.Home.route)
                 executeOneTimeSaving = false

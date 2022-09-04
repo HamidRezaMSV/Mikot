@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hamid.msv.mikot.domain.model.MikotUser
-import hamid.msv.mikot.domain.usecase.SaveLoginStateUseCase
+import hamid.msv.mikot.domain.usecase.SaveCurrentUserIdUseCase
 import hamid.msv.mikot.domain.usecase.SaveUserInFirebaseUseCase
 import hamid.msv.mikot.domain.usecase.SignUpUserUseCase
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val signUpUserUseCase: SignUpUserUseCase,
     private val saveUserInFirebaseUseCase: SaveUserInFirebaseUseCase,
-    private val saveLoginStateUseCase: SaveLoginStateUseCase
+    private val saveCurrentUserIdUseCase: SaveCurrentUserIdUseCase
 ): ViewModel() {
 
     val signUpResponse = signUpUserUseCase.response
@@ -29,8 +29,8 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO){ saveUserInFirebaseUseCase.execute(user) }
     }
 
-    fun saveLoginState(isLogin:Boolean){
-        viewModelScope.launch(Dispatchers.IO) { saveLoginStateUseCase.execute(isLogin) }
+    fun saveCurrentUserUid(uid : String){
+        viewModelScope.launch(Dispatchers.IO) { saveCurrentUserIdUseCase.execute(uid) }
     }
 
 }

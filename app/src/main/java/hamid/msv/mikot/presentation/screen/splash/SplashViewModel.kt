@@ -3,8 +3,9 @@ package hamid.msv.mikot.presentation.screen.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import hamid.msv.mikot.domain.usecase.ReadLoginStateUseCase
+import hamid.msv.mikot.domain.usecase.ReadCurrentUserIdUseCase
 import hamid.msv.mikot.domain.usecase.ReadOnBoardingUseCase
+import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel
 @Inject constructor(
-    readOnBoardingUseCase: ReadOnBoardingUseCase ,
-    readLoginStateUseCase: ReadLoginStateUseCase
+    readOnBoardingUseCase: ReadOnBoardingUseCase,
+    readCurrentUserIdUseCase: ReadCurrentUserIdUseCase
 ) : ViewModel() {
 
     private val _onBoardingCompleted = MutableStateFlow(false)
@@ -29,7 +30,7 @@ class SplashViewModel
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _isLogin.value = readLoginStateUseCase.execute().stateIn(viewModelScope).value
+            _isLogin.value = readCurrentUserIdUseCase.execute().stateIn(viewModelScope).value != USER_IS_NOT_LOGIN
             _onBoardingCompleted.value = readOnBoardingUseCase.execute().stateIn(viewModelScope).value
         }
     }

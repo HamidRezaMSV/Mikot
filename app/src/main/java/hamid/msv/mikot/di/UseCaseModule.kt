@@ -66,12 +66,12 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideSaveLoginStateUseCase(dataStoreRepository: DataStoreRepository) =
-        SaveLoginStateUseCase(dataStoreRepository)
+    fun provideSaveCurrentUserIdUseCase(dataStoreRepository: DataStoreRepository) =
+        SaveCurrentUserIdUseCase(dataStoreRepository)
 
     @Provides
     @Singleton
-    fun provideReadLoginStateUseCase(dataStoreRepository: DataStoreRepository) =
-        ReadLoginStateUseCase(dataStoreRepository)
+    fun provideReadCurrentUserIdUseCase(dataStoreRepository: DataStoreRepository) =
+        ReadCurrentUserIdUseCase(dataStoreRepository)
 
 }
