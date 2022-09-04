@@ -5,6 +5,6 @@ import javax.inject.Inject
 
 class GetAllUsersUseCase @Inject constructor(private val userRepository: UserRepository) {
 
-    suspend fun execute() = userRepository.getAllUsers()
+    fun execute() = userRepository.getAllUsers()
 
 }

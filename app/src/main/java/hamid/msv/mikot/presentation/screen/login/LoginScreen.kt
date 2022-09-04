@@ -1,7 +1,6 @@
 package hamid.msv.mikot.presentation.screen.login
 
 import android.content.Context
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -20,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import hamid.msv.mikot.R
@@ -37,6 +35,20 @@ fun LoginScreen(
 
     val context = LocalContext.current
 
+    when(viewModel.loginResponse.value){
+        FirebaseResponse.SUCCESSFUL -> {
+            Toast.makeText(context, context.getString(R.string.welcome), Toast.LENGTH_SHORT).show()
+            navController.popBackStack()
+            navController.navigate(Screen.Home.route)
+            viewModel.loginResponse.value = FirebaseResponse.END
+        }
+        FirebaseResponse.FAILED -> {
+            Toast.makeText(context, context.getString(R.string.connection_failed), Toast.LENGTH_SHORT).show()
+            viewModel.loginResponse.value = FirebaseResponse.END
+        }
+        FirebaseResponse.END -> {}
+    }
+
     LoginContent(
         onLoginClicked = {
             if (isInputDataValid(loginEmail, loginPassword,context)){
@@ -48,20 +60,6 @@ fun LoginScreen(
             navController.navigate(Screen.SignUp.route)
         }
     )
-
-    when(viewModel.response.value){
-        FirebaseResponse.SUCCESSFUL -> {
-            Toast.makeText(context, context.getString(R.string.welcome), Toast.LENGTH_SHORT).show()
-            navController.popBackStack()
-            navController.navigate(Screen.Home.route)
-            viewModel.response.value = FirebaseResponse.END
-        }
-        FirebaseResponse.FAILED -> {
-            Toast.makeText(context, context.getString(R.string.connection_failed), Toast.LENGTH_SHORT).show()
-            viewModel.response.value = FirebaseResponse.END
-        }
-        FirebaseResponse.END -> {}
-    }
 
 }
 

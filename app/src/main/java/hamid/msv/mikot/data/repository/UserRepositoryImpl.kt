@@ -30,6 +30,6 @@ class UserRepositoryImpl
     override fun signInUser(email: String, password: String): Flow<Task<AuthResult>> =
         remoteDataSource.signInUser(email, password)
 
-    override suspend fun getAllUsers(): Map<String, Any> = remoteDataSource.getAllUsers()
+    override fun getAllUsers(): Flow<List<MikotUser>> = remoteDataSource.getAllUsers()
 
 }

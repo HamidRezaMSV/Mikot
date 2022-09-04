@@ -16,9 +16,11 @@ interface RemoteDataSource {
     val updateLastMessageResponse : LiveData<Task<Void>>
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
+    // Changed
     fun signInUser(email:String , password : String) : Flow<Task<AuthResult>>
     suspend fun createNewMessage(message: Message,child : String)
-    suspend fun getAllUsers() : Map<String, Any>
+    // Changed
+    fun getAllUsers() : Flow<List<MikotUser>>
     suspend fun getAllMessages(child : String) : Map<String, Any>
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>

@@ -21,9 +21,7 @@ class LoginViewModel @Inject constructor(
     private val signInUserUseCase: SignInUserUseCase
 ): ViewModel() {
 
-    //val loginResponse = signInUserUseCase.response
-
-    val response = mutableStateOf(FirebaseResponse.END)
+    val loginResponse = mutableStateOf(FirebaseResponse.END)
 
     fun loginUser(email:String , password : String)  {
         signInUserUseCase.execute(email, password)
@@ -31,15 +29,14 @@ class LoginViewModel @Inject constructor(
             if (it.isSuccessful){
                 saveLoginState()
                 Application.currentUser = it.result.user
-                response.value = FirebaseResponse.SUCCESSFUL
+                loginResponse.value = FirebaseResponse.SUCCESSFUL
             }else{
                 Log.d("Mikot_login", it.exception?.message.toString())
-                response.value = FirebaseResponse.FAILED
+                loginResponse.value = FirebaseResponse.FAILED
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun saveLoginState() =
-        viewModelScope.launch(Dispatchers.IO) { saveLoginStateUseCase.execute(true) }
+    private fun saveLoginState() = viewModelScope.launch(Dispatchers.IO) { saveLoginStateUseCase.execute(true) }
 
 }

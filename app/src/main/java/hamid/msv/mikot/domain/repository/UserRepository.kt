@@ -13,5 +13,5 @@ interface UserRepository {
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
     fun signInUser(email:String , password : String): Flow<Task<AuthResult>>
-    suspend fun getAllUsers() : Map<String, Any>
+    fun getAllUsers() : Flow<List<MikotUser>>
 }

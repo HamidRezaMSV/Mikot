@@ -1,5 +1,6 @@
 package hamid.msv.mikot.data.source.remote
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
@@ -15,10 +16,7 @@ import hamid.msv.mikot.data.remote.FirebaseApi.USER_DATABASE
 import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.model.MikotUser
-import hamid.msv.mikot.util.DATABASE_ERROR_KEY
-import hamid.msv.mikot.util.GET_ALL_MESSAGES_KEY
-import hamid.msv.mikot.util.GET_ALL_USERS_KEY
-import hamid.msv.mikot.util.GET_LAST_MESSAGES_KEY
+import hamid.msv.mikot.util.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -53,18 +51,16 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     }
 
     override suspend fun saveNewUserInFirebase(user: MikotUser) {
-        USER_DATABASE.child(user.id).setValue(user).addOnCompleteListener { _saveNewUserResponse.postValue(it) }
+        user.id?.let { id -> USER_DATABASE.child(id).setValue(user).addOnCompleteListener { _saveNewUserResponse.postValue(it) } }
     }
 
     // Change this for test new settings:
-    //        authentication.signInWithEmailAndPassword(email,password)
-    //            .addOnCompleteListener { _signInResponse.postValue(it) }
     override fun signInUser(email:String , password : String) : Flow<Task<AuthResult>> = callbackFlow {
         authentication.signInWithEmailAndPassword(email, password).addOnCompleteListener {
             _signInResponse.postValue(it)
             trySend(it).isSuccess
         }
-        awaitClose { close() }
+        awaitClose { cancel() }
     }
 
     override suspend fun createNewMessage(message: Message , child : String) {
@@ -78,25 +74,49 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         }
     }
 
-    override suspend fun getAllUsers(): Map<String, Any> {
-        val result = MutableLiveData<List<MikotUser>>()
-        val databaseError = MutableLiveData<DatabaseError>()
-
-        USER_DATABASE.addValueEventListener(object : ValueEventListener {
+    // Change this for test new settings:
+    override fun getAllUsers(): Flow<List<MikotUser>> = callbackFlow {
+        val users = mutableListOf<MikotUser>()
+        USER_DATABASE.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                result.postValue(snapshot.getValue<List<MikotUser>>())
+                snapshot.children.forEach { item ->
+                    val user = item.getValue(MikotUser::class.java)
+                    user?.let { users.add(it) }
+                }
+                trySend(users)
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                databaseError.postValue(error)
-            }
+            override fun onCancelled(error: DatabaseError) { TODO("Not yet implemented") }
         })
-
-        return mapOf(
-            GET_ALL_USERS_KEY to result,
-            DATABASE_ERROR_KEY to databaseError
-        )
+        awaitClose { cancel() }
     }
+
+
+//    override suspend fun getAllUsers(): Flow<List<MikotUser>> {
+//        val result = MutableLiveData<List<MikotUser>>()
+//        //val databaseError = MutableLiveData<DatabaseError>()
+//
+//        val users = mutableListOf<MikotUser>()
+//        var errorMessage = NO_ERROR
+//
+//        USER_DATABASE.addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                snapshot.children.forEach {
+//                    val user = it.getValue(MikotUser::class.java)
+//                    user?.let { data -> users.add(data) }
+//                }
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                //databaseError.postValue(error)
+//            }
+//        })
+//
+////        return mapOf(
+////            GET_ALL_USERS_KEY to result,
+////            DATABASE_ERROR_KEY to databaseError
+////        )
+//    }
 
     override suspend fun getAllMessages(child : String): Map<String, Any> {
         val result = MutableLiveData<List<Message>>()
