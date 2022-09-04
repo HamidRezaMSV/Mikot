@@ -26,11 +26,11 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun saveUserInFirebase(user: MikotUser){
-        viewModelScope.launch{ saveUserInFirebaseUseCase.execute(user) }
+        viewModelScope.launch(Dispatchers.IO){ saveUserInFirebaseUseCase.execute(user) }
     }
 
     fun saveLoginState(isLogin:Boolean){
-        viewModelScope.launch { saveLoginStateUseCase.execute(isLogin) }
+        viewModelScope.launch(Dispatchers.IO) { saveLoginStateUseCase.execute(isLogin) }
     }
 
 }

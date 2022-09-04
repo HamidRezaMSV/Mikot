@@ -3,6 +3,7 @@ package hamid.msv.mikot.ui.theme
 import androidx.compose.ui.unit.dp
 
 // Padding values
+val EXTRA_SMALL_PADDING = 4.dp
 val MEDIUM_PADDING = 12.dp
 val EXTRA_MEDIUM_PADDING = 18.dp
 val LARGE_PADDING = 24.dp
@@ -18,5 +19,5 @@ val FINISH_BUTTON_ELEVATION = 8.dp
 // Register Screen
 val REGISTER_TEXT_FIELD_CORNER_RADIUS = 8.dp
 val REGISTER_BUTTON_CORNER_RADIUS = 16.dp
-val REGISTER_BUTTON_ELEVATION = 8.dp
+val REGISTER_BUTTON_ELEVATION = 4.dp
 val REGISTER_BUTTON_HEIGHT = 56.dp

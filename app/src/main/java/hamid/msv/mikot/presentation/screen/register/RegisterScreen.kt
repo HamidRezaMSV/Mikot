@@ -35,6 +35,7 @@ import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
+import hamid.msv.mikot.util.REGISTER_PLACEHOLDER_ALPHA
 
 @Composable
 fun RegisterScreen(
@@ -111,7 +112,7 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
     LaunchedEffect(key1 = true){
         scrollState.animateScrollTo(
             scrollState.maxValue ,
-            tween(durationMillis = 1000 , delayMillis = 1000)
+            tween(durationMillis = 1000 , delayMillis = 500)
         )
     }
 
@@ -223,7 +224,7 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
             border = BorderStroke(width = 2.dp , color = MaterialTheme.colors.registerButtonBackgroundColor)
         ) {
             Text(
-                text = stringResource(id = R.string.have_account) ,
+                text = stringResource(id = R.string.register_have_account) ,
                 fontSize = MaterialTheme.typography.subtitle1.fontSize
             )
         }
@@ -260,8 +261,8 @@ fun RegisterTextField(
         else -> VisualTransformation.None
     }
 
-    val placeHolderColor = if (error) Red.copy(ContentAlpha.medium)
-    else MaterialTheme.colors.registerScreenContentColor.copy(ContentAlpha.medium)
+    val placeHolderColor = if (error) Red.copy(REGISTER_PLACEHOLDER_ALPHA)
+    else MaterialTheme.colors.registerScreenContentColor.copy(REGISTER_PLACEHOLDER_ALPHA)
 
     val errorColor = if (error) Red.copy(ContentAlpha.medium)
     else MaterialTheme.colors.registerScreenContentColor.copy(alpha = 0.7f)
@@ -321,11 +322,11 @@ private fun isInputDataValid(
     return emailValidation && passwordValidation && fullNameValidation && userNameValidation && phoneNumberValidation && confirmPasswordValidation
 }
 
-var fullNameValue = ""
-var userNameValue = ""
-var passwordValue = ""
-var confirmPasswordValue = ""
-var emailValue = ""
-var phoneNumberValue = ""
-var executeOneTimeSignUp = true
-var executeOneTimeSaving = true
+private var fullNameValue = ""
+private var userNameValue = ""
+private var passwordValue = ""
+private var confirmPasswordValue = ""
+private var emailValue = ""
+private var phoneNumberValue = ""
+private var executeOneTimeSignUp = true
+private var executeOneTimeSaving = true

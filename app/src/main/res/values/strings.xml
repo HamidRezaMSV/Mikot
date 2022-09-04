@@ -8,7 +8,7 @@
     <string name="finish">Finish</string>
     <!--Register Screen-->
     <string name="register">Register</string>
-    <string name="have_account">Have an account? Login</string>
+    <string name="register_have_account">Have an account? Login</string>
     <string name="full_name">Full Name</string>
     <string name="hint_full_name">Example : Hamid Reza Mousavi</string>
     <string name="user_name">Username</string>
@@ -28,4 +28,10 @@
     <string name="invalid_phone_message">phone number can not be empty</string>
     <string name="invalid_username_message">username can not be empty</string>
     <string name="invalid_confirm_password_message">confirm password is wrong!</string>
+    <!--Login Screen-->
+    <string name="login">Login</string>
+    <string name="login_email_hint">Enter your email</string>
+    <string name="login_pass_hint">Enter your password</string>
+    <string name="login_have_not_account">Create new account</string>
+    <string name="welcome">Welcome</string>
 </resources>
