@@ -6,6 +6,7 @@ import com.google.firebase.auth.AuthResult
 import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.model.MikotUser
+import kotlinx.coroutines.flow.Flow
 
 interface RemoteDataSource {
     val signUpResponse : LiveData<Task<AuthResult>>
@@ -15,7 +16,7 @@ interface RemoteDataSource {
     val updateLastMessageResponse : LiveData<Task<Void>>
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
-    suspend fun signInUser(email:String , password : String)
+    fun signInUser(email:String , password : String) : Flow<Task<AuthResult>>
     suspend fun createNewMessage(message: Message,child : String)
     suspend fun getAllUsers() : Map<String, Any>
     suspend fun getAllMessages(child : String) : Map<String, Any>

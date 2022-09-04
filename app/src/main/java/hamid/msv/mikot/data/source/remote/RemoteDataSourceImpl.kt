@@ -19,6 +19,10 @@ import hamid.msv.mikot.util.DATABASE_ERROR_KEY
 import hamid.msv.mikot.util.GET_ALL_MESSAGES_KEY
 import hamid.msv.mikot.util.GET_ALL_USERS_KEY
 import hamid.msv.mikot.util.GET_LAST_MESSAGES_KEY
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val authentication: FirebaseAuth) : RemoteDataSource {
@@ -52,9 +56,15 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         USER_DATABASE.child(user.id).setValue(user).addOnCompleteListener { _saveNewUserResponse.postValue(it) }
     }
 
-    override suspend fun signInUser(email:String , password : String) {
-        authentication.signInWithEmailAndPassword(email,password)
-            .addOnCompleteListener { _signInResponse.postValue(it) }
+    // Change this for test new settings:
+    //        authentication.signInWithEmailAndPassword(email,password)
+    //            .addOnCompleteListener { _signInResponse.postValue(it) }
+    override fun signInUser(email:String , password : String) : Flow<Task<AuthResult>> = callbackFlow {
+        authentication.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+            _signInResponse.postValue(it)
+            trySend(it).isSuccess
+        }
+        awaitClose { close() }
     }
 
     override suspend fun createNewMessage(message: Message , child : String) {

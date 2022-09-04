@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import hamid.msv.mikot.R
+import hamid.msv.mikot.domain.model.FirebaseResponse
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.REGISTER_PLACEHOLDER_ALPHA
@@ -48,16 +49,20 @@ fun LoginScreen(
         }
     )
 
-    observeLoginResponse(navController, viewModel, context)
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun A() {
-    LoginContent(onLoginClicked = { /*TODO*/ }) {
-        
+    when(viewModel.response.value){
+        FirebaseResponse.SUCCESSFUL -> {
+            Toast.makeText(context, context.getString(R.string.welcome), Toast.LENGTH_SHORT).show()
+            navController.popBackStack()
+            navController.navigate(Screen.Home.route)
+            viewModel.response.value = FirebaseResponse.END
+        }
+        FirebaseResponse.FAILED -> {
+            Toast.makeText(context, context.getString(R.string.connection_failed), Toast.LENGTH_SHORT).show()
+            viewModel.response.value = FirebaseResponse.END
+        }
+        FirebaseResponse.END -> {}
     }
+
 }
 
 @Composable
@@ -195,25 +200,5 @@ private fun isInputDataValid(email:String,password:String,context: Context) : Bo
     return emailValidation && passwordValidation
 }
 
-private fun observeLoginResponse(navController : NavHostController,viewModel : LoginViewModel , context: Context){
-    viewModel.loginResponse.observeForever {
-        it?.let {
-            if (executeLoginOneTime){
-                if (it.isSuccessful){
-                    executeLoginOneTime = false
-                    Toast.makeText(context, context.getString(R.string.welcome), Toast.LENGTH_SHORT).show()
-                    viewModel.saveLoginState(isLogin = true)
-                    navController.popBackStack()
-                    navController.navigate(Screen.Home.route)
-                }else{
-                    Toast.makeText(context, context.getString(R.string.connection_failed), Toast.LENGTH_SHORT).show()
-                    Log.d("Mikot_login", it.exception?.message.toString())
-                }
-            }
-        }
-    }
-}
-
 private var loginEmail = ""
 private var loginPassword = ""
-private var executeLoginOneTime = true

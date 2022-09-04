@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import hamid.msv.mikot.domain.model.MikotUser
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     val signUpResponse : LiveData<Task<AuthResult>>
@@ -11,6 +12,6 @@ interface UserRepository {
     val signInResponse : LiveData<Task<AuthResult>>
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
-    suspend fun signInUser(email:String , password : String)
+    fun signInUser(email:String , password : String): Flow<Task<AuthResult>>
     suspend fun getAllUsers() : Map<String, Any>
 }

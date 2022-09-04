@@ -7,7 +7,7 @@ class SignInUserUseCase @Inject constructor(private val userRepository: UserRepo
 
     val response = userRepository.signInResponse
 
-    suspend fun execute(email: String, password: String) =
+    fun execute(email: String, password: String) =
         userRepository.signInUser(email, password)
 
 }

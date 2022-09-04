@@ -6,6 +6,7 @@ import com.google.firebase.auth.AuthResult
 import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.repository.UserRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UserRepositoryImpl
@@ -26,9 +27,8 @@ class UserRepositoryImpl
         remoteDataSource.saveNewUserInFirebase(user)
     }
 
-    override suspend fun signInUser(email: String, password: String) {
+    override fun signInUser(email: String, password: String): Flow<Task<AuthResult>> =
         remoteDataSource.signInUser(email, password)
-    }
 
     override suspend fun getAllUsers(): Map<String, Any> = remoteDataSource.getAllUsers()
 
