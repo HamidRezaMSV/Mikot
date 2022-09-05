@@ -1,4 +1,4 @@
-package hamid.msv.mikot.navigation
+package hamid.msv.mikot.domain.model
 
 import androidx.annotation.DrawableRes
 import hamid.msv.mikot.R

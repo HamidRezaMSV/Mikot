@@ -35,4 +35,6 @@
     <string name="login_pass_hint">Enter your password</string>
     <string name="login_have_not_account">Create new account</string>
     <string name="welcome">Welcome</string>
+    <!--Chat Screen-->
+    <string name="chat_text_field_hint">Enter your message</string>
 </resources>

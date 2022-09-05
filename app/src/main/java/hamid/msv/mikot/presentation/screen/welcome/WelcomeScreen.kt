@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.pager.*
 import hamid.msv.mikot.R
-import hamid.msv.mikot.navigation.OnBoardingPage
+import hamid.msv.mikot.domain.model.OnBoardingPage
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.ON_BOARDING_PAGE_COUNT
