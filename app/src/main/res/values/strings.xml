@@ -22,7 +22,6 @@
     <string name="hint_confirm_password">Enter your password again</string>
     <string name="phoneNumber">Phone Number</string>
     <string name="hint_phoneNumber">Example : 09123456789</string>
-    <string name="iran_pre_phone_number">09</string>
     <string name="invalid_email_message">input email is in wrong format!</string>
     <string name="invalid_password_message">password must be at least 6 characters</string>
     <string name="invalid_name_message">full name can not be empty</string>

@@ -20,7 +20,7 @@ class MessageRepositoryImpl
         remoteDataSource.createNewMessage(message , child)
     }
 
-    override suspend fun getAllMessages(child : String): Map<String, Any> = remoteDataSource.getAllMessages(child)
+    override suspend fun getAllMessages(child : String) = remoteDataSource.getAllMessages(child)
 
 
     override suspend fun updateChatLastMessage(lastMessage: LastMessage) {
