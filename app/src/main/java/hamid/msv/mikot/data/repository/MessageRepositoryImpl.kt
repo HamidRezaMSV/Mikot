@@ -6,6 +6,7 @@ import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.repository.MessageRepository
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class MessageRepositoryImpl
@@ -16,11 +17,14 @@ class MessageRepositoryImpl
     override val updateLastMessageResponse: LiveData<Task<Void>>
         get() = remoteDataSource.updateLastMessageResponse
 
-    override suspend fun createNewMessage(message: Message , child : String) {
+    override val messages = remoteDataSource.messages
+
+    override suspend fun createNewMessage(message: Message, child : String) {
         remoteDataSource.createNewMessage(message , child)
     }
 
-    override suspend fun getAllMessages(child : String) = remoteDataSource.getAllMessages(child)
+    override suspend fun listenForMessages(child : String) =
+        remoteDataSource.listenForMessages(child)
 
 
     override suspend fun updateChatLastMessage(lastMessage: LastMessage) {

@@ -7,6 +7,7 @@ import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.model.MikotUser
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface RemoteDataSource {
     val signUpResponse : LiveData<Task<AuthResult>>
@@ -14,6 +15,9 @@ interface RemoteDataSource {
     val signInResponse : LiveData<Task<AuthResult>>
     val createNewMessageResponse : LiveData<Task<Void>>
     val updateLastMessageResponse : LiveData<Task<Void>>
+
+    val messages : StateFlow<List<Message>>
+
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
     // Changed
@@ -22,7 +26,7 @@ interface RemoteDataSource {
     // Changed
     fun getAllUsers() : Flow<List<MikotUser>>
     // Changed
-    suspend fun getAllMessages(child : String) : Flow<List<Message>>
+    suspend fun listenForMessages(child : String)
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>
 }

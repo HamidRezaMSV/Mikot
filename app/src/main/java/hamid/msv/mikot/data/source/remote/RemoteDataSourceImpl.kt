@@ -1,12 +1,10 @@
 package hamid.msv.mikot.data.source.remote
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -20,10 +18,7 @@ import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.util.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val authentication: FirebaseAuth) : RemoteDataSource {
@@ -94,71 +89,21 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         awaitClose { cancel() }
     }
 
-
-//    override suspend fun getAllUsers(): Flow<List<MikotUser>> {
-//        val result = MutableLiveData<List<MikotUser>>()
-//        //val databaseError = MutableLiveData<DatabaseError>()
-//
-//        val users = mutableListOf<MikotUser>()
-//        var errorMessage = NO_ERROR
-//
-//        USER_DATABASE.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                snapshot.children.forEach {
-//                    val user = it.getValue(MikotUser::class.java)
-//                    user?.let { data -> users.add(data) }
-//                }
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                //databaseError.postValue(error)
-//            }
-//        })
-//
-////        return mapOf(
-////            GET_ALL_USERS_KEY to result,
-////            DATABASE_ERROR_KEY to databaseError
-////        )
-//    }
-
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
+    override val messages: StateFlow<List<Message>> = _messages.asStateFlow()
 
-    override suspend fun getAllMessages(child : String): Flow<List<Message>> = callbackFlow{
-        val messages = mutableListOf<Message>()
-        MESSAGE_DATABASE.child(child).addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val message = snapshot.getValue(Message::class.java) ?: return
-                messages.add(message)
-                trySend(messages)
+    override suspend fun listenForMessages(child : String){
+        MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val response = snapshot.children.map { it.getValue(Message::class.java) ?: return }
+                _messages.value = response
             }
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) { TODO("Not yet implemented") }
-            override fun onChildRemoved(snapshot: DataSnapshot) { TODO("Not yet implemented") }
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) { TODO("Not yet implemented") }
-            override fun onCancelled(error: DatabaseError) { TODO("Not yet implemented") }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
         })
-
-        awaitClose{ close() }
     }
-
-//    override suspend fun getAllMessages(child : String): Flow<List<Message>> {
-//        val result = MutableLiveData<List<Message>>()
-//        val databaseError = MutableLiveData<DatabaseError>()
-//
-//        MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                result.postValue(snapshot.getValue<List<Message>>())
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                databaseError.postValue(error)
-//            }
-//        })
-//
-//        return mapOf(
-//            GET_ALL_MESSAGES_KEY to result,
-//            DATABASE_ERROR_KEY to databaseError
-//        )
-//    }
 
     override suspend fun getChatsLastMessage(): Map<String, Any> {
         val result = MutableLiveData<List<LastMessage>>()

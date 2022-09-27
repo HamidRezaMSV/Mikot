@@ -39,7 +39,7 @@ fun LoginScreen(
         FirebaseResponse.SUCCESSFUL -> {
             Toast.makeText(context, context.getString(R.string.welcome), Toast.LENGTH_SHORT).show()
             navController.popBackStack()
-            navController.navigate(Screen.Home.route)
+            navController.navigate(Screen.Chat.route)
             viewModel.loginResponse.value = FirebaseResponse.END
         }
         FirebaseResponse.FAILED -> {
