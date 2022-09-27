@@ -25,8 +25,8 @@ interface RemoteDataSource {
     suspend fun createNewMessage(message: Message,child : String)
     // Changed
     fun getAllUsers() : Flow<List<MikotUser>>
-    // Changed
-    suspend fun listenForMessages(child : String)
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>
+
+    suspend fun listenForMessages(child : String)
 }

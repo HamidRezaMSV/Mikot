@@ -13,7 +13,7 @@
     <string name="full_name">Full Name</string>
     <string name="hint_full_name">Example : Hamid Reza Mousavi</string>
     <string name="user_name">Username</string>
-    <string name="hint_user_name">Example : HamidSM</string>
+    <string name="hint_user_name">Enter your username</string>
     <string name="email">Email</string>
     <string name="hint_email">Example : example@gmail.com</string>
     <string name="password">Password</string>

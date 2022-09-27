@@ -37,6 +37,8 @@ class LoginViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun saveCurrentUserId(uid:String) = viewModelScope.launch(Dispatchers.IO) { saveCurrentUserIdUseCase.execute(uid) }
+    private fun saveCurrentUserId(uid:String) = viewModelScope.launch(Dispatchers.IO) {
+        saveCurrentUserIdUseCase.execute(uid)
+    }
 
 }

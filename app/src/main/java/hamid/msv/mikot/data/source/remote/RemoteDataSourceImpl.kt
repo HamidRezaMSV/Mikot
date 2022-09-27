@@ -23,6 +23,9 @@ import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val authentication: FirebaseAuth) : RemoteDataSource {
 
+    private val _messages = MutableStateFlow<List<Message>>(emptyList())
+    override val messages: StateFlow<List<Message>> = _messages.asStateFlow()
+
     private val _signUpResponse = MutableLiveData<Task<AuthResult>>()
     override val signUpResponse: LiveData<Task<AuthResult>>
         get() = _signUpResponse
@@ -45,7 +48,9 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
 
     override suspend fun signUpUser(email:String , password : String) {
         authentication.createUserWithEmailAndPassword(email,password)
-            .addOnCompleteListener { _signUpResponse.postValue(it) }
+            .addOnCompleteListener {
+
+                _signUpResponse.postValue(it) }
     }
 
     override suspend fun saveNewUserInFirebase(user: MikotUser) {
@@ -89,18 +94,14 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         awaitClose { cancel() }
     }
 
-    private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    override val messages: StateFlow<List<Message>> = _messages.asStateFlow()
-
     override suspend fun listenForMessages(child : String){
         MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                val response = snapshot.children.map { it.getValue(Message::class.java) ?: return }
-                _messages.value = response
+                val data = snapshot.children.map { it.getValue(Message::class.java) ?: return }
+               _messages.value = data
             }
 
             override fun onCancelled(error: DatabaseError) {
-
             }
         })
     }

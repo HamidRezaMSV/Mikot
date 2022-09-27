@@ -9,6 +9,7 @@ import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,12 +22,10 @@ class SplashViewModel
 ) : ViewModel() {
 
     private val _onBoardingCompleted = MutableStateFlow(false)
-    val onBoardingCompleted: StateFlow<Boolean>
-        get() = _onBoardingCompleted
+    val onBoardingCompleted: StateFlow<Boolean> = _onBoardingCompleted.asStateFlow()
 
     private val _isLogin = MutableStateFlow(false)
-    val isLogin : StateFlow<Boolean>
-        get() = _isLogin
+    val isLogin : StateFlow<Boolean> = _isLogin.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
