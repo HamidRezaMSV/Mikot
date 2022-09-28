@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hamid.msv.mikot.ui.theme.*
 
@@ -20,7 +21,10 @@ fun MessageItem(isMe: Boolean,text:String,time:String) {
     SelectionContainer {
         if (isMe) {
             Column(
-                modifier = Modifier.fillMaxWidth() ,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = SMALL_PADDING)
+                    .padding(top = EXTRA_SMALL_PADDING),
                 horizontalAlignment = Alignment.End
             ) {
                 Row(
@@ -50,7 +54,7 @@ fun MessageItem(isMe: Boolean,text:String,time:String) {
                             text = text,
                             color = Color.Black,
                             fontWeight = FontWeight.Normal,
-                            fontSize = MaterialTheme.typography.body2.fontSize
+                            fontSize = MaterialTheme.typography.body1.fontSize
                         )
                     }
                 }
@@ -64,7 +68,10 @@ fun MessageItem(isMe: Boolean,text:String,time:String) {
             }
         } else {
             Column(
-                modifier = Modifier.fillMaxWidth() ,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = SMALL_PADDING)
+                    .padding(top = EXTRA_SMALL_PADDING),
                 horizontalAlignment = Alignment.Start
             ) {
                 Row(
@@ -89,10 +96,10 @@ fun MessageItem(isMe: Boolean,text:String,time:String) {
                     ) {
                         Text(
                             modifier = Modifier.padding(vertical = SMALL_PADDING , horizontal = MEDIUM_PADDING),
-                            text = "Hi Hamid",
+                            text = text,
                             color = Color.White,
                             fontWeight = FontWeight.Normal,
-                            fontSize = MaterialTheme.typography.body2.fontSize
+                            fontSize = MaterialTheme.typography.body1.fontSize
                         )
                     }
                 }
@@ -106,4 +113,24 @@ fun MessageItem(isMe: Boolean,text:String,time:String) {
             }
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun MessageItem1() {
+    MessageItem(
+        isMe = true,
+        text = "Salam",
+        time = "02:20"
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+fun MessageItem2() {
+    MessageItem(
+        isMe = false,
+        text = "haj Hamid",
+        time = "02:20"
+    )
 }

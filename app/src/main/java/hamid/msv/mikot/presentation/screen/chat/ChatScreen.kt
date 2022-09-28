@@ -57,7 +57,11 @@ fun ChatScreenContent(messages:List<Message> , onSendClicked : (String) -> Unit)
             reverseLayout = true ,
             contentPadding = PaddingValues(bottom = SMALL_PADDING)
         ){
-            items(messages.reversed()) { item -> MessageItem(isMe = item.senderId == sender, text = item.text!! , time = item.time!!) }
+            items(messages.reversed()) { item ->
+                MessageItem(isMe = item.senderId == sender,
+                    text = item.text!!,
+                    time = item.time!!)
+            }
         }
 
         Box(

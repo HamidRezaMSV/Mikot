@@ -18,8 +18,8 @@ import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val authentication: FirebaseAuth) : RemoteDataSource {
 
-    private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    override val messages: StateFlow<List<Message>> = _messages.asStateFlow()
+    private val _messages = MutableStateFlow<FirebaseResource<List<Message>>?>(null)
+    override val messages: StateFlow<FirebaseResource<List<Message>>?> = _messages.asStateFlow()
 
     private val _signUpResponse = MutableStateFlow<FirebaseResource<String>?>(null)
     override val signUpResponse: StateFlow<FirebaseResource<String>?> = _signUpResponse.asStateFlow()
@@ -83,10 +83,6 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         }
     }
 
-    // Change this for test new settings:
-    //                snapshot.children.forEach { item ->
-//                    val user = item.getValue(MikotUser::class.java)
-//                    user?.let { users.add(it) }
     override fun getAllUsers(): StateFlow<FirebaseResource<List<MikotUser>>?> {
         val response = MutableStateFlow<FirebaseResource<List<MikotUser>>?>(null)
         USER_DATABASE.addValueEventListener(object : ValueEventListener{
@@ -106,10 +102,12 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val data = snapshot.children.map { it.getValue(Message::class.java) ?: return }
-               _messages.value = data
+               _messages.value = FirebaseResource.Success(data = data)
             }
 
-            override fun onCancelled(error: DatabaseError) { TODO("Not yet implemented") }
+            override fun onCancelled(error: DatabaseError) {
+                _messages.value = FirebaseResource.Error(error = error.message)
+            }
         })
     }
 

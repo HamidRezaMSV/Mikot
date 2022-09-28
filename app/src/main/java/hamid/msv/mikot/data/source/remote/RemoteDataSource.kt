@@ -14,7 +14,7 @@ interface RemoteDataSource {
     val createNewMessageResponse : LiveData<Task<Void>>
     val updateLastMessageResponse : LiveData<Task<Void>>
 
-    val messages : StateFlow<List<Message>>
+    val messages : StateFlow<FirebaseResource<List<Message>>?>
     val signUpResponse : StateFlow<FirebaseResource<String>?>
     val saveNewUserResponse : StateFlow<FirebaseResource<String>?>
     val signInResponse : StateFlow<FirebaseResource<String>?>

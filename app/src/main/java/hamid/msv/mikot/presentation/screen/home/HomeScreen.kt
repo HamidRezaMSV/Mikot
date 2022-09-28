@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
+import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 
 @Composable
@@ -43,7 +44,10 @@ fun HomeScreen(
         items(userList.value){ user ->
             HomeScreenUserItem(
                 user = user,
-                onItemSelected = { userId -> Log.d("MIKOT_HOME" , "selected item id : $userId")}
+                onItemSelected = { userId ->
+                    Log.d("MIKOT_HOME" , "selected item id : $userId")
+                    navController.navigate(Screen.Chat.route)
+                }
             )
         }
     }

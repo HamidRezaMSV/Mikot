@@ -6,7 +6,6 @@ import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.repository.MessageRepository
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class MessageRepositoryImpl
