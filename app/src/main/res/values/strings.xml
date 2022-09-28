@@ -36,4 +36,5 @@
     <string name="welcome">Welcome</string>
     <!--Chat Screen-->
     <string name="chat_text_field_hint">Enter your message</string>
+    <string name="null_receiver_id_error">Something went wrong,try again!</string>
 </resources>

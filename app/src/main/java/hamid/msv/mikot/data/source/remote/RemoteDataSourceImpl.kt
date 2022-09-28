@@ -30,10 +30,8 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     private val _signInResponse = MutableStateFlow<FirebaseResource<String>?>(null)
     override val signInResponse = _signInResponse.asStateFlow()
 
-
-    private val _createNewMessageResponse = MutableLiveData<Task<Void>>()
-    override val createNewMessageResponse: LiveData<Task<Void>>
-        get() = _createNewMessageResponse
+    private val _sendNewMessageResponse = MutableStateFlow<FirebaseResource<String>?>(null)
+    override val sendNewMessageResponse = _sendNewMessageResponse.asStateFlow()
 
     private val _updateLastMessageResponse = MutableLiveData<Task<Void>>()
     override val updateLastMessageResponse: LiveData<Task<Void>>
@@ -72,9 +70,22 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
             }
     }
 
-    override suspend fun createNewMessage(message: Message , child : String) {
-        MESSAGE_DATABASE.child(child).push().setValue(message)
-            .addOnCompleteListener { _createNewMessageResponse.postValue(it) }
+    override suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String) {
+        MESSAGE_DATABASE.child(senderId+receiverId).push().setValue(message)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    MESSAGE_DATABASE.child(receiverId+senderId).push().setValue(message)
+                        .addOnCompleteListener { response ->
+                            if (response.isSuccessful){
+                                _sendNewMessageResponse.value = FirebaseResource.Success(data = "OK")
+                            }else{
+                                _sendNewMessageResponse.value = FirebaseResource.Error(error = it.exception?.message.toString())
+                            }
+                        }
+                }else{
+                    _sendNewMessageResponse.value = FirebaseResource.Error(error = it.exception?.message.toString())
+                }
+            }
     }
 
     override suspend fun updateChatLastMessage(lastMessage: LastMessage) {

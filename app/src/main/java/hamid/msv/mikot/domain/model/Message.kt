@@ -1,7 +1,7 @@
 package hamid.msv.mikot.domain.model
 
 data class Message(
-    val id : String? = null ,
+    var id : String? = null ,
     var text : String? = null ,
     var time : String? = null ,
     val senderId : String? = null ,

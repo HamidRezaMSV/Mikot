@@ -16,8 +16,8 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideCreateNewMessageUseCase(messageRepository: MessageRepository) =
-        CreateNewMessageUseCase(messageRepository)
+    fun provideSendNewMessageUseCase(messageRepository: MessageRepository) =
+        SendNewMessageUseCase(messageRepository)
 
     @Provides
     @Singleton

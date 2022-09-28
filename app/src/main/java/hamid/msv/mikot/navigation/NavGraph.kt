@@ -1,6 +1,7 @@
 package hamid.msv.mikot.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,6 +12,7 @@ import hamid.msv.mikot.presentation.screen.login.LoginScreen
 import hamid.msv.mikot.presentation.screen.register.RegisterScreen
 import hamid.msv.mikot.presentation.screen.splash.SplashScreen
 import hamid.msv.mikot.presentation.screen.welcome.WelcomeScreen
+import hamid.msv.mikot.util.CHAT_SCREEN_ARG_KEY
 
 @ExperimentalPagerApi
 @Composable
@@ -22,7 +24,13 @@ fun SetupNavGraph() {
         composable(route = Screen.SignUp.route){ RegisterScreen(navController) }
         composable(route = Screen.SignIn.route){ LoginScreen(navController) }
         composable(route = Screen.Home.route){ HomeScreen(navController) }
-        composable(route = Screen.Chat.route){ ChatScreen(navController) }
+        composable(
+            route = Screen.Chat.route ,
+            arguments = listOf(navArgument(CHAT_SCREEN_ARG_KEY){ type = NavType.StringType })
+        ) {
+            val receiverId = it.arguments?.getString(CHAT_SCREEN_ARG_KEY)
+            ChatScreen(navController, receiverId = receiverId)
+        }
         composable(route = Screen.Profile.route){  }
     }
 }

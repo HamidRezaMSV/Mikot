@@ -7,6 +7,6 @@ import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 @HiltAndroidApp
 class Application : Application(){
     companion object{
-        var currentUserId : String = USER_IS_NOT_LOGIN
+        var currentUserId : String? = null
     }
 }

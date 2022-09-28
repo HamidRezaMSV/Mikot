@@ -135,7 +135,7 @@ class RegisterViewModel @Inject constructor(
                     when(it){
                         is FirebaseResource.Success -> {
                             Log.d("Mikot_Register", "database isSuccessful")
-                            saveCurrentUserUid(uid = Application.currentUserId)
+                            saveCurrentUserUid(uid = Application.currentUserId!!)
                             _navigateToHomeScreen.value = true
                         }
                         is FirebaseResource.Error -> {

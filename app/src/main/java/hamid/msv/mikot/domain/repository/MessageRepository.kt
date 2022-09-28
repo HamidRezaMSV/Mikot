@@ -8,12 +8,12 @@ import hamid.msv.mikot.domain.model.Message
 import kotlinx.coroutines.flow.StateFlow
 
 interface MessageRepository {
-    val createNewMessageResponse : LiveData<Task<Void>>
     val updateLastMessageResponse : LiveData<Task<Void>>
 
     val messages : StateFlow<FirebaseResource<List<Message>>?>
+    val sendNewMessageResponse: StateFlow<FirebaseResource<String>?>
 
-    suspend fun createNewMessage(message: Message , child : String)
+    suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String)
     suspend fun listenForMessages(child : String)
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>

@@ -45,8 +45,7 @@ fun HomeScreen(
             HomeScreenUserItem(
                 user = user,
                 onItemSelected = { userId ->
-                    Log.d("MIKOT_HOME" , "selected item id : $userId")
-                    navController.navigate(Screen.Chat.route)
+                    navController.navigate(Screen.Chat.passReceiverId(userId))
                 }
             )
         }
