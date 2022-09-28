@@ -1,5 +1,6 @@
 package hamid.msv.mikot.presentation.screen.home
 
+import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.usecase.GetAllUsersUseCase
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +31,12 @@ class HomeViewModel @Inject constructor(
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
-                            response.data?.let { data -> _userList.value = data }
+                            response.data?.let { data ->
+                                _userList.value = data.map { user ->
+                                    user.createAccountTime = parseTime(user.createAccountTime!!.toLong())
+                                    user
+                                }
+                            }
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_HOME" , response.error.toString())
@@ -38,5 +45,9 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun parseTime(time:Long): String{
+        return SimpleDateFormat.getPatternInstance("yyyy/MM/dd", Locale.ENGLISH).format(Date(time))
     }
 }
