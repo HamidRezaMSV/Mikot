@@ -16,7 +16,7 @@ import hamid.msv.mikot.presentation.screen.welcome.WelcomeScreen
 @Composable
 fun SetupNavGraph() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.SignUp.route){
+    NavHost(navController = navController, startDestination = Screen.Splash.route){
         composable(route = Screen.Splash.route){ SplashScreen(navController) }
         composable(route = Screen.Welcome.route){ WelcomeScreen(navController) }
         composable(route = Screen.SignUp.route){ RegisterScreen(navController) }

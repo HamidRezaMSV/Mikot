@@ -12,6 +12,7 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,11 +34,13 @@ fun HomeScreen(
     viewModel : HomeViewModel = hiltViewModel()
 ) {
 
+    val userList = viewModel.userList.collectAsState()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize() ,
         contentPadding = PaddingValues(EXTRA_SMALL_PADDING)
     ){
-        items(viewModel.users.value){ user ->
+        items(userList.value){ user ->
             HomeScreenUserItem(name = user.userName ?: stringResource(id = R.string.unknown))
         }
     }
@@ -45,9 +48,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeScreenUserItem(
-    name:String = "Unknown"
-) {
+fun HomeScreenUserItem(name:String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,12 +114,10 @@ fun HomeScreenUserItem(
 
         }
     }
-    
-    
 }
 
 @Preview(showBackground = true)
 @Composable
 fun UserItemPreview() {
-    HomeScreenUserItem()
+    HomeScreenUserItem("")
 }

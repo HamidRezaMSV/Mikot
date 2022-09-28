@@ -3,7 +3,6 @@ package hamid.msv.mikot.data.source.remote
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,8 +13,6 @@ import hamid.msv.mikot.data.remote.FirebaseApi.MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.USER_DATABASE
 import hamid.msv.mikot.domain.model.*
 import hamid.msv.mikot.util.*
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
@@ -87,20 +84,22 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     }
 
     // Change this for test new settings:
-    override fun getAllUsers(): Flow<List<MikotUser>> = callbackFlow {
-        val users = mutableListOf<MikotUser>()
+    //                snapshot.children.forEach { item ->
+//                    val user = item.getValue(MikotUser::class.java)
+//                    user?.let { users.add(it) }
+    override fun getAllUsers(): StateFlow<FirebaseResource<List<MikotUser>>?> {
+        val response = MutableStateFlow<FirebaseResource<List<MikotUser>>?>(null)
         USER_DATABASE.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.children.forEach { item ->
-                    val user = item.getValue(MikotUser::class.java)
-                    user?.let { users.add(it) }
-                }
-                trySend(users)
+                val data = snapshot.children.map { it.getValue(MikotUser::class.java) ?: return }
+                response.value = FirebaseResource.Success(data = data)
             }
 
-            override fun onCancelled(error: DatabaseError) { TODO("Not yet implemented") }
+            override fun onCancelled(error: DatabaseError) {
+                response.value = FirebaseResource.Error(error = error.message)
+            }
         })
-        awaitClose { cancel() }
+        return response.asStateFlow()
     }
 
     override suspend fun listenForMessages(child : String){

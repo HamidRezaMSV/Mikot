@@ -14,6 +14,5 @@ interface UserRepository {
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
     suspend fun signInUser(email:String , password : String)
-
-    fun getAllUsers() : Flow<List<MikotUser>>
+    fun getAllUsers() : StateFlow<FirebaseResource<List<MikotUser>>?>
 }

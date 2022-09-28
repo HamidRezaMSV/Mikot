@@ -3,6 +3,7 @@ package hamid.msv.mikot.presentation.screen.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.usecase.ReadCurrentUserIdUseCase
 import hamid.msv.mikot.domain.usecase.ReadOnBoardingUseCase
 import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
@@ -29,7 +30,9 @@ class SplashViewModel
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            _isLogin.value = readCurrentUserIdUseCase.execute().stateIn(viewModelScope).value != USER_IS_NOT_LOGIN
+            val uid = readCurrentUserIdUseCase.execute().stateIn(viewModelScope).value
+            _isLogin.value = uid != USER_IS_NOT_LOGIN
+            Application.currentUserId = uid
             _onBoardingCompleted.value = readOnBoardingUseCase.execute().stateIn(viewModelScope).value
         }
     }

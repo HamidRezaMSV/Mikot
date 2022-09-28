@@ -22,7 +22,6 @@ class UserRepositoryImpl
     override suspend fun signInUser(email: String, password: String)  =
         remoteDataSource.signInUser(email, password)
 
-    override fun getAllUsers(): Flow<List<MikotUser>> =
-        remoteDataSource.getAllUsers()
+    override fun getAllUsers() = remoteDataSource.getAllUsers()
 
 }

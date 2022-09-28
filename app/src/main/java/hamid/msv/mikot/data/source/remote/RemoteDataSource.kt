@@ -23,11 +23,9 @@ interface RemoteDataSource {
     suspend fun listenForMessages(child : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
     suspend fun signInUser(email:String , password : String)
-
+    fun getAllUsers() : StateFlow<FirebaseResource<List<MikotUser>>?>
 
     suspend fun createNewMessage(message: Message,child : String)
-    // Changed
-    fun getAllUsers() : Flow<List<MikotUser>>
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>
 
