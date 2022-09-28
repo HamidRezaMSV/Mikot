@@ -59,4 +59,7 @@ val Colors.chatItemBackgroundColor
 val Colors.chatItemBorderColor
     @Composable get() = if (isLight) Dark_Green_Blue else Dark_Green_Blue
 
+val Colors.chatTopBarTextColor
+    @Composable get() = if (isLight) DarkGray else LightGray
+
 

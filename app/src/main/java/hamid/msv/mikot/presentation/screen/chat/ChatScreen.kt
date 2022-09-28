@@ -1,9 +1,11 @@
 package hamid.msv.mikot.presentation.screen.chat
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -16,9 +18,11 @@ import hamid.msv.mikot.Application
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.presentation.component.ChatTextField
+import hamid.msv.mikot.presentation.component.ChatTopBar
 import hamid.msv.mikot.presentation.component.MessageItem
 import hamid.msv.mikot.ui.theme.SMALL_PADDING
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ChatScreen(
     navController: NavHostController,
@@ -34,14 +38,19 @@ fun ChatScreen(
 
     val messages = viewModel.messages.collectAsState()
 
-    ChatScreenContent(
-        messages = messages.value ,
-        onSendClicked = { viewModel.sendNewMessage(text = it , receiverId = receiverId!!) }
+    Scaffold(
+        content = {
+            ChatScreenContent(
+                messages = messages.value ,
+                onSendClicked = { text ->  viewModel.sendNewMessage(text = text , receiverId = receiverId!!) }
+            )
+        },
+        topBar = { ChatTopBar(name = receiverId!!) }
     )
 }
 
 @Composable
-fun ChatScreenContent(messages:List<Message> , onSendClicked : (String) -> Unit) {
+fun ChatScreenContent(messages:List<Message> , onSendClicked : (text:String) -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize() ,
         verticalArrangement = Arrangement.SpaceBetween
