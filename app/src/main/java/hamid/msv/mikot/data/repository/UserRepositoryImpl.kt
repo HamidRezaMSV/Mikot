@@ -4,18 +4,20 @@ import androidx.lifecycle.LiveData
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import hamid.msv.mikot.data.source.remote.RemoteDataSource
+import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class UserRepositoryImpl
 @Inject constructor(private val remoteDataSource: RemoteDataSource) : UserRepository {
 
-    override val signUpResponse: LiveData<Task<AuthResult>>
-        get() = remoteDataSource.signUpResponse
-    override val saveNewUserResponse: LiveData<Task<Void>>
-        get() = remoteDataSource.saveNewUserResponse
+    override val signUpResponse = remoteDataSource.signUpResponse
+    override val saveNewUserResponse = remoteDataSource.saveNewUserResponse
+
+
     override val signInResponse: LiveData<Task<AuthResult>>
         get() = remoteDataSource.signInResponse
 

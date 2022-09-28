@@ -1,9 +1,5 @@
 package hamid.msv.mikot.presentation.screen.register
 
-import android.content.Context
-import android.util.Log
-import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -14,7 +10,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,9 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import hamid.msv.mikot.Application
 import hamid.msv.mikot.R
-import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
@@ -44,11 +37,21 @@ fun RegisterScreen(
 ) {
 
     val context = LocalContext.current
+    val registeredUserId = viewModel.userId.collectAsState()
+    val navigateToHomeScreen = viewModel.navigateToHomeScreen.collectAsState()
 
     RegisterContent(
-        onRegisterClicked = {
-            if (isInputDataValid(fullNameValue,userNameValue,passwordValue,confirmPasswordValue,emailValue,phoneNumberValue,context)){
-                viewModel.signUpUser(emailValue,passwordValue)
+        onRegisterClicked = { fName, uName, pass, cPass, email, phone ->
+            if (viewModel.isInputDataValid(fName, uName, pass, cPass, email, phone, context)) {
+                viewModel.currentUser.apply {
+                    this.fullName = fName
+                    this.userName = uName
+                    this.password = pass
+                    this.email = email
+                    this.phoneNumber = phone
+                    this.createAccountTime = System.currentTimeMillis().toString()
+                }
+                viewModel.signUpUser(email, pass)
             }
         },
         onLoginClicked = {
@@ -57,48 +60,26 @@ fun RegisterScreen(
         }
     )
 
-    viewModel.signUpResponse.observeAsState().value?.let {
-        if (it.isSuccessful){
-            if (executeOneTimeSignUp){
-                Log.d("Mikot_Register", "isSuccessful")
-                val user = MikotUser(
-                    id = it.result.user!!.uid ,
-                    fullName = fullNameValue ,
-                    userName = userNameValue ,
-                    password = passwordValue ,
-                    email = emailValue ,
-                    createAccountTime = System.currentTimeMillis().toString(),
-                    phoneNumber = phoneNumberValue
-                )
-                viewModel.saveUserInFirebase(user)
-                Application.currentUserId = it.result.user!!.uid
-                executeOneTimeSignUp = false
-            }
-        }else{
-            Log.d("Mikot_Register", it.exception?.message.toString())
-            Toast.makeText(context,context.getString(R.string.connection_failed),Toast.LENGTH_SHORT).show()
-        }
+    // Save user in firebase database
+    registeredUserId.value?.let {
+        viewModel.currentUser.id = it
+        viewModel.saveUserInFirebase(viewModel.currentUser)
+        viewModel.finishAuthentication()
     }
 
-    viewModel.saveUserInFirebaseResponse.observeAsState().value?.let {
-        if (it.isSuccessful){
-            if (executeOneTimeSaving){
-                Log.d("Mikot_Register", "database isSuccessful")
-                Application.currentUserId.let { user -> viewModel.saveCurrentUserUid(uid = user) }
-                navController.popBackStack()
-                navController.navigate(Screen.Home.route)
-                executeOneTimeSaving = false
-            }
-        }else{
-            Log.d("Mikot_Register", "database" + it.exception?.message.toString())
-            Toast.makeText(context,context.getString(R.string.connection_failed),Toast.LENGTH_SHORT).show()
-        }
+    if (navigateToHomeScreen.value) {
+        navController.popBackStack()
+        navController.navigate(Screen.Home.route)
+        viewModel.finishRegistering()
     }
 
 }
 
 @Composable
-fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit) {
+fun RegisterContent(
+    onRegisterClicked: (fName: String, uName: String, pass: String, cPass: String, email: String, phone: String) -> Unit,
+    onLoginClicked: () -> Unit
+) {
 
     val fullName = remember { mutableStateOf("") }
     val userName = remember { mutableStateOf("") }
@@ -109,10 +90,10 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
 
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(key1 = true){
+    LaunchedEffect(key1 = true) {
         scrollState.animateScrollTo(
-            scrollState.maxValue ,
-            tween(durationMillis = 1000 , delayMillis = 500)
+            scrollState.maxValue,
+            tween(durationMillis = 1000, delayMillis = 500)
         )
     }
 
@@ -133,11 +114,11 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
         )
 
         Text(
-            modifier = Modifier.fillMaxWidth() ,
-            text = stringResource(id = R.string.register) ,
-            textAlign = TextAlign.Center ,
-            color = MaterialTheme.colors.registerScreenContentColor ,
-            fontWeight = FontWeight.Bold ,
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.register),
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.registerScreenContentColor,
+            fontWeight = FontWeight.Bold,
             fontSize = MaterialTheme.typography.h4.fontSize
         )
 
@@ -162,19 +143,19 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
         RegisterTextField(
             value = password,
             label = R.string.password,
-            hint = R.string.hint_password ,
+            hint = R.string.hint_password,
             isPassword = true
         )
         RegisterTextField(
             value = confirmPassword,
             label = R.string.confirm_password,
-            hint = R.string.hint_confirm_password ,
+            hint = R.string.hint_confirm_password,
             isPassword = true
         )
         RegisterTextField(
             value = phoneNumber,
             label = R.string.phoneNumber,
-            hint = R.string.hint_phoneNumber ,
+            hint = R.string.hint_phoneNumber,
             isPhoneNumber = true
         )
 
@@ -183,27 +164,28 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(REGISTER_BUTTON_HEIGHT) ,
-            shape = RoundedCornerShape(size = REGISTER_BUTTON_CORNER_RADIUS) ,
+                .height(REGISTER_BUTTON_HEIGHT),
+            shape = RoundedCornerShape(size = REGISTER_BUTTON_CORNER_RADIUS),
             elevation = REGISTER_BUTTON_ELEVATION
         ) {
             Button(
                 onClick = {
-                    fullNameValue = fullName.value.trim()
-                    userNameValue = userName.value.trim()
-                    passwordValue = password.value.trim()
-                    confirmPasswordValue = confirmPassword.value.trim()
-                    emailValue = email.value.trim()
-                    phoneNumberValue = phoneNumber.value.trim()
-                    onRegisterClicked()
-                    },
+                    onRegisterClicked(
+                        fullName.value.trim(),
+                        userName.value.trim(),
+                        password.value.trim(),
+                        confirmPassword.value.trim(),
+                        email.value.trim(),
+                        phoneNumber.value.trim()
+                    )
+                },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.registerButtonBackgroundColor,
                     contentColor = Color.White
                 )
             ) {
                 Text(
-                    text = stringResource(id = R.string.register) ,
+                    text = stringResource(id = R.string.register),
                     fontSize = MaterialTheme.typography.h6.fontSize
                 )
             }
@@ -215,16 +197,19 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
             modifier = Modifier
                 .fillMaxWidth()
                 .height(REGISTER_BUTTON_HEIGHT),
-            onClick = { onLoginClicked() } ,
+            onClick = { onLoginClicked() },
             shape = RoundedCornerShape(size = REGISTER_BUTTON_CORNER_RADIUS),
             colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = Color.White ,
+                backgroundColor = Color.White,
                 contentColor = MaterialTheme.colors.registerButtonBackgroundColor
-            ) ,
-            border = BorderStroke(width = 2.dp , color = MaterialTheme.colors.registerButtonBackgroundColor)
+            ),
+            border = BorderStroke(
+                width = 2.dp,
+                color = MaterialTheme.colors.registerButtonBackgroundColor
+            )
         ) {
             Text(
-                text = stringResource(id = R.string.register_have_account) ,
+                text = stringResource(id = R.string.register_have_account),
                 fontSize = MaterialTheme.typography.subtitle1.fontSize
             )
         }
@@ -235,29 +220,35 @@ fun RegisterContent(onRegisterClicked : () -> Unit , onLoginClicked : () -> Unit
 
 @Composable
 fun RegisterTextField(
-    value:MutableState<String>,
-    label:Int,
-    hint : Int,
-    isEmail : Boolean = false,
-    isPassword : Boolean = false,
-    isPhoneNumber : Boolean = false
+    value: MutableState<String>,
+    label: Int,
+    hint: Int,
+    isEmail: Boolean = false,
+    isPassword: Boolean = false,
+    isPhoneNumber: Boolean = false
 ) {
 
     var error by remember { mutableStateOf(false) }
-    error = when{
-        isPassword -> { value.value.length < 6 }
-        isPhoneNumber -> { value.value.length != PHONE_NUMBER_CHARACTER_COUNT }
-        else -> { false }
+    error = when {
+        isPassword -> {
+            value.value.length < 6
+        }
+        isPhoneNumber -> {
+            value.value.length != PHONE_NUMBER_CHARACTER_COUNT
+        }
+        else -> {
+            false
+        }
     }
 
-    val keyboardOption = when{
-        isEmail ->  KeyboardOptions(keyboardType = KeyboardType.Email)
-        isPhoneNumber ->  KeyboardOptions(keyboardType = KeyboardType.Phone)
-        else ->  KeyboardOptions.Default
+    val keyboardOption = when {
+        isEmail -> KeyboardOptions(keyboardType = KeyboardType.Email)
+        isPhoneNumber -> KeyboardOptions(keyboardType = KeyboardType.Phone)
+        else -> KeyboardOptions.Default
     }
 
-    val visualTransformation = when{
-        isPassword ->  PasswordVisualTransformation()
+    val visualTransformation = when {
+        isPassword -> PasswordVisualTransformation()
         else -> VisualTransformation.None
     }
 
@@ -272,61 +263,26 @@ fun RegisterTextField(
             .fillMaxWidth()
             .padding(bottom = EXTRA_MEDIUM_PADDING),
         value = value.value,
-        onValueChange = { value.value = it } ,
-        label = { Text(text = stringResource(id = label))} ,
-        placeholder = { Text(text = stringResource(id = hint)) } ,
-        singleLine = true ,
+        onValueChange = { value.value = it },
+        label = { Text(text = stringResource(id = label)) },
+        placeholder = { Text(text = stringResource(id = hint)) },
+        singleLine = true,
         isError = error,
-        keyboardOptions = keyboardOption ,
+        keyboardOptions = keyboardOption,
         visualTransformation = visualTransformation,
-        shape = RoundedCornerShape(size = REGISTER_TEXT_FIELD_CORNER_RADIUS) ,
+        shape = RoundedCornerShape(size = REGISTER_TEXT_FIELD_CORNER_RADIUS),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color.Black ,
-            backgroundColor = Color.White ,
-            cursorColor = MaterialTheme.colors.registerScreenContentColor ,
-            focusedBorderColor = MaterialTheme.colors.registerScreenContentColor ,
+            textColor = Color.Black,
+            backgroundColor = Color.White,
+            cursorColor = MaterialTheme.colors.registerScreenContentColor,
+            focusedBorderColor = MaterialTheme.colors.registerScreenContentColor,
             errorBorderColor = Red,
             unfocusedBorderColor = MaterialTheme.colors.registerScreenContentColor.copy(alpha = 0.7f),
             errorLabelColor = Red,
             placeholderColor = placeHolderColor,
-            focusedLabelColor = MaterialTheme.colors.registerScreenContentColor ,
-            disabledPlaceholderColor = errorColor ,
+            focusedLabelColor = MaterialTheme.colors.registerScreenContentColor,
+            disabledPlaceholderColor = errorColor,
             unfocusedLabelColor = errorColor
         )
     )
 }
-
-private fun isInputDataValid(
-    fullName:String,
-    userName:String,
-    password:String,
-    confirmPassword:String,
-    email:String,
-    phoneNumber:String,
-    context: Context
-) : Boolean{
-    val emailValidation = Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    val passwordValidation = password.length >= 6
-    val confirmPasswordValidation = password.length >= 6 && confirmPassword == password
-    val fullNameValidation = fullName.isNotEmpty()
-    val userNameValidation = userName.isNotEmpty()
-    val phoneNumberValidation = phoneNumber.isNotEmpty()
-    when{
-        !emailValidation -> Toast.makeText(context,context.getString(R.string.invalid_email_message), Toast.LENGTH_SHORT).show()
-        !passwordValidation -> Toast.makeText(context,context.getString(R.string.invalid_password_message), Toast.LENGTH_SHORT).show()
-        !fullNameValidation -> Toast.makeText(context,context.getString(R.string.invalid_name_message), Toast.LENGTH_SHORT).show()
-        !userNameValidation -> Toast.makeText(context,context.getString(R.string.invalid_username_message), Toast.LENGTH_SHORT).show()
-        !phoneNumberValidation -> Toast.makeText(context,context.getString(R.string.invalid_phone_message), Toast.LENGTH_SHORT).show()
-        !confirmPasswordValidation -> Toast.makeText(context,context.getString(R.string.invalid_confirm_password_message), Toast.LENGTH_SHORT).show()
-    }
-    return emailValidation && passwordValidation && fullNameValidation && userNameValidation && phoneNumberValidation && confirmPasswordValidation
-}
-
-private var fullNameValue = ""
-private var userNameValue = ""
-private var passwordValue = ""
-private var confirmPasswordValue = ""
-private var emailValue = ""
-private var phoneNumberValue = ""
-private var executeOneTimeSignUp = true
-private var executeOneTimeSaving = true

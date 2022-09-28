@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class SaveUserInFirebaseUseCase @Inject constructor(private val userRepository: UserRepository) {
 
-    val response = userRepository.saveNewUserResponse
+    val saveNewUserResponse = userRepository.saveNewUserResponse
 
     suspend fun execute(user: MikotUser) =
         userRepository.saveNewUserInFirebase(user)

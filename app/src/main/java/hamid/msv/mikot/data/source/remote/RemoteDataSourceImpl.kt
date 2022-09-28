@@ -12,9 +12,7 @@ import com.google.firebase.database.ktx.getValue
 import hamid.msv.mikot.data.remote.FirebaseApi.LAST_MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.USER_DATABASE
-import hamid.msv.mikot.domain.model.LastMessage
-import hamid.msv.mikot.domain.model.Message
-import hamid.msv.mikot.domain.model.MikotUser
+import hamid.msv.mikot.domain.model.*
 import hamid.msv.mikot.util.*
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
@@ -26,13 +24,11 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     override val messages: StateFlow<List<Message>> = _messages.asStateFlow()
 
-    private val _signUpResponse = MutableLiveData<Task<AuthResult>>()
-    override val signUpResponse: LiveData<Task<AuthResult>>
-        get() = _signUpResponse
+    private val _signUpResponse = MutableStateFlow<FirebaseResource<String>?>(null)
+    override val signUpResponse: StateFlow<FirebaseResource<String>?> = _signUpResponse.asStateFlow()
 
-    private val _saveNewUserResponse = MutableLiveData<Task<Void>>()
-    override val saveNewUserResponse: LiveData<Task<Void>>
-        get() = _saveNewUserResponse
+    private val _saveNewUserResponse = MutableStateFlow<FirebaseResource<String>?>(null)
+    override val saveNewUserResponse = _saveNewUserResponse.asStateFlow()
 
     private val _signInResponse = MutableLiveData<Task<AuthResult>>()
     override val signInResponse: LiveData<Task<AuthResult>>
@@ -46,15 +42,26 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     override val updateLastMessageResponse: LiveData<Task<Void>>
         get() = _updateLastMessageResponse
 
-    override suspend fun signUpUser(email:String , password : String) {
+
+    override suspend fun signUpUser(email:String, password : String) {
         authentication.createUserWithEmailAndPassword(email,password)
             .addOnCompleteListener {
-
-                _signUpResponse.postValue(it) }
+                if (it.isSuccessful){
+                    _signUpResponse.value = FirebaseResource.Success(data = it.result.user?.uid.toString())
+                }else{
+                    _signUpResponse.value = FirebaseResource.Error(error = it.exception?.message.toString())
+                }
+            }
     }
 
     override suspend fun saveNewUserInFirebase(user: MikotUser) {
-        user.id?.let { id -> USER_DATABASE.child(id).setValue(user).addOnCompleteListener { _saveNewUserResponse.postValue(it) } }
+        USER_DATABASE.child(user.id!!).setValue(user).addOnCompleteListener{
+            if (it.isSuccessful){
+                _saveNewUserResponse.value = FirebaseResource.Success(data = "OK")
+            }else{
+                _saveNewUserResponse.value = FirebaseResource.Error(it.exception?.message.toString())
+            }
+        }
     }
 
     // Change this for test new settings:
@@ -101,8 +108,7 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
                _messages.value = data
             }
 
-            override fun onCancelled(error: DatabaseError) {
-            }
+            override fun onCancelled(error: DatabaseError) { TODO("Not yet implemented") }
         })
     }
 

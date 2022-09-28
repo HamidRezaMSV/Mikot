@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class SignUpUserUseCase @Inject constructor(private val userRepository: UserRepository) {
 
-    val response = userRepository.signUpResponse
+    val signUpResponse = userRepository.signUpResponse
 
     suspend fun execute(email: String, password: String) =
         userRepository.signUpUser(email, password)
