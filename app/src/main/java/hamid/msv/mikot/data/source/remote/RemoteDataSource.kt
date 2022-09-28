@@ -11,22 +11,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface RemoteDataSource {
-    val signInResponse : LiveData<Task<AuthResult>>
     val createNewMessageResponse : LiveData<Task<Void>>
     val updateLastMessageResponse : LiveData<Task<Void>>
 
     val messages : StateFlow<List<Message>>
     val signUpResponse : StateFlow<FirebaseResource<String>?>
     val saveNewUserResponse : StateFlow<FirebaseResource<String>?>
-
+    val signInResponse : StateFlow<FirebaseResource<String>?>
 
     suspend fun signUpUser(email:String , password : String)
     suspend fun listenForMessages(child : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
+    suspend fun signInUser(email:String , password : String)
 
 
-    // Changed
-    fun signInUser(email:String , password : String) : Flow<Task<AuthResult>>
     suspend fun createNewMessage(message: Message,child : String)
     // Changed
     fun getAllUsers() : Flow<List<MikotUser>>

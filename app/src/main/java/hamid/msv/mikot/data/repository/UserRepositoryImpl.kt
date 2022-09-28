@@ -1,14 +1,9 @@
 package hamid.msv.mikot.data.repository
 
-import androidx.lifecycle.LiveData
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import hamid.msv.mikot.data.source.remote.RemoteDataSource
-import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class UserRepositoryImpl
@@ -16,22 +11,18 @@ class UserRepositoryImpl
 
     override val signUpResponse = remoteDataSource.signUpResponse
     override val saveNewUserResponse = remoteDataSource.saveNewUserResponse
+    override val signInResponse = remoteDataSource.signInResponse
 
-
-    override val signInResponse: LiveData<Task<AuthResult>>
-        get() = remoteDataSource.signInResponse
-
-    override suspend fun signUpUser(email: String, password: String) {
+    override suspend fun signUpUser(email: String, password: String) =
         remoteDataSource.signUpUser(email, password)
-    }
 
-    override suspend fun saveNewUserInFirebase(user: MikotUser) {
+    override suspend fun saveNewUserInFirebase(user: MikotUser) =
         remoteDataSource.saveNewUserInFirebase(user)
-    }
 
-    override fun signInUser(email: String, password: String): Flow<Task<AuthResult>> =
+    override suspend fun signInUser(email: String, password: String)  =
         remoteDataSource.signInUser(email, password)
 
-    override fun getAllUsers(): Flow<List<MikotUser>> = remoteDataSource.getAllUsers()
+    override fun getAllUsers(): Flow<List<MikotUser>> =
+        remoteDataSource.getAllUsers()
 
 }

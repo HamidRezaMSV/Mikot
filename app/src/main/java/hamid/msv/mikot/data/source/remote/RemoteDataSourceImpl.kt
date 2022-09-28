@@ -30,9 +30,9 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     private val _saveNewUserResponse = MutableStateFlow<FirebaseResource<String>?>(null)
     override val saveNewUserResponse = _saveNewUserResponse.asStateFlow()
 
-    private val _signInResponse = MutableLiveData<Task<AuthResult>>()
-    override val signInResponse: LiveData<Task<AuthResult>>
-        get() = _signInResponse
+    private val _signInResponse = MutableStateFlow<FirebaseResource<String>?>(null)
+    override val signInResponse = _signInResponse.asStateFlow()
+
 
     private val _createNewMessageResponse = MutableLiveData<Task<Void>>()
     override val createNewMessageResponse: LiveData<Task<Void>>
@@ -64,13 +64,15 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         }
     }
 
-    // Change this for test new settings:
-    override fun signInUser(email:String , password : String) : Flow<Task<AuthResult>> = callbackFlow {
-        authentication.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-            _signInResponse.postValue(it)
-            trySend(it).isSuccess
-        }
-        awaitClose { cancel() }
+    override suspend fun signInUser(email:String , password : String) {
+        authentication.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    _signInResponse.value = FirebaseResource.Success(data = it.result.user!!.uid)
+                }else{
+                    _signInResponse.value = FirebaseResource.Error(error = it.exception?.message.toString())
+                }
+            }
     }
 
     override suspend fun createNewMessage(message: Message , child : String) {

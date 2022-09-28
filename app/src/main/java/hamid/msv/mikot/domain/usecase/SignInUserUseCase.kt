@@ -5,9 +5,9 @@ import javax.inject.Inject
 
 class SignInUserUseCase @Inject constructor(private val userRepository: UserRepository) {
 
-    val response = userRepository.signInResponse
+    val signInResponse = userRepository.signInResponse
 
-    fun execute(email: String, password: String) =
+    suspend fun execute(email: String, password: String) =
         userRepository.signInUser(email, password)
 
 }
