@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import hamid.msv.mikot.presentation.screen.chat.ChatScreen
+import hamid.msv.mikot.presentation.screen.contact.ContactScreen
 import hamid.msv.mikot.presentation.screen.home.HomeScreen
 import hamid.msv.mikot.presentation.screen.login.LoginScreen
 import hamid.msv.mikot.presentation.screen.register.RegisterScreen
@@ -31,6 +32,7 @@ fun SetupNavGraph() {
             val receiverId = it.arguments?.getString(CHAT_SCREEN_ARG_KEY)
             ChatScreen(navController, receiverId = receiverId)
         }
+        composable(route = Screen.Contact.route){ ContactScreen(navController) }
         composable(route = Screen.Profile.route){  }
     }
 }
