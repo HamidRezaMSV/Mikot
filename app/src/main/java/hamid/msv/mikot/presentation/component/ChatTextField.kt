@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,9 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import hamid.msv.mikot.R
-import hamid.msv.mikot.ui.theme.Dark_Gray_2
-import hamid.msv.mikot.ui.theme.EXTRA_SMALL_PADDING
-import hamid.msv.mikot.ui.theme.LightGray
+import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.CHAT_TEXT_FILED_MAX_LINE
 
 @Composable
@@ -30,8 +29,10 @@ fun ChatTextField(onSendClicked : (String) -> Unit) {
     val scrollState = rememberScrollState()
 
     Card(
-        modifier = Modifier.fillMaxWidth() ,
-        backgroundColor = Color.White
+        modifier = Modifier.fillMaxWidth().padding(EXTRA_SMALL_PADDING).padding(bottom = EXTRA_SMALL_PADDING) ,
+        backgroundColor = Color.White ,
+        shape = RoundedCornerShape(size = CHAT_TEXT_FIELD_CORNER_RADIUS),
+        elevation = CHAT_TEXT_FIELD_ELEVATION
     ) {
         Row(
             modifier = Modifier.fillMaxWidth() ,

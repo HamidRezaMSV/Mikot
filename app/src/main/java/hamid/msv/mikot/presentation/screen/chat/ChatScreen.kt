@@ -8,10 +8,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import hamid.msv.mikot.Application
@@ -39,20 +40,22 @@ fun ChatScreen(
     val messages = viewModel.messages.collectAsState()
 
     Scaffold(
-        content = {
-            ChatScreenContent(
-                messages = messages.value ,
-                onSendClicked = { text ->  viewModel.sendNewMessage(text = text , receiverId = receiverId!!) }
+        modifier = Modifier.fillMaxSize(),
+        content = { ChatScreenContent(messages = messages.value) },
+        backgroundColor = Color.White,
+        topBar = { ChatTopBar(name = receiverId!!) } ,
+        bottomBar = {
+            ChatTextField(
+                onSendClicked = { text -> viewModel.sendNewMessage(text = text , receiverId = receiverId!!) }
             )
-        },
-        topBar = { ChatTopBar(name = receiverId!!) }
+        }
     )
 }
 
 @Composable
-fun ChatScreenContent(messages:List<Message> , onSendClicked : (text:String) -> Unit) {
+fun ChatScreenContent(messages:List<Message>) {
     Column(
-        modifier = Modifier.fillMaxSize() ,
+        modifier = Modifier.fillMaxSize().padding(bottom = 56.dp) ,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         LazyColumn(
@@ -69,12 +72,6 @@ fun ChatScreenContent(messages:List<Message> , onSendClicked : (text:String) -> 
                     time = message.time!!
                 )
             }
-        }
-
-        Box(
-            modifier = Modifier.fillMaxWidth() , contentAlignment = Alignment.Center
-        ) {
-            ChatTextField(onSendClicked = { onSendClicked(it) })
         }
     }
 }
