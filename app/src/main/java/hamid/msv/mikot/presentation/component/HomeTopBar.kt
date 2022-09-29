@@ -1,16 +1,17 @@
 package hamid.msv.mikot.presentation.component
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -18,18 +19,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import hamid.msv.mikot.R
 import hamid.msv.mikot.ui.theme.*
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeTopBar() {
 
-    val alpha = animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(durationMillis = 1000 , delayMillis = 300)
-    )
+    val visible = remember { mutableStateOf(false) }
+    val enterAnimation =
+        expandVertically(
+            animationSpec = tween(durationMillis = 1500),
+            expandFrom = Alignment.Bottom
+        ) + fadeIn(animationSpec = tween(durationMillis = 2000))
+
+    LaunchedEffect(key1 = true) {
+        delay(500)
+        visible.value = true
+    }
 
     Box(
-        modifier = Modifier.padding(all = SMALL_PADDING).alpha(alpha.value)
-    ){
+        modifier = Modifier.padding(all = SMALL_PADDING),
+    ) {
         Card(
             modifier = Modifier.requiredHeight(HOME_TOP_BAR_HEIGHT),
             backgroundColor = MaterialTheme.colors.homeTopBarBackgroundColor,
@@ -44,14 +53,20 @@ fun HomeTopBar() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = stringResource(id = R.string.app_name).uppercase() ,
-                    fontSize = HOME_TOP_BAR_TEXT_SIZE,
-                    fontWeight = FontWeight.Bold ,
-                    maxLines = 1 ,
-                    overflow = TextOverflow.Ellipsis,
-                    fontFamily = FontFamily.Serif
-                )
+                AnimatedVisibility(
+                    visible = visible.value,
+                    enter = enterAnimation
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(id = R.string.app_name).uppercase(),
+                        fontSize = HOME_TOP_BAR_TEXT_SIZE,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = FontFamily.Serif
+                    )
+                }
             }
         }
     }
