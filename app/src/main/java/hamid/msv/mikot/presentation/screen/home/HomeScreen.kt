@@ -1,7 +1,22 @@
 package hamid.msv.mikot.presentation.screen.home
 
+import android.annotation.SuppressLint
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import hamid.msv.mikot.navigation.Screen
+import hamid.msv.mikot.presentation.component.HomeFAB
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController : NavHostController) {}
+fun HomeScreen(
+    navController: NavHostController
+) {
+
+    Scaffold(
+        floatingActionButton = {
+            HomeFAB(onClick = { navController.navigate(Screen.Contact.route) })
+        },
+        content = { }
+    )
+}
