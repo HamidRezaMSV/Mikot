@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.presentation.component.HomeFAB
+import hamid.msv.mikot.presentation.component.HomeTopBar
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -17,6 +18,7 @@ fun HomeScreen(
         floatingActionButton = {
             HomeFAB(onClick = { navController.navigate(Screen.Contact.route) })
         },
+        topBar = { HomeTopBar() },
         content = { }
     )
 }

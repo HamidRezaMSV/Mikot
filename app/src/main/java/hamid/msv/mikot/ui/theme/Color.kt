@@ -13,7 +13,6 @@ val LightGray = Color(0xFFD8D8D8)
 val DarkGray = Color(0xFF2A2A2A)
 val Dark_Gray_2 = Color(0xFF4B4A4A)
 
-
 val Green = Color(0xFF4CAF50)
 val Blue = Color(0xFF2196F3)
 val Red= Color(0xFFF75A28)
@@ -67,3 +66,9 @@ val Colors.homeFABBackgroundColor
 
 val Colors.homeFABContentColor
     @Composable get() = if (isLight) Green_Blue else Green_Blue
+
+val Colors.homeTopBarTextColor
+    @Composable get() = if (isLight) Green_Blue else Green_Blue
+
+val Colors.homeTopBarBackgroundColor
+    @Composable get() = if (isLight) Color.White else Color.White
