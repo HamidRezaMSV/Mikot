@@ -2,6 +2,7 @@ package hamid.msv.mikot.presentation.screen.chat
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,6 +40,10 @@ fun ChatScreen(
 
     val messages = viewModel.messages.collectAsState()
     val receiverUser = viewModel.receiverUser.collectAsState()
+
+    BackHandler {
+        navController.popBackStack()
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

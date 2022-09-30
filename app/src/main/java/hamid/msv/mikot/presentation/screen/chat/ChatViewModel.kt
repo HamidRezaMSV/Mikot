@@ -2,7 +2,6 @@ package hamid.msv.mikot.presentation.screen.chat
 
 import android.icu.text.SimpleDateFormat
 import android.util.Log
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,18 +30,18 @@ class ChatViewModel @Inject constructor(
 
     private val receiverId = Application.receiverId!!
 
+    private val _messages = MutableStateFlow<List<Message>>(emptyList())
+    val messages : StateFlow<List<Message>> = _messages.asStateFlow()
+
+    private val _receiverUser = MutableStateFlow<MikotUser?>(null)
+    val receiverUser = _receiverUser.asStateFlow()
+
     init {
         fetchReceiverInfo()
         listenForMessages()
         editReceivedMessages()
         listenForSendNewMessageResponse()
     }
-
-    private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    val messages : StateFlow<List<Message>> = _messages.asStateFlow()
-
-    private val _receiverUser = MutableStateFlow<MikotUser?>(null)
-    val receiverUser = _receiverUser.asStateFlow()
 
     private fun fetchReceiverInfo(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -87,7 +86,9 @@ class ChatViewModel @Inject constructor(
                         is FirebaseResource.Success -> {
                             response.data?.let { messageList ->
                                 _messages.value = messageList.map { message ->
-                                    message.time = parseTime(message.time!!.toLong())
+                                    if (!message.time!!.contains(":")){
+                                        message.time = parseTime(message.time!!.toLong())
+                                    }
                                     message
                                 }
                             }
@@ -127,5 +128,4 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
-
 }

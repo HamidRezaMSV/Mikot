@@ -20,7 +20,7 @@ interface RemoteDataSource {
     val sendNewMessageResponse: StateFlow<FirebaseResource<String>?>
 
     suspend fun signUpUser(email: String, password: String)
-    suspend fun listenForMessages(child: String)
+    fun listenForMessages(child: String)
     suspend fun saveNewUserInFirebase(user: MikotUser)
     suspend fun signInUser(email: String, password: String)
     fun getAllUsers(): StateFlow<FirebaseResource<List<MikotUser>>?>

@@ -7,5 +7,5 @@ class GetAllMessagesUseCase @Inject constructor(private val messageRepository: M
 
     val messages = messageRepository.messages
 
-    suspend fun execute(child : String) = messageRepository.listenForMessages(child)
+    fun execute(child : String) = messageRepository.listenForMessages(child)
 }

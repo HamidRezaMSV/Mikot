@@ -14,7 +14,7 @@ interface MessageRepository {
     val sendNewMessageResponse: StateFlow<FirebaseResource<String>?>
 
     suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String)
-    suspend fun listenForMessages(child : String)
+    fun listenForMessages(child : String)
     suspend fun updateChatLastMessage(lastMessage: LastMessage)
     suspend fun getChatsLastMessage() : Map<String, Any>
 }

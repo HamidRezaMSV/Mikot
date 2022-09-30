@@ -127,7 +127,7 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         return response.asStateFlow()
     }
 
-    override suspend fun listenForMessages(child : String){
+    override fun listenForMessages(child : String){
         MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val data = snapshot.children.map { it.getValue(Message::class.java) ?: return }

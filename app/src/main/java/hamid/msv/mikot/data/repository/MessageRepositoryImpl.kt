@@ -22,7 +22,7 @@ class MessageRepositoryImpl
     override suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String) =
         remoteDataSource.sendNewMessage(message, senderId, receiverId)
 
-    override suspend fun listenForMessages(child : String) =
+    override fun listenForMessages(child : String) =
         remoteDataSource.listenForMessages(child)
 
 
