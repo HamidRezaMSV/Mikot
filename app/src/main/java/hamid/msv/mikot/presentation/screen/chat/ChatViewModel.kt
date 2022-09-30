@@ -19,8 +19,6 @@ import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
-const val PRIMARY_KEY = "gQPmtPlZO9PM0S24a8aIRcKS1Pk1kcojkPMpdtaEeHhHxWq2WsBXXv93"
-
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val getAllMessagesUseCase: GetAllMessagesUseCase,
@@ -29,6 +27,7 @@ class ChatViewModel @Inject constructor(
 ): ViewModel() {
 
     private val receiverId = Application.receiverId!!
+    private val senderId = Application.currentUserId!!
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages : StateFlow<List<Message>> = _messages.asStateFlow()
@@ -62,7 +61,6 @@ class ChatViewModel @Inject constructor(
 
     fun sendNewMessage(text: String, receiverId: String){
         viewModelScope.launch {
-            val senderId = Application.currentUserId
             if (senderId != USER_IS_NOT_LOGIN){
                 val message = Message(
                     id = UUID.randomUUID().toString(),
@@ -71,7 +69,7 @@ class ChatViewModel @Inject constructor(
                     senderId = senderId ,
                     receiverId = receiverId
                 )
-                sendNewMessageUseCase.execute(message,senderId!!,receiverId)
+                sendNewMessageUseCase.execute(message,senderId,receiverId)
             }else{
                 Log.d("MIKOT_CHAT" , "senderId is invalid for sending new message")
             }
@@ -104,7 +102,7 @@ class ChatViewModel @Inject constructor(
 
     private fun listenForMessages(){
         viewModelScope.launch {
-            getAllMessagesUseCase.execute(PRIMARY_KEY)
+            getAllMessagesUseCase.execute(senderId+receiverId)
         }
     }
 
