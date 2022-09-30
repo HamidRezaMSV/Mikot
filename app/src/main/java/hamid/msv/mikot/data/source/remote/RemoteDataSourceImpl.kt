@@ -109,6 +109,24 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         return response.asStateFlow()
     }
 
+    override fun getUserById(id: String): StateFlow<FirebaseResource<MikotUser>?> {
+        val response = MutableStateFlow<FirebaseResource<MikotUser>?>(null)
+        USER_DATABASE.child(id).get().addOnCompleteListener {
+            if (it.isSuccessful){
+                val user = it.result.getValue(MikotUser::class.java)
+                if (user != null){
+                    response.value = FirebaseResource.Success(data = user)
+                }else{
+                    response.value = FirebaseResource.Error(error = "Received user is null")
+                }
+            }else{
+                response.value = FirebaseResource.Error(error = it.exception?.message.toString())
+            }
+        }
+
+        return response.asStateFlow()
+    }
+
     override suspend fun listenForMessages(child : String){
         MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {

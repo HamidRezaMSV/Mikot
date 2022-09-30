@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import hamid.msv.mikot.Application
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.presentation.component.ContactScreenItem
 import hamid.msv.mikot.ui.theme.EXTRA_SMALL_PADDING
@@ -29,6 +30,7 @@ fun ContactScreen(
             ContactScreenItem(
                 user = user,
                 onItemSelected = { userId ->
+                    Application.receiverId = userId
                     navController.navigate(Screen.Chat.passReceiverId(userId))
                 }
             )

@@ -74,4 +74,9 @@ object UseCaseModule {
     fun provideReadCurrentUserIdUseCase(dataStoreRepository: DataStoreRepository) =
         ReadCurrentUserIdUseCase(dataStoreRepository)
 
+    @Provides
+    @Singleton
+    fun provideGetUserByIdUseCase(userRepository: UserRepository) =
+        GetUserByIdUseCase(userRepository)
+
 }

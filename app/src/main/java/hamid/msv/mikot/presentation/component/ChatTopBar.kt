@@ -12,10 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.ui.theme.*
 
 @Composable
-fun ChatTopBar(name: String) {
+fun ChatTopBar(user: MikotUser) {
     Box(
         modifier = Modifier
             .padding(horizontal = SMALL_PADDING)
@@ -36,7 +37,7 @@ fun ChatTopBar(name: String) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = name,
+                    text = user.userName ?: "Unknown",
                     color = MaterialTheme.colors.chatTopBarTextColor,
                     fontSize = MaterialTheme.typography.h5.fontSize,
                     fontWeight = FontWeight.Bold,
@@ -51,5 +52,5 @@ fun ChatTopBar(name: String) {
 @Composable
 @Preview(showBackground = true)
 fun ChatTopBarPreview() {
-    ChatTopBar(name = "Hamid Reza")
+    ChatTopBar(user = MikotUser())
 }

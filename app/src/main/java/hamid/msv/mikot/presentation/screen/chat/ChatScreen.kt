@@ -38,12 +38,13 @@ fun ChatScreen(
     }
 
     val messages = viewModel.messages.collectAsState()
+    val receiverUser = viewModel.receiverUser.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         content = { ChatScreenContent(messages = messages.value) },
         backgroundColor = Color.White,
-        topBar = { ChatTopBar(name = receiverId!!) } ,
+        topBar = { receiverUser.value?.let { ChatTopBar(user = it) } } ,
         bottomBar = {
             ChatTextField(
                 onSendClicked = { text -> viewModel.sendNewMessage(text = text , receiverId = receiverId!!) }
@@ -55,7 +56,9 @@ fun ChatScreen(
 @Composable
 fun ChatScreenContent(messages:List<Message>) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(bottom = 56.dp) ,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 56.dp) ,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         LazyColumn(

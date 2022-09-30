@@ -3,7 +3,6 @@ package hamid.msv.mikot.data.repository
 import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UserRepositoryImpl
@@ -23,5 +22,7 @@ class UserRepositoryImpl
         remoteDataSource.signInUser(email, password)
 
     override fun getAllUsers() = remoteDataSource.getAllUsers()
+
+    override fun getUserById(id: String) = remoteDataSource.getUserById(id)
 
 }

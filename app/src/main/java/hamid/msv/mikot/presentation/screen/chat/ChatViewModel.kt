@@ -2,15 +2,19 @@ package hamid.msv.mikot.presentation.screen.chat
 
 import android.icu.text.SimpleDateFormat
 import android.util.Log
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.Message
+import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.usecase.GetAllMessagesUseCase
+import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
 import hamid.msv.mikot.domain.usecase.SendNewMessageUseCase
 import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -21,10 +25,14 @@ const val PRIMARY_KEY = "gQPmtPlZO9PM0S24a8aIRcKS1Pk1kcojkPMpdtaEeHhHxWq2WsBXXv9
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val getAllMessagesUseCase: GetAllMessagesUseCase,
-    private val sendNewMessageUseCase: SendNewMessageUseCase
+    private val sendNewMessageUseCase: SendNewMessageUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase
 ): ViewModel() {
 
+    private val receiverId = Application.receiverId!!
+
     init {
+        fetchReceiverInfo()
         listenForMessages()
         editReceivedMessages()
         listenForSendNewMessageResponse()
@@ -32,6 +40,26 @@ class ChatViewModel @Inject constructor(
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages : StateFlow<List<Message>> = _messages.asStateFlow()
+
+    private val _receiverUser = MutableStateFlow<MikotUser?>(null)
+    val receiverUser = _receiverUser.asStateFlow()
+
+    private fun fetchReceiverInfo(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserByIdUseCase.execute(receiverId).collect{
+                it?.let { response ->
+                    when(response){
+                        is FirebaseResource.Success -> {
+                            _receiverUser.value = response.data!!
+                        }
+                        is FirebaseResource.Error -> {
+                            Log.d("MIKOT_CHAT" , response.error.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun sendNewMessage(text: String, receiverId: String){
         viewModelScope.launch {
