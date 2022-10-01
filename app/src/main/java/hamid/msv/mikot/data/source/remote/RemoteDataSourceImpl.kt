@@ -1,17 +1,19 @@
 package hamid.msv.mikot.data.source.remote
 
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
 import hamid.msv.mikot.data.remote.FirebaseApi.LAST_MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.USER_DATABASE
-import hamid.msv.mikot.domain.model.*
-import hamid.msv.mikot.util.*
-import kotlinx.coroutines.flow.*
+import hamid.msv.mikot.domain.model.FirebaseResource
+import hamid.msv.mikot.domain.model.LastMessage
+import hamid.msv.mikot.domain.model.Message
+import hamid.msv.mikot.domain.model.MikotUser
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class RemoteDataSourceImpl @Inject constructor(private val authentication: FirebaseAuth) : RemoteDataSource {
@@ -141,24 +143,25 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         })
     }
 
-    override suspend fun getChatsLastMessage(): Map<String, Any> {
-        val result = MutableLiveData<List<LastMessage>>()
-        val databaseError = MutableLiveData<DatabaseError>()
-
+    override suspend fun getAllLastMessages(currentUserId : String): StateFlow<FirebaseResource<List<LastMessage>>?> {
+        val response = MutableStateFlow<FirebaseResource<List<LastMessage>>?>(null)
         LAST_MESSAGE_DATABASE.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                result.postValue(snapshot.getValue<List<LastMessage>>())
+                val list = mutableListOf<LastMessage>()
+                snapshot.children.forEach {
+                    if (it.key.toString().startsWith(currentUserId)){
+                        val item = it.getValue(LastMessage::class.java) ?: return
+                        list.add(item)
+                    }
+                }
+                response.value = FirebaseResource.Success(data = list.toList())
             }
 
             override fun onCancelled(error: DatabaseError) {
-                databaseError.postValue(error)
+                response.value = FirebaseResource.Error(error = error.message)
             }
         })
 
-        return mapOf(
-            GET_LAST_MESSAGES_KEY to result,
-            DATABASE_ERROR_KEY to databaseError
-        )
+        return response.asStateFlow()
     }
-
 }

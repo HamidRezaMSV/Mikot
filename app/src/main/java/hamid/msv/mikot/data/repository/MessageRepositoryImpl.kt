@@ -17,6 +17,7 @@ class MessageRepositoryImpl
     override fun listenForMessages(child : String) =
         remoteDataSource.listenForMessages(child)
 
-    override suspend fun getChatsLastMessage(): Map<String, Any> = remoteDataSource.getChatsLastMessage()
+    override suspend fun getAllLastMessages(currentUserId: String) =
+        remoteDataSource.getAllLastMessages(currentUserId)
 
 }

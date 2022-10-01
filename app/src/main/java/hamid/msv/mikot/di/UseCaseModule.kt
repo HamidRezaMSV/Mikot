@@ -31,8 +31,8 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideGetChatsLastMessageUseCase(messageRepository: MessageRepository) =
-        GetChatsLastMessageUseCase(messageRepository)
+    fun provideGetAllLastMessagesUseCase(messageRepository: MessageRepository) =
+        GetAllLastMessagesUseCase(messageRepository)
 
     @Provides
     @Singleton

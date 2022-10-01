@@ -1,6 +1,7 @@
 package hamid.msv.mikot.data.source.remote
 
 import hamid.msv.mikot.domain.model.FirebaseResource
+import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.model.MikotUser
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,5 @@ interface RemoteDataSource {
     fun getAllUsers(): StateFlow<FirebaseResource<List<MikotUser>>?>
     fun getUserById(id: String) : StateFlow<FirebaseResource<MikotUser>?>
     suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String)
-
-    suspend fun getChatsLastMessage(): Map<String, Any>
+    suspend fun getAllLastMessages(currentUserId : String): StateFlow<FirebaseResource<List<LastMessage>>?>
 }
