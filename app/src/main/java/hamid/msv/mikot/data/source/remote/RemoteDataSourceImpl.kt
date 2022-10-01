@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import hamid.msv.mikot.data.remote.FirebaseApi.LAST_MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.USER_DATABASE
@@ -32,6 +34,23 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
 
     private val _sendNewMessageResponse = MutableStateFlow<FirebaseResource<String>?>(null)
     override val sendNewMessageResponse = _sendNewMessageResponse.asStateFlow()
+
+    override fun getConnectionState(): StateFlow<FirebaseResource<Boolean>?> {
+        val response = MutableStateFlow<FirebaseResource<Boolean>?>(null)
+        Firebase.database.getReference(".info/connected")
+            .addValueEventListener(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java) ?: false
+                response.value = FirebaseResource.Success(data = connected)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                response.value = FirebaseResource.Error(error = error.message)
+            }
+        })
+
+        return response.asStateFlow()
+    }
 
     override suspend fun signUpUser(email:String, password : String) {
         authentication.createUserWithEmailAndPassword(email,password)
@@ -164,4 +183,5 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
 
         return response.asStateFlow()
     }
+
 }

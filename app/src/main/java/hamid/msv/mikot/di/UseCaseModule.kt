@@ -74,4 +74,9 @@ object UseCaseModule {
     fun provideGetUserByIdUseCase(userRepository: UserRepository) =
         GetUserByIdUseCase(userRepository)
 
+    @Provides
+    @Singleton
+    fun provideGetConnectionStateUseCase(userRepository: UserRepository) =
+        GetConnectionStateUseCase(userRepository)
+
 }

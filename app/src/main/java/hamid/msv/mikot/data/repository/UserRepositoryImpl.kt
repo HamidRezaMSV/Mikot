@@ -25,4 +25,6 @@ class UserRepositoryImpl
 
     override fun getUserById(id: String) = remoteDataSource.getUserById(id)
 
+    override fun getConnectionState() = remoteDataSource.getConnectionState()
+
 }

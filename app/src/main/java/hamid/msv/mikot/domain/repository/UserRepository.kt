@@ -11,6 +11,8 @@ interface UserRepository {
     val saveNewUserResponse : StateFlow<FirebaseResource<String>?>
     val signInResponse : StateFlow<FirebaseResource<String>?>
 
+    fun getConnectionState(): StateFlow<FirebaseResource<Boolean>?>
+
     suspend fun signUpUser(email:String , password : String)
     suspend fun saveNewUserInFirebase(user : MikotUser)
     suspend fun signInUser(email:String , password : String)

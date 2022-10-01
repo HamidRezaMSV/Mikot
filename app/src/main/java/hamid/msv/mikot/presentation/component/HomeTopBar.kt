@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +23,7 @@ import hamid.msv.mikot.ui.theme.*
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomeTopBar() {
+fun HomeTopBar(connectionState : Boolean) {
 
     val visible = remember { mutableStateOf(false) }
     val enterAnimation =
@@ -30,6 +31,8 @@ fun HomeTopBar() {
             animationSpec = tween(durationMillis = 1500),
             expandFrom = Alignment.Bottom
         ) + fadeIn(animationSpec = tween(durationMillis = 2000))
+
+    val topBarTextColor = if (connectionState) Color.Green else Color.Red
 
     LaunchedEffect(key1 = true) {
         delay(500)
@@ -42,7 +45,7 @@ fun HomeTopBar() {
         Card(
             modifier = Modifier.requiredHeight(HOME_TOP_BAR_HEIGHT),
             backgroundColor = MaterialTheme.colors.homeTopBarBackgroundColor,
-            contentColor = MaterialTheme.colors.homeTopBarTextColor,
+            contentColor = topBarTextColor,
             shape = RoundedCornerShape(size = HOME_TOP_BAR_CORNER_RADIUS),
             elevation = HOME_TOP_BAR_ELEVATION
         ) {
@@ -75,5 +78,5 @@ fun HomeTopBar() {
 @Preview(showBackground = true)
 @Composable
 fun HomeTopBarPreview() {
-    HomeTopBar()
+    HomeTopBar(true)
 }
