@@ -5,5 +5,7 @@ data class LastMessage(
     val text: String,
     val time: String,
     val senderId: String,
-    val receiverId: String
+    val receiverId: String,
+    val senderUsername : String,
+    val receiverUsername : String
 )

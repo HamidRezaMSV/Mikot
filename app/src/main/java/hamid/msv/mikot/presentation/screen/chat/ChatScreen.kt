@@ -28,13 +28,17 @@ import hamid.msv.mikot.ui.theme.SMALL_PADDING
 @Composable
 fun ChatScreen(
     navController: NavHostController,
-    receiverId : String?,
+    receiverId: String?,
     viewModel: ChatViewModel = hiltViewModel()
 ) {
 
     val context = LocalContext.current
-    if (receiverId == null){
-        Toast.makeText(context, stringResource(id = R.string.null_receiver_id_error), Toast.LENGTH_SHORT).show()
+    if (receiverId == null) {
+        Toast.makeText(
+            context,
+            stringResource(id = R.string.null_receiver_id_error),
+            Toast.LENGTH_SHORT
+        ).show()
         navController.popBackStack()
     }
 
@@ -49,30 +53,32 @@ fun ChatScreen(
         modifier = Modifier.fillMaxSize(),
         content = { ChatScreenContent(messages = messages.value) },
         backgroundColor = Color.White,
-        topBar = { receiverUser.value?.let { ChatTopBar(user = it) } } ,
+        topBar = { receiverUser.value?.let { ChatTopBar(user = it) } },
         bottomBar = {
             ChatTextField(
-                onSendClicked = { text -> viewModel.sendNewMessage(text = text , receiverId = receiverId!!) }
+                onSendClicked = { text ->
+                    receiverUser.value?.let { viewModel.sendNewMessage(text = text, receiverUser = it) }
+                }
             )
         }
     )
 }
 
 @Composable
-fun ChatScreenContent(messages:List<Message>) {
+fun ChatScreenContent(messages: List<Message>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 56.dp) ,
+            .padding(bottom = 56.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f) ,
-            reverseLayout = true ,
+                .weight(1f),
+            reverseLayout = true,
             contentPadding = PaddingValues(bottom = SMALL_PADDING)
-        ){
+        ) {
             items(messages.reversed()) { message ->
                 MessageItem(
                     isMe = message.senderId == Application.currentUserId,

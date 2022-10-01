@@ -59,7 +59,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun sendNewMessage(text: String, receiverId: String){
+    fun sendNewMessage(text: String, receiverUser: MikotUser){
         viewModelScope.launch {
             if (senderId != USER_IS_NOT_LOGIN){
                 val message = Message(
@@ -67,7 +67,9 @@ class ChatViewModel @Inject constructor(
                     text = text ,
                     time = System.currentTimeMillis().toString(),
                     senderId = senderId ,
-                    receiverId = receiverId
+                    receiverId = receiverId,
+                    senderUsername = Application.currentUser!!.userName,
+                    receiverUsername = receiverUser.userName
                 )
                 sendNewMessageUseCase.execute(message,senderId,receiverId)
             }else{
