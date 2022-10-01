@@ -20,7 +20,7 @@ val Green_Blue = Color(0xFF009688)
 val Dark_Green_Blue = Color(0xFF015F56)
 
 val Colors.splashAppNameColor
-    @Composable get() = if (isLight) Purple500 else Purple500
+    @Composable get() = if (isLight) Green_Blue else Green_Blue
 
 val Colors.welcomeScreenBackgroundColor
     @Composable get() = if (isLight) Color.White else Color.White

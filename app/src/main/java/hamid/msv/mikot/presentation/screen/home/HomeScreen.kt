@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -75,14 +74,11 @@ fun HomeScreenContent(lastMessages: List<LastMessage>,onItemSelected: (userId:St
 
 @Composable
 fun EmptyHomeScreenContent() {
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .aspectRatio(1f)
-            .padding(EXTRA_LARGE_PADDING),
-        backgroundColor = Color.White ,
-        shape = RoundedCornerShape(size = EMPTY_HOME_SCREEN_CARD_CORNER_RADIUS),
-        elevation = EMPTY_HOME_SCREEN_CARD_ELEVATION
+            .background(Color.White) ,
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -93,7 +89,7 @@ fun EmptyHomeScreenContent() {
                 modifier = Modifier.fillMaxWidth( ),
                 painter = painterResource(id = R.drawable.ic_empty_list),
                 contentDescription = null,
-                tint = Color.Black.copy(0.3f)
+                tint = Color.Black.copy(0.2f)
             )
 
             Spacer(modifier = Modifier.height(LARGE_PADDING))
@@ -101,7 +97,7 @@ fun EmptyHomeScreenContent() {
             Text(
                 text = stringResource(R.string.no_chat_exists),
                 fontWeight = FontWeight.Bold,
-                color = Color.Black.copy(0.4f),
+                color = Color.Black.copy(0.2f),
                 fontSize = MaterialTheme.typography.body1.fontSize
             )
         }
