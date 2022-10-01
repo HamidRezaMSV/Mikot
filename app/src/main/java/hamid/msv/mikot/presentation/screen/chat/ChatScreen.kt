@@ -51,7 +51,12 @@ fun ChatScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        content = { ChatScreenContent(messages = messages.value) },
+        content = {
+            ChatScreenContent(
+                messages = messages.value,
+                onMessageClick = { text -> viewModel.copyTextToClipBoard(text,context) }
+            )
+        },
         backgroundColor = Color.White,
         topBar = { receiverUser.value?.let { ChatTopBar(user = it) } },
         bottomBar = {
@@ -65,7 +70,7 @@ fun ChatScreen(
 }
 
 @Composable
-fun ChatScreenContent(messages: List<Message>) {
+fun ChatScreenContent(messages: List<Message> , onMessageClick: (text:String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,7 +88,8 @@ fun ChatScreenContent(messages: List<Message>) {
                 MessageItem(
                     isMe = message.senderId == Application.currentUserId,
                     text = message.text!!,
-                    time = message.time!!
+                    time = message.time!!,
+                    onMessageClick = { text ->  onMessageClick(text) }
                 )
             }
         }

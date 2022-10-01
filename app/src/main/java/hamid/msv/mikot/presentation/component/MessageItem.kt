@@ -1,6 +1,7 @@
 package hamid.msv.mikot.presentation.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -17,25 +18,25 @@ import androidx.compose.ui.unit.dp
 import hamid.msv.mikot.ui.theme.*
 
 @Composable
-fun MessageItem(isMe: Boolean,text:String,time:String) {
+fun MessageItem(isMe: Boolean,text:String,time:String,onMessageClick: (text:String) -> Unit) {
     SelectionContainer {
         if (isMe) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = SMALL_PADDING)
+                    .padding(horizontal = SMALL_PADDING)
                     .padding(top = EXTRA_SMALL_PADDING),
                 horizontalAlignment = Alignment.End
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = EXTRA_SMALL_PADDING)
+                        .fillMaxWidth(0.8f)
                         .padding(horizontal = EXTRA_SMALL_PADDING),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Card(
+                        modifier = Modifier.clickable { onMessageClick(text) },
                         shape = RoundedCornerShape(
                             topStart = MESSAGE_ITEM_CORNER_RADIUS ,
                             bottomStart = MESSAGE_ITEM_CORNER_RADIUS ,
@@ -70,19 +71,19 @@ fun MessageItem(isMe: Boolean,text:String,time:String) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = SMALL_PADDING)
+                    .padding(horizontal = SMALL_PADDING)
                     .padding(top = EXTRA_SMALL_PADDING),
                 horizontalAlignment = Alignment.Start
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = EXTRA_SMALL_PADDING)
+                        .fillMaxWidth(0.8f)
                         .padding(horizontal = EXTRA_SMALL_PADDING),
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Card(
+                        modifier = Modifier.clickable { onMessageClick(text) },
                         shape = RoundedCornerShape(
                             topEnd = MESSAGE_ITEM_CORNER_RADIUS ,
                             bottomStart = MESSAGE_ITEM_CORNER_RADIUS ,
@@ -122,7 +123,7 @@ fun MessageItem1() {
         isMe = true,
         text = "Salam",
         time = "02:20"
-    )
+    ){}
 }
 
 @Composable
@@ -132,5 +133,5 @@ fun MessageItem2() {
         isMe = false,
         text = "haj Hamid",
         time = "02:20"
-    )
+    ){}
 }

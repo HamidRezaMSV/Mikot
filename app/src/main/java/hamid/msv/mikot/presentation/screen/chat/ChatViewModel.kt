@@ -1,5 +1,6 @@
 package hamid.msv.mikot.presentation.screen.chat
 
+import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import hamid.msv.mikot.domain.usecase.GetAllMessagesUseCase
 import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
 import hamid.msv.mikot.domain.usecase.SendNewMessageUseCase
 import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
+import hamid.msv.mikot.util.copyTextToClipBoard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -42,23 +44,6 @@ class ChatViewModel @Inject constructor(
         listenForSendNewMessageResponse()
     }
 
-    private fun fetchReceiverInfo(){
-        viewModelScope.launch(Dispatchers.IO) {
-            getUserByIdUseCase.execute(receiverId).collect{
-                it?.let { response ->
-                    when(response){
-                        is FirebaseResource.Success -> {
-                            _receiverUser.value = response.data!!
-                        }
-                        is FirebaseResource.Error -> {
-                            Log.d("MIKOT_CHAT" , response.error.toString())
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     fun sendNewMessage(text: String, receiverUser: MikotUser){
         viewModelScope.launch {
             if (senderId != USER_IS_NOT_LOGIN){
@@ -74,6 +59,29 @@ class ChatViewModel @Inject constructor(
                 sendNewMessageUseCase.execute(message,senderId,receiverId)
             }else{
                 Log.d("MIKOT_CHAT" , "senderId is invalid for sending new message")
+            }
+        }
+    }
+
+    fun copyTextToClipBoard(text: String , context: Context){
+        viewModelScope.launch(Dispatchers.IO) {
+            context.copyTextToClipBoard(text)
+        }
+    }
+
+    private fun fetchReceiverInfo(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserByIdUseCase.execute(receiverId).collect{
+                it?.let { response ->
+                    when(response){
+                        is FirebaseResource.Success -> {
+                            _receiverUser.value = response.data!!
+                        }
+                        is FirebaseResource.Error -> {
+                            Log.d("MIKOT_CHAT" , response.error.toString())
+                        }
+                    }
+                }
             }
         }
     }

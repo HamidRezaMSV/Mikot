@@ -1,5 +1,6 @@
 package hamid.msv.mikot.presentation.screen.home
 
+import android.icu.text.SimpleDateFormat
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -65,6 +67,13 @@ class HomeViewModel @Inject constructor(
                         is FirebaseResource.Success -> {
                             response.data?.let { data ->
                                 _lastMessages.value = data
+                                    .sortedByDescending { lastMessage -> lastMessage.time!!.toLong() }
+                                    .map { item ->
+                                        if (!item.time.toString().contains(":")){
+                                            item.time = parseTime(item.time!!.toLong())
+                                        }
+                                        item
+                                    }
                             }
                         }
                         is FirebaseResource.Error -> {
@@ -92,5 +101,9 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun parseTime(time:Long): String{
+        return SimpleDateFormat.getPatternInstance("yyyy/MM/dd HH:mm", Locale.ENGLISH).format(Date(time))
     }
 }

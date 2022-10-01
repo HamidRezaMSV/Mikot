@@ -72,8 +72,7 @@ fun HomeScreenItem(lastMessage: LastMessage, onItemSelected : (userId:String) ->
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = EXTRA_SMALL_PADDING) ,
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween ,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -98,7 +97,7 @@ fun HomeScreenItem(lastMessage: LastMessage, onItemSelected : (userId:String) ->
                     color = Color.Black.copy(ContentAlpha.medium) ,
                     fontWeight = FontWeight.SemiBold ,
                     fontSize = MaterialTheme.typography.subtitle2.fontSize ,
-                    maxLines = 2 ,
+                    maxLines = 1 ,
                     overflow = TextOverflow.Ellipsis
                 )
             }
