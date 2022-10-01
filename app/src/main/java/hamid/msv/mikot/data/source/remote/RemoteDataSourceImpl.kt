@@ -1,8 +1,6 @@
 package hamid.msv.mikot.data.source.remote
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -32,11 +30,6 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
 
     private val _sendNewMessageResponse = MutableStateFlow<FirebaseResource<String>?>(null)
     override val sendNewMessageResponse = _sendNewMessageResponse.asStateFlow()
-
-    private val _updateLastMessageResponse = MutableLiveData<Task<Void>>()
-    override val updateLastMessageResponse: LiveData<Task<Void>>
-        get() = _updateLastMessageResponse
-
 
     override suspend fun signUpUser(email:String, password : String) {
         authentication.createUserWithEmailAndPassword(email,password)
@@ -72,26 +65,34 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
 
     override suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String) {
         MESSAGE_DATABASE.child(senderId+receiverId).push().setValue(message)
-            .addOnCompleteListener {
-                if (it.isSuccessful){
+            .addOnCompleteListener { response1 ->
+                if (response1.isSuccessful){
                     MESSAGE_DATABASE.child(receiverId+senderId).push().setValue(message)
-                        .addOnCompleteListener { response ->
-                            if (response.isSuccessful){
-                                _sendNewMessageResponse.value = FirebaseResource.Success(data = "OK")
+                        .addOnCompleteListener { response2 ->
+                            if (response2.isSuccessful){
+                                LAST_MESSAGE_DATABASE.child(senderId+receiverId).setValue(message.mapToLastMessage())
+                                    .addOnCompleteListener { response3 ->
+                                        if (response3.isSuccessful){
+                                            LAST_MESSAGE_DATABASE.child(receiverId+senderId).setValue(message.mapToLastMessage())
+                                                .addOnCompleteListener { response4 ->
+                                                    if (response4.isSuccessful){
+                                                        _sendNewMessageResponse.value = FirebaseResource.Success(data = "OK")
+                                                    }else{
+                                                        _sendNewMessageResponse.value = FirebaseResource.Error(error = response4.exception?.message.toString())
+                                                    }
+                                                }
+                                        }else{
+                                            _sendNewMessageResponse.value = FirebaseResource.Error(error = response3.exception?.message.toString())
+                                        }
+                                    }
                             }else{
-                                _sendNewMessageResponse.value = FirebaseResource.Error(error = it.exception?.message.toString())
+                                _sendNewMessageResponse.value = FirebaseResource.Error(error = response2.exception?.message.toString())
                             }
                         }
                 }else{
-                    _sendNewMessageResponse.value = FirebaseResource.Error(error = it.exception?.message.toString())
+                    _sendNewMessageResponse.value = FirebaseResource.Error(error = response1.exception?.message.toString())
                 }
             }
-    }
-
-    override suspend fun updateChatLastMessage(lastMessage: LastMessage) {
-        LAST_MESSAGE_DATABASE.setValue(lastMessage).addOnCompleteListener {
-            _updateLastMessageResponse.postValue(it)
-        }
     }
 
     override fun getAllUsers(): StateFlow<FirebaseResource<List<MikotUser>>?> {

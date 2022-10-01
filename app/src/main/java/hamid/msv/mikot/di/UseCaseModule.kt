@@ -51,11 +51,6 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideUpdateChatLastMessageUseCase(messageRepository: MessageRepository) =
-        UpdateChatLastMessageUseCase(messageRepository)
-
-    @Provides
-    @Singleton
     fun provideReadOnBoardingUseCase(dataStoreRepository: DataStoreRepository) =
         ReadOnBoardingUseCase(dataStoreRepository)
 
