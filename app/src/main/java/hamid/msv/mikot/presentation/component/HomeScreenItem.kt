@@ -44,7 +44,7 @@ fun HomeScreenItem(lastMessage: LastMessage, onItemSelected : (userId:String) ->
             .fillMaxWidth()
             .height(HOME_SCREEN_ITEM_HEIGHT)
             .padding(EXTRA_SMALL_PADDING)
-            .clickable { onItemSelected(secondUserId) },
+            .clickable { onItemSelected(secondUserId!!) },
         elevation = HOME_SCREEN_ITEM_ELEVATION ,
         shape = RoundedCornerShape(size = HOME_SCREEN_ITEM_CORNER_RADIUS) ,
         backgroundColor = Color.White
@@ -78,7 +78,7 @@ fun HomeScreenItem(lastMessage: LastMessage, onItemSelected : (userId:String) ->
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = username ,
+                        text = username!! ,
                         color = Color.Black ,
                         fontSize = HOME_SCREEN_ITEM_NAME_TEXT_SIZE ,
                         fontWeight = FontWeight.Bold
@@ -86,7 +86,7 @@ fun HomeScreenItem(lastMessage: LastMessage, onItemSelected : (userId:String) ->
 
                     Text(
                         modifier = Modifier.padding(end = EXTRA_SMALL_PADDING) ,
-                        text = lastMessage.time ,
+                        text = lastMessage.time!! ,
                         color = Color.Black.copy(ContentAlpha.medium) ,
                         fontSize = MaterialTheme.typography.body2.fontSize
                     )
@@ -94,7 +94,7 @@ fun HomeScreenItem(lastMessage: LastMessage, onItemSelected : (userId:String) ->
 
                 Text(
                     modifier = Modifier.weight(1f) ,
-                    text = lastMessage.text ,
+                    text = lastMessage.text!! ,
                     color = Color.Black.copy(ContentAlpha.medium) ,
                     fontWeight = FontWeight.SemiBold ,
                     fontSize = MaterialTheme.typography.subtitle2.fontSize ,

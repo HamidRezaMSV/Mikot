@@ -9,6 +9,7 @@ import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.usecase.GetAllLastMessagesUseCase
 import hamid.msv.mikot.domain.usecase.GetConnectionStateUseCase
+import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getConnectionStateUseCase: GetConnectionStateUseCase,
-    private val getAllLastMessagesUseCase: GetAllLastMessagesUseCase
+    private val getAllLastMessagesUseCase: GetAllLastMessagesUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase
 ): ViewModel(){
 
     private val currentUserId = Application.currentUserId!!
@@ -41,6 +43,9 @@ class HomeViewModel @Inject constructor(
                     when(response){
                         is FirebaseResource.Success -> {
                             _connectionState.value = response.data!!
+                            if (response.data){
+                                fetchCurrentUserInfo(currentUserId)
+                            }
                             Log.d("MIKOT_HOME" , "Connection State : ${response.data}")
                         }
                         is FirebaseResource.Error -> {
@@ -61,6 +66,24 @@ class HomeViewModel @Inject constructor(
                             response.data?.let { data ->
                                 _lastMessages.value = data
                             }
+                        }
+                        is FirebaseResource.Error -> {
+                            Log.d("MIKOT_HOME" , response.error.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchCurrentUserInfo(currentUserId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserByIdUseCase.execute(currentUserId).collect{
+                it?.let { response ->
+                    when(response){
+                        is FirebaseResource.Success -> {
+                            Application.currentUser = response.data!!
+                            Log.d("MIKOT_HOME" , "current user info fetched successfully")
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_HOME" , response.error.toString())

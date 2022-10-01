@@ -31,6 +31,7 @@ fun ContactScreen(
                 user = user,
                 onItemSelected = { userId ->
                     Application.receiverId = userId
+                    navController.popBackStack()
                     navController.navigate(Screen.Chat.passReceiverId(userId))
                 }
             )

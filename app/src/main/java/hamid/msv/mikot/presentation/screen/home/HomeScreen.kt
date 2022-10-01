@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import hamid.msv.mikot.Application
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.navigation.Screen
@@ -45,6 +46,7 @@ fun HomeScreen(
             HomeScreenContent(
                 lastMessages = lastMessages.value,
                 onItemSelected = { userId ->
+                    Application.receiverId = userId
                     navController.navigate(Screen.Chat.passReceiverId(userId))
                 }
             )

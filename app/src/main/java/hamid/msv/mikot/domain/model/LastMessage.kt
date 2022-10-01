@@ -1,11 +1,11 @@
 package hamid.msv.mikot.domain.model
 
 data class LastMessage(
-    val id: String,
-    val text: String,
-    val time: String,
-    val senderId: String,
-    val receiverId: String,
-    val senderUsername : String,
-    val receiverUsername : String
+    val id: String? = null,
+    val text: String? = null,
+    val time: String? = null,
+    val senderId: String? = null,
+    val receiverId: String? = null,
+    val senderUsername : String? = null,
+    val receiverUsername : String? = null
 )
