@@ -13,11 +13,11 @@ data class RoomMessage(
     @ColumnInfo(name = "sender_id")
     val senderId: String,
     @ColumnInfo(name = "sender_username")
-    val senderUsername : String ,
+    val senderUsername: String,
     @ColumnInfo(name = "receiver_id")
     val receiverId: String,
     @ColumnInfo(name = "receiver_username")
-    val receiverUsername : String ,
+    val receiverUsername: String,
     @ColumnInfo(name = "is_edited")
     var isEdited: Boolean = false,
     @ColumnInfo(name = "edit_time")
@@ -27,4 +27,18 @@ data class RoomMessage(
     @ColumnInfo(name = "replied_msg_id")
     var repliedMessageId: String = "NO_VALUE",
     val key: String
-)
+) {
+
+    fun mapToMessage() =
+        Message(
+            id = id,
+            text = text,
+            time = time,
+            senderId = senderId,
+            senderUsername = senderUsername,
+            receiverId = receiverId,
+            receiverUsername = receiverUsername,
+            key = key
+        )
+
+}

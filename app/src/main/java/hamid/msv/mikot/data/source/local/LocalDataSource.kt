@@ -8,7 +8,7 @@ interface LocalDataSource {
 
     suspend fun addAllMessages(messages: List<RoomMessage>)
 
-    fun getAllMessages(currentUserId: String): Flow<List<RoomMessage>>
+    fun getAllMessages(path: String): Flow<List<RoomMessage>>
 
     suspend fun addAllLastMessages(lastMessages: List<RoomLastMessage>)
 

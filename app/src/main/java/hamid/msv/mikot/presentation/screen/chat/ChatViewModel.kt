@@ -12,6 +12,7 @@ import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.usecase.GetAllMessagesUseCase
 import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
+import hamid.msv.mikot.domain.usecase.SaveAllMessagesUseCase
 import hamid.msv.mikot.domain.usecase.SendNewMessageUseCase
 import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 import hamid.msv.mikot.util.copyTextToClipBoard
@@ -25,7 +26,8 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val getAllMessagesUseCase: GetAllMessagesUseCase,
     private val sendNewMessageUseCase: SendNewMessageUseCase,
-    private val getUserByIdUseCase: GetUserByIdUseCase
+    private val getUserByIdUseCase: GetUserByIdUseCase,
+    private val saveAllMessagesUseCase: SaveAllMessagesUseCase
 ): ViewModel() {
 
     private val receiverId = Application.receiverId!!
@@ -40,6 +42,7 @@ class ChatViewModel @Inject constructor(
     init {
         fetchReceiverInfo()
         listenForMessages()
+        fetchMessagesFromDB()
         editReceivedMessages()
         listenForSendNewMessageResponse()
     }
@@ -86,6 +89,17 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    private fun fetchMessagesFromDB(){
+        val path = senderId + receiverId
+        viewModelScope.launch(Dispatchers.IO) {
+            getAllMessagesUseCase.executeFromDB(path).collectLatest {
+                if (it.isNotEmpty()){
+                    _messages.value = it.map { roomMessage -> roomMessage.mapToMessage() }
+                }
+            }
+        }
+    }
+
     private fun editReceivedMessages() {
         viewModelScope.launch {
             getAllMessagesUseCase.messagesFromServer.collect{
@@ -93,12 +107,14 @@ class ChatViewModel @Inject constructor(
                     when(response){
                         is FirebaseResource.Success -> {
                             response.data?.let { messageList ->
-                                _messages.value = messageList.map { message ->
+                                val validList = messageList.map { message ->
                                     if (!message.time!!.contains(":")){
                                         message.time = parseTime(message.time!!.toLong())
                                     }
                                     message
                                 }
+                                _messages.value = validList
+                                saveAllMessagesUseCase.execute(validList.map { message -> message.mapToRoomMessage() })
                             }
                         }
                         is FirebaseResource.Error -> {

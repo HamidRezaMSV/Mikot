@@ -12,8 +12,8 @@ class LocalDataSourceImpl(mikotDatabase: MikotDatabase) : LocalDataSource {
     override suspend fun addAllMessages(messages: List<RoomMessage>) =
         messageDao.addAllMessages(messages)
 
-    override fun getAllMessages(currentUserId: String) =
-        messageDao.getAllMessages(currentUserId)
+    override fun getAllMessages(path: String) =
+        messageDao.getAllMessages(path)
 
     override suspend fun addAllLastMessages(lastMessages: List<RoomLastMessage>) =
         lastMessageDao.addAllLastMessages(lastMessages)

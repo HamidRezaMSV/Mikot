@@ -26,4 +26,16 @@ data class Message(
             receiverUsername = receiverUsername,
             key = key
         )
+
+    fun mapToRoomMessage() =
+        RoomMessage(
+            id = id!!,
+            text = text!!,
+            time = time!!,
+            senderId = senderId!!,
+            senderUsername = senderUsername!!,
+            receiverId = receiverId!!,
+            receiverUsername = receiverUsername!!,
+            key = key!!
+        )
 }

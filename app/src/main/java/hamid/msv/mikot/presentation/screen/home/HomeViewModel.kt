@@ -11,9 +11,11 @@ import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.usecase.GetAllLastMessagesUseCase
 import hamid.msv.mikot.domain.usecase.GetConnectionStateUseCase
 import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
+import hamid.msv.mikot.domain.usecase.SaveAllLastMessagesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -22,7 +24,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getConnectionStateUseCase: GetConnectionStateUseCase,
     private val getAllLastMessagesUseCase: GetAllLastMessagesUseCase,
-    private val getUserByIdUseCase: GetUserByIdUseCase
+    private val getUserByIdUseCase: GetUserByIdUseCase,
+    private val saveAllLastMessagesUseCase: SaveAllLastMessagesUseCase
 ): ViewModel(){
 
     private val currentUserId = Application.currentUserId!!
@@ -35,6 +38,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         detectConnectionState()
+        fetchAllLastMessageFromDB()
         listenForLastMessages()
     }
 
@@ -66,14 +70,16 @@ class HomeViewModel @Inject constructor(
                     when(response){
                         is FirebaseResource.Success -> {
                             response.data?.let { data ->
-                                _lastMessages.value = data
+                                val validList = data
                                     .sortedByDescending { lastMessage -> lastMessage.time!!.toLong() }
-                                    .map { item ->
-                                        if (!item.time.toString().contains(":")){
-                                            item.time = parseTime(item.time!!.toLong())
+                                    .map { lastMessage ->
+                                        if (!lastMessage.time.toString().contains(":")){
+                                            lastMessage.time = parseTime(lastMessage.time!!.toLong())
                                         }
-                                        item
+                                        lastMessage
                                     }
+                                _lastMessages.value = validList
+                                saveAllLastMessagesUseCase.execute(validList.map { lastMessage-> lastMessage.mapToRoomLastMessage() })
                             }
                         }
                         is FirebaseResource.Error -> {
@@ -98,6 +104,17 @@ class HomeViewModel @Inject constructor(
                             Log.d("MIKOT_HOME" , response.error.toString())
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun fetchAllLastMessageFromDB(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getAllLastMessagesUseCase.executeFromDB(currentUserId).collectLatest{
+                if (it.isNotEmpty()){
+                    _lastMessages.value = it.map { roomLastMessage -> roomLastMessage.mapToLastMessage() }
+                    Log.d("MIKOT_HOME" , "fetchAllLastMessageFromDB")
                 }
             }
         }

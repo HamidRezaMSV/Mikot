@@ -9,4 +9,18 @@ data class LastMessage(
     val senderUsername : String? = null,
     val receiverUsername : String? = null,
     var key: String? = null
-)
+){
+
+    fun mapToRoomLastMessage(): RoomLastMessage =
+        RoomLastMessage(
+            id = id!!,
+            text = text!!,
+            time = time!!,
+            senderId = senderId!!,
+            receiverId = receiverId!!,
+            senderUsername = senderUsername!!,
+            receiverUsername = receiverUsername!!,
+            key = key!!
+        )
+
+}

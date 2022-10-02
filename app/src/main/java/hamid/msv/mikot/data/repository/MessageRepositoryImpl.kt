@@ -33,8 +33,8 @@ class MessageRepositoryImpl
     override suspend fun saveAllLastMessages(lastMessages: List<RoomLastMessage>) =
         localDataSource.addAllLastMessages(lastMessages)
 
-    override fun getAllMessagesFromDB(currentUserId: String): Flow<List<RoomMessage>> =
-        localDataSource.getAllMessages(currentUserId)
+    override fun getAllMessagesFromDB(path: String): Flow<List<RoomMessage>> =
+        localDataSource.getAllMessages(path)
 
     override fun getAllLastMessagesFromDB(currentUserId: String): Flow<List<RoomLastMessage>> =
         localDataSource.getAllLastMessages(currentUserId

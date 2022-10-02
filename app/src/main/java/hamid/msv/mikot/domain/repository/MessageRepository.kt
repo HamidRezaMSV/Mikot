@@ -14,6 +14,6 @@ interface MessageRepository {
 
     suspend fun saveAllMessages(messages: List<RoomMessage>)
     suspend fun saveAllLastMessages(lastMessages: List<RoomLastMessage>)
-    fun getAllMessagesFromDB(currentUserId: String): Flow<List<RoomMessage>>
+    fun getAllMessagesFromDB(path: String): Flow<List<RoomMessage>>
     fun getAllLastMessagesFromDB(currentUserId: String): Flow<List<RoomLastMessage>>
 }

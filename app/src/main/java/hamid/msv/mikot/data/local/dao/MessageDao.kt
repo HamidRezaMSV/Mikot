@@ -13,7 +13,7 @@ interface MessageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllMessages(messages: List<RoomMessage>)
 
-    @Query("SELECT * FROM message_table WHERE `key` LIKE :currentUserId || '%'")
-    fun getAllMessages(currentUserId: String): Flow<List<RoomMessage>>
+    @Query("SELECT * FROM message_table WHERE `key` = :path")
+    fun getAllMessages(path: String): Flow<List<RoomMessage>>
 
 }

@@ -19,4 +19,8 @@ data class RoomLastMessage(
     @ColumnInfo(name = "receiver_username")
     val receiverUsername : String,
     val key: String
-)
+){
+
+    fun mapToLastMessage() = LastMessage(id, text, time, senderId, receiverId, senderUsername, receiverUsername, key)
+
+}
