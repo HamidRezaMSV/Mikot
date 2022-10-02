@@ -88,7 +88,7 @@ class ChatViewModel @Inject constructor(
 
     private fun editReceivedMessages() {
         viewModelScope.launch {
-            getAllMessagesUseCase.messages.collect{
+            getAllMessagesUseCase.messagesFromServer.collect{
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
@@ -112,7 +112,7 @@ class ChatViewModel @Inject constructor(
 
     private fun listenForMessages(){
         viewModelScope.launch {
-            getAllMessagesUseCase.execute(senderId+receiverId)
+            getAllMessagesUseCase.executeFromServer(senderId+receiverId)
         }
     }
 

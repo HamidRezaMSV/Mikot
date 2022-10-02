@@ -5,7 +5,9 @@ import javax.inject.Inject
 
 class GetAllMessagesUseCase @Inject constructor(private val messageRepository: MessageRepository) {
 
-    val messages = messageRepository.messages
+    val messagesFromServer = messageRepository.messages
 
-    fun execute(child : String) = messageRepository.listenForMessages(child)
+    fun executeFromServer(child : String) = messageRepository.listenForMessages(child)
+
+    fun executeFromDB(currentUserId: String) = messageRepository.getAllMessagesFromDB(currentUserId)
 }

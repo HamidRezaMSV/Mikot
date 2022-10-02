@@ -79,4 +79,14 @@ object UseCaseModule {
     fun provideGetConnectionStateUseCase(userRepository: UserRepository) =
         GetConnectionStateUseCase(userRepository)
 
+    @Provides
+    @Singleton
+    fun provideSaveAllMessagesUseCase(messageRepository: MessageRepository) =
+        SaveAllMessagesUseCase(messageRepository)
+
+    @Provides
+    @Singleton
+    fun provideSaveAllLastMessageUseCase(messageRepository: MessageRepository) =
+        SaveAllLastMessagesUseCase(messageRepository)
+
 }

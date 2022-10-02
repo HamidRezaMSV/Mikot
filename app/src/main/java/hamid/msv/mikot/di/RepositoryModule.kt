@@ -8,6 +8,7 @@ import hamid.msv.mikot.data.repository.DataStoreRepositoryImpl
 import hamid.msv.mikot.data.repository.MessageRepositoryImpl
 import hamid.msv.mikot.data.repository.UserRepositoryImpl
 import hamid.msv.mikot.data.source.cache.DataStoreDataSource
+import hamid.msv.mikot.data.source.local.LocalDataSource
 import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.repository.DataStoreRepository
 import hamid.msv.mikot.domain.repository.MessageRepository
@@ -20,8 +21,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideMessageRepository(remoteDataSource: RemoteDataSource) : MessageRepository =
-        MessageRepositoryImpl(remoteDataSource)
+    fun provideMessageRepository(remoteDataSource: RemoteDataSource,localDataSource: LocalDataSource) : MessageRepository =
+        MessageRepositoryImpl(remoteDataSource,localDataSource)
 
     @Provides
     @Singleton

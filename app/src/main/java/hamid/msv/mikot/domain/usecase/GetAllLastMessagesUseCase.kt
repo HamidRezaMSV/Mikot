@@ -5,6 +5,10 @@ import javax.inject.Inject
 
 class GetAllLastMessagesUseCase @Inject constructor(private val messageRepository: MessageRepository) {
 
-    suspend fun execute(currentUserId: String) = messageRepository.getAllLastMessages(currentUserId)
+    suspend fun executeFromServer(currentUserId: String) =
+        messageRepository.getAllLastMessages(currentUserId)
+
+    fun executeFromDB(currentUserId: String) =
+        messageRepository.getAllLastMessagesFromDB(currentUserId)
 
 }

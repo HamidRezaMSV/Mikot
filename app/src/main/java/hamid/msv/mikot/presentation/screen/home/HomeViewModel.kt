@@ -61,7 +61,7 @@ class HomeViewModel @Inject constructor(
 
     private fun listenForLastMessages(){
         viewModelScope.launch(Dispatchers.IO) {
-            getAllLastMessagesUseCase.execute(currentUserId).collect{
+            getAllLastMessagesUseCase.executeFromServer(currentUserId).collect{
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
