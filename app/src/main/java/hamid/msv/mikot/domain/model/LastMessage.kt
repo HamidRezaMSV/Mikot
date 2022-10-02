@@ -7,5 +7,6 @@ data class LastMessage(
     val senderId: String? = null,
     val receiverId: String? = null,
     val senderUsername : String? = null,
-    val receiverUsername : String? = null
+    val receiverUsername : String? = null,
+    var key: String? = null
 )

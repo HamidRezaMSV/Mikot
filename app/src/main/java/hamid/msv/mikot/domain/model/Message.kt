@@ -11,17 +11,19 @@ data class Message(
     var isEdited: Boolean = false,
     var editTime: String? = null,
     var isReply: Boolean = false,
-    var repliedMessageId: String? = null
+    var repliedMessageId: String? = null,
+    var key: String? = null
 ) {
 
     fun mapToLastMessage(): LastMessage =
         LastMessage(
-            id = id!!,
-            text = text!!,
-            time = time!!,
-            senderId = senderId!!,
-            receiverId = receiverId!!,
-            senderUsername = senderUsername!!,
-            receiverUsername = receiverUsername!!
+            id = id,
+            text = text,
+            time = time,
+            senderId = senderId,
+            receiverId = receiverId,
+            senderUsername = senderUsername,
+            receiverUsername = receiverUsername,
+            key = key
         )
 }

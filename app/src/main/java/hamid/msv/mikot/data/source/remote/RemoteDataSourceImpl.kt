@@ -85,16 +85,18 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     }
 
     override suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String) {
-        MESSAGE_DATABASE.child(senderId+receiverId).push().setValue(message)
+        val msg1 = message.apply { key = senderId+receiverId }
+        val msg2 = message.apply { key = receiverId+senderId }
+        MESSAGE_DATABASE.child(senderId+receiverId).push().setValue(msg1)
             .addOnCompleteListener { response1 ->
                 if (response1.isSuccessful){
-                    MESSAGE_DATABASE.child(receiverId+senderId).push().setValue(message)
+                    MESSAGE_DATABASE.child(receiverId+senderId).push().setValue(msg2)
                         .addOnCompleteListener { response2 ->
                             if (response2.isSuccessful){
-                                LAST_MESSAGE_DATABASE.child(senderId+receiverId).setValue(message.mapToLastMessage())
+                                LAST_MESSAGE_DATABASE.child(senderId+receiverId).setValue(msg1.mapToLastMessage())
                                     .addOnCompleteListener { response3 ->
                                         if (response3.isSuccessful){
-                                            LAST_MESSAGE_DATABASE.child(receiverId+senderId).setValue(message.mapToLastMessage())
+                                            LAST_MESSAGE_DATABASE.child(receiverId+senderId).setValue(msg2.mapToLastMessage())
                                                 .addOnCompleteListener { response4 ->
                                                     if (response4.isSuccessful){
                                                         _sendNewMessageResponse.value = FirebaseResource.Success(data = "OK")
