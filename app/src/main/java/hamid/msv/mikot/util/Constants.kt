@@ -13,3 +13,5 @@ const val REGISTER_PLACEHOLDER_ALPHA = 0.6f
 const val USER_IS_NOT_LOGIN = "user_is_not_login"
 const val CHAT_TEXT_FILED_MAX_LINE = 5
 const val CHAT_SCREEN_ARG_KEY = "receiverId"
+const val ROOM_DATABASE_VERSION = 1
+const val ROOM_DATABASE_NAME = "mikot_database"
