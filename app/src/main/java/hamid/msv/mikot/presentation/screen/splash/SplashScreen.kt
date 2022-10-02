@@ -1,17 +1,19 @@
 package hamid.msv.mikot.presentation.screen.splash
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,11 +32,12 @@ fun SplashScreen(
 ) {
     val onBoardingCompleted by viewModel.onBoardingCompleted.collectAsState()
     val isLogin by viewModel.isLogin.collectAsState()
+    val showAppName = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
-
-        delay(3000)
-
+        delay(1500)
+        showAppName.value = true
+        delay(1500)
         navController.popBackStack()
         when{
             onBoardingCompleted -> {
@@ -47,11 +50,18 @@ fun SplashScreen(
         }
     }
 
-    SplashContent()
+    SplashContent(showAppName.value)
 }
 
 @Composable
-fun SplashContent() {
+fun SplashContent(showAppName: Boolean) {
+
+    val enterAnimation =
+        expandVertically(
+            animationSpec = tween(durationMillis = 1500),
+            expandFrom = Alignment.Bottom
+        ) + fadeIn(animationSpec = tween(durationMillis = 2000))
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -61,13 +71,19 @@ fun SplashContent() {
         ) {
             LottieSplashAnimation()
         }
-        Text(
+        AnimatedVisibility(
             modifier = Modifier.weight(0.2f),
-            text = stringResource(id = R.string.app_name),
-            fontSize = MaterialTheme.typography.h4.fontSize,
-            fontWeight = FontWeight.Bold ,
-            color = MaterialTheme.colors.splashAppNameColor
-        )
+            visible = showAppName,
+            enter = enterAnimation
+        ) {
+            Text(
+                text = stringResource(id = R.string.app_name).uppercase(),
+                fontSize = MaterialTheme.typography.h4.fontSize,
+                fontWeight = FontWeight.Bold ,
+                fontFamily = FontFamily.Serif,
+                color = MaterialTheme.colors.splashAppNameColor
+            )
+        }
     }
 }
 
@@ -86,5 +102,5 @@ fun LottieSplashAnimation() {
 @Composable
 @Preview(showBackground = true)
 fun SplashContentPreview() {
-    SplashContent()
+    SplashContent(true)
 }
