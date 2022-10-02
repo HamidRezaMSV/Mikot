@@ -15,7 +15,6 @@ import hamid.msv.mikot.domain.usecase.SaveAllLastMessagesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -37,8 +36,8 @@ class HomeViewModel @Inject constructor(
     val lastMessages = _lastMessages.asStateFlow()
 
     init {
-        detectConnectionState()
         fetchAllLastMessageFromDB()
+        detectConnectionState()
         listenForLastMessages()
     }
 
@@ -111,10 +110,9 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchAllLastMessageFromDB(){
         viewModelScope.launch(Dispatchers.IO) {
-            getAllLastMessagesUseCase.executeFromDB(currentUserId).collectLatest{
+            getAllLastMessagesUseCase.executeFromDB(currentUserId).collect{
                 if (it.isNotEmpty()){
                     _lastMessages.value = it.map { roomLastMessage -> roomLastMessage.mapToLastMessage() }
-                    Log.d("MIKOT_HOME" , "fetchAllLastMessageFromDB")
                 }
             }
         }

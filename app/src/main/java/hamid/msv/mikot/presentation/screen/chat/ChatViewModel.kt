@@ -90,7 +90,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun fetchMessagesFromDB(){
-        val path = senderId + receiverId
+        val path = receiverId + senderId
         viewModelScope.launch(Dispatchers.IO) {
             getAllMessagesUseCase.executeFromDB(path).collectLatest {
                 if (it.isNotEmpty()){

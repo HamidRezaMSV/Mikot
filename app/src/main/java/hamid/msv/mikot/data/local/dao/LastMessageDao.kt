@@ -13,7 +13,7 @@ interface LastMessageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllLastMessages(lastMessages: List<RoomLastMessage>)
 
-    @Query("SELECT * FROM last_message_table WHERE `key` LIKE :currentUserId || '%'")
+    @Query("SELECT * FROM last_message_table WHERE `key` LIKE '%' || :currentUserId")
     fun getAllLastMessages(currentUserId: String): Flow<List<RoomLastMessage>>
 
 }

@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "last_message_table")
 data class RoomLastMessage(
-    @PrimaryKey
     val id: String,
     val text: String,
     val time: String,
@@ -18,6 +17,7 @@ data class RoomLastMessage(
     val senderUsername : String,
     @ColumnInfo(name = "receiver_username")
     val receiverUsername : String,
+    @PrimaryKey
     val key: String
 ){
 

@@ -71,18 +71,19 @@ fun SplashContent(showAppName: Boolean) {
         ) {
             LottieSplashAnimation()
         }
-        AnimatedVisibility(
-            modifier = Modifier.weight(0.2f),
-            visible = showAppName,
-            enter = enterAnimation
-        ) {
-            Text(
-                text = stringResource(id = R.string.app_name).uppercase(),
-                fontSize = MaterialTheme.typography.h4.fontSize,
-                fontWeight = FontWeight.Bold ,
-                fontFamily = FontFamily.Serif,
-                color = MaterialTheme.colors.splashAppNameColor
-            )
+        Column(modifier = Modifier.weight(0.2f)){
+            AnimatedVisibility(
+                visible = showAppName,
+                enter = enterAnimation
+            ) {
+                Text(
+                    text = stringResource(id = R.string.app_name).uppercase(),
+                    fontSize = MaterialTheme.typography.h4.fontSize,
+                    fontWeight = FontWeight.Bold ,
+                    fontFamily = FontFamily.Serif,
+                    color = MaterialTheme.colors.splashAppNameColor
+                )
+            }
         }
     }
 }
