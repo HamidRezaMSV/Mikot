@@ -8,19 +8,24 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.usecase.GetAllUsersUseCase
+import hamid.msv.mikot.domain.usecase.SaveAllUsersUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class ContactViewModel @Inject constructor(
-    private val getAllUsersUseCase: GetAllUsersUseCase
+    private val getAllUsersUseCase: GetAllUsersUseCase,
+    private val saveAllUsersUseCase: SaveAllUsersUseCase
 ) : ViewModel() {
 
     init {
         listenForAllUsers()
+        fetchAllUsersFromDB()
     }
 
     private val _userList = MutableStateFlow<List<MikotUser>>(emptyList())
@@ -28,22 +33,34 @@ class ContactViewModel @Inject constructor(
 
     private fun listenForAllUsers(){
         viewModelScope.launch {
-            getAllUsersUseCase.execute().collect{
+            getAllUsersUseCase.executeFromServer().collect{
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
                             response.data?.let { data ->
-                                _userList.value = data.map { user ->
+                                val validList = data.map { user ->
                                     user.createAccountTime = parseTime(user.createAccountTime!!.toLong())
                                     user.phoneNumber = parsPhoneNumber(user.phoneNumber!!)
                                     user
                                 }
+                                _userList.value = validList
+                                saveAllUsersUseCase.execute(validList.map { mikotUser -> mikotUser.mapToRoomUser() })
                             }
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_CONTACT" , response.error.toString())
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun fetchAllUsersFromDB(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getAllUsersUseCase.executeFromDB().collectLatest {
+                if (it.isNotEmpty()){
+                    _userList.value = it.map { roomUser -> roomUser.mapToMikotUser() }
                 }
             }
         }

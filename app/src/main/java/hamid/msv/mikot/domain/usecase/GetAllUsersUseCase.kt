@@ -5,6 +5,8 @@ import javax.inject.Inject
 
 class GetAllUsersUseCase @Inject constructor(private val userRepository: UserRepository) {
 
-    fun execute() = userRepository.getAllUsers()
+    fun executeFromServer() = userRepository.getAllUsers()
+
+    fun executeFromDB() = userRepository.getAllUsersFromDB()
 
 }

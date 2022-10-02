@@ -2,6 +2,7 @@ package hamid.msv.mikot.data.source.local
 
 import hamid.msv.mikot.domain.model.RoomLastMessage
 import hamid.msv.mikot.domain.model.RoomMessage
+import hamid.msv.mikot.domain.model.RoomUser
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDataSource {
@@ -13,5 +14,9 @@ interface LocalDataSource {
     suspend fun addAllLastMessages(lastMessages: List<RoomLastMessage>)
 
     fun getAllLastMessages(currentUserId: String): Flow<List<RoomLastMessage>>
+
+    suspend fun addAllUsers(users: List<RoomUser>)
+
+    fun getAllUsers(): Flow<List<RoomUser>>
 
 }

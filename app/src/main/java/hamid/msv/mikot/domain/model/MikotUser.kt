@@ -10,4 +10,19 @@ data class MikotUser(
     var profileImage : String? = null,
     var createAccountTime : String? = null ,
     var phoneNumber : String? = null
-)
+){
+
+    fun mapToRoomUser() =
+        RoomUser(
+            id = id!!,
+            fullName = fullName!!,
+            userName = userName!!,
+            password = password!!,
+            email = email!!,
+            bio = bio,
+            profileImage = profileImage,
+            createAccountTime = createAccountTime!!,
+            phoneNumber = phoneNumber!!
+        )
+
+}

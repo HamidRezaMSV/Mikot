@@ -26,8 +26,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(remoteDataSource: RemoteDataSource) : UserRepository =
-        UserRepositoryImpl(remoteDataSource)
+    fun provideUserRepository(remoteDataSource: RemoteDataSource,localDataSource: LocalDataSource) : UserRepository =
+        UserRepositoryImpl(remoteDataSource,localDataSource)
 
     @Provides
     @Singleton

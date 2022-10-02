@@ -2,6 +2,7 @@ package hamid.msv.mikot.domain.repository
 
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.MikotUser
+import hamid.msv.mikot.domain.model.RoomUser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -18,4 +19,7 @@ interface UserRepository {
     suspend fun signInUser(email:String , password : String)
     fun getAllUsers() : StateFlow<FirebaseResource<List<MikotUser>>?>
     fun getUserById(id: String) : StateFlow<FirebaseResource<MikotUser>?>
+
+    suspend fun addAllUsersToDB(users: List<RoomUser>)
+    fun getAllUsersFromDB(): Flow<List<RoomUser>>
 }

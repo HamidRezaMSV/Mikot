@@ -1,12 +1,17 @@
 package hamid.msv.mikot.data.repository
 
+import hamid.msv.mikot.data.source.local.LocalDataSource
 import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.model.MikotUser
+import hamid.msv.mikot.domain.model.RoomUser
 import hamid.msv.mikot.domain.repository.UserRepository
 import javax.inject.Inject
 
 class UserRepositoryImpl
-@Inject constructor(private val remoteDataSource: RemoteDataSource) : UserRepository {
+@Inject constructor(
+    private val remoteDataSource: RemoteDataSource,
+    private val localDataSource: LocalDataSource
+) : UserRepository {
 
     override val signUpResponse = remoteDataSource.signUpResponse
     override val saveNewUserResponse = remoteDataSource.saveNewUserResponse
@@ -27,4 +32,8 @@ class UserRepositoryImpl
 
     override fun getConnectionState() = remoteDataSource.getConnectionState()
 
+    override suspend fun addAllUsersToDB(users: List<RoomUser>) =
+        localDataSource.addAllUsers(users)
+
+    override fun getAllUsersFromDB() = localDataSource.getAllUsers()
 }
