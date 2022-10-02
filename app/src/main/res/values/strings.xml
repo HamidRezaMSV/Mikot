@@ -38,4 +38,6 @@
     <string name="chat_text_field_hint">Enter your message</string>
     <string name="null_receiver_id_error">Something went wrong,try again!</string>
     <string name="no_chat_exists">There is no conversation here</string>
+    <!--Home Screen-->
+    <string name="connecting">CONNECTING…</string>
 </resources>

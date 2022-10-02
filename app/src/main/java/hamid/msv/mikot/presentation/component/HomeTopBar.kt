@@ -33,6 +33,10 @@ fun HomeTopBar(connectionState : Boolean) {
         ) + fadeIn(animationSpec = tween(durationMillis = 2000))
 
     val topBarTextColor = if (connectionState) Color.Green else Color.Red
+    val topBarText =
+        if (connectionState)
+        stringResource(id = R.string.app_name).uppercase()
+        else stringResource(id = R.string.connecting)
 
     LaunchedEffect(key1 = true) {
         delay(500)
@@ -62,7 +66,7 @@ fun HomeTopBar(connectionState : Boolean) {
                 ) {
                     Text(
                         modifier = Modifier,
-                        text = stringResource(id = R.string.app_name).uppercase(),
+                        text = topBarText,
                         fontSize = HOME_TOP_BAR_TEXT_SIZE,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
