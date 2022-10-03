@@ -11,10 +11,7 @@ import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.Contact
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.LastMessage
-import hamid.msv.mikot.domain.usecase.GetAllLastMessagesUseCase
-import hamid.msv.mikot.domain.usecase.GetConnectionStateUseCase
-import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
-import hamid.msv.mikot.domain.usecase.SaveAllLastMessagesUseCase
+import hamid.msv.mikot.domain.usecase.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +24,8 @@ class HomeViewModel @Inject constructor(
     private val getConnectionStateUseCase: GetConnectionStateUseCase,
     private val getAllLastMessagesUseCase: GetAllLastMessagesUseCase,
     private val getUserByIdUseCase: GetUserByIdUseCase,
-    private val saveAllLastMessagesUseCase: SaveAllLastMessagesUseCase
+    private val saveAllLastMessagesUseCase: SaveAllLastMessagesUseCase,
+    private val signOutUserUseCase: SignOutUserUseCase
 ): ViewModel(){
 
     private val currentUserId = Application.currentUserId!!
@@ -43,6 +41,9 @@ class HomeViewModel @Inject constructor(
         detectConnectionState()
         listenForLastMessages()
     }
+
+    fun signOutUser() = viewModelScope.launch(Dispatchers.IO) { signOutUserUseCase.execute() }
+
 
     private fun detectConnectionState(){
         viewModelScope.launch(Dispatchers.IO) {

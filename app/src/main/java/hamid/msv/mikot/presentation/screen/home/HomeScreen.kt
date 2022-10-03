@@ -76,9 +76,9 @@ fun HomeScreen(
 
     HomeScreenMenu(
         expanded = menuExpanded,
-        onSettingClick = { Log.d("MIKOT_HOME" , "setting") },
-        onProfileClick = { Log.d("MIKOT_HOME" , "profile") },
-        onLogoutClick = { Log.d("MIKOT_HOME" , "logout") }
+        onSettingClick = { navController.navigate(Screen.Setting.route) },
+        onProfileClick = { navController.navigate(Screen.Profile.route) },
+        onLogoutClick = { viewModel.signOutUser() }
     )
 }
 

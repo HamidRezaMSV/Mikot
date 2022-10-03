@@ -89,4 +89,9 @@ object UseCaseModule {
     fun provideSaveAllLastMessageUseCase(messageRepository: MessageRepository) =
         SaveAllLastMessagesUseCase(messageRepository)
 
+    @Provides
+    @Singleton
+    fun provideSignOutUserUseCase(userRepository: UserRepository) =
+        SignOutUserUseCase(userRepository)
+
 }

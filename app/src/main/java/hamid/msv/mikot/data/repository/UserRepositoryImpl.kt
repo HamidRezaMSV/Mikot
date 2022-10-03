@@ -36,4 +36,6 @@ class UserRepositoryImpl
         localDataSource.addAllUsers(users)
 
     override fun getAllUsersFromDB() = localDataSource.getAllUsers()
+
+    override suspend fun signOutUser() = remoteDataSource.signOutUser()
 }

@@ -186,4 +186,5 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         return response.asStateFlow()
     }
 
+    override suspend fun signOutUser() { authentication.signOut() }
 }

@@ -12,4 +12,5 @@ sealed class Screen(val route: String) {
     object Profile : Screen(route = "profile_screen")
     object Welcome : Screen(route = "welcome_screen")
     object Contact : Screen(route = "contact_screen")
+    object Setting : Screen(route = "setting_screen")
 }
