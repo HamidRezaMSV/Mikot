@@ -46,7 +46,7 @@ class SplashViewModel
 
     private fun fetchCurrentUserInfo(currentUserId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            getUserByIdUseCase.execute(currentUserId).collect{
+            getUserByIdUseCase.executeFromServer(currentUserId).collect{
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {

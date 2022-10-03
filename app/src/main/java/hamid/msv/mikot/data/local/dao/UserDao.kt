@@ -16,4 +16,7 @@ interface UserDao {
     @Query("SELECT * FROM user_table")
     fun getAllUsers(): Flow<List<RoomUser>>
 
+    @Query("SELECT * FROM user_table WHERE id =:userId")
+    fun getUserById(userId: String): Flow<RoomUser>
+
 }

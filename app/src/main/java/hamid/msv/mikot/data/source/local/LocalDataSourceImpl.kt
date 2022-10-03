@@ -4,6 +4,7 @@ import hamid.msv.mikot.data.local.MikotDatabase
 import hamid.msv.mikot.domain.model.RoomLastMessage
 import hamid.msv.mikot.domain.model.RoomMessage
 import hamid.msv.mikot.domain.model.RoomUser
+import kotlinx.coroutines.flow.Flow
 
 class LocalDataSourceImpl(mikotDatabase: MikotDatabase) : LocalDataSource {
 
@@ -27,4 +28,6 @@ class LocalDataSourceImpl(mikotDatabase: MikotDatabase) : LocalDataSource {
         userDao.addAllUsers(users)
 
     override fun getAllUsers() = userDao.getAllUsers()
+
+    override fun getUserById(userId: String) = userDao.getUserById(userId)
 }

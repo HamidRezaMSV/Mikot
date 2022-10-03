@@ -19,4 +19,6 @@ interface LocalDataSource {
 
     fun getAllUsers(): Flow<List<RoomUser>>
 
+    fun getUserById(userId: String): Flow<RoomUser>
+
 }

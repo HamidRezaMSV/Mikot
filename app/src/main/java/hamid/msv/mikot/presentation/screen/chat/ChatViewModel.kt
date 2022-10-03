@@ -40,10 +40,11 @@ class ChatViewModel @Inject constructor(
     val receiverUser = _receiverUser.asStateFlow()
 
     init {
-        fetchReceiverInfo()
+        fetchReceiverInfoFromServer()
+        fetchReceiverInfoFromDB()
         listenForMessages()
         fetchMessagesFromDB()
-        editReceivedMessages()
+        formatReceivedMessages()
         listenForSendNewMessageResponse()
     }
 
@@ -72,9 +73,9 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun fetchReceiverInfo(){
+    private fun fetchReceiverInfoFromServer(){
         viewModelScope.launch(Dispatchers.IO) {
-            getUserByIdUseCase.execute(receiverId).collect{
+            getUserByIdUseCase.executeFromServer(receiverId).collect{
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
@@ -85,6 +86,14 @@ class ChatViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun fetchReceiverInfoFromDB(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserByIdUseCase.executeFromDB(userId = receiverId).collect{
+                _receiverUser.value = it.mapToMikotUser()
             }
         }
     }
@@ -100,7 +109,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun editReceivedMessages() {
+    private fun formatReceivedMessages() {
         viewModelScope.launch {
             getAllMessagesUseCase.messagesFromServer.collect{
                 it?.let { response ->
