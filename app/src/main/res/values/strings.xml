@@ -38,6 +38,7 @@
     <string name="chat_text_field_hint">Enter your message</string>
     <string name="null_receiver_id_error">Something went wrong,try again!</string>
     <string name="no_chat_exists">There is no conversation here</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
     <!--Home Screen-->
     <string name="connecting">Connecting…</string>
     <string name="request_permission">Request Permission</string>

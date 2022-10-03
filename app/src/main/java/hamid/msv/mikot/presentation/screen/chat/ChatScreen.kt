@@ -54,7 +54,10 @@ fun ChatScreen(
         content = {
             ChatScreenContent(
                 messages = messages.value,
-                onMessageClick = { text -> viewModel.copyTextToClipBoard(text,context) }
+                onMessageLongClick = { text ->
+                    viewModel.copyTextToClipBoard(text,context)
+                    Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+                }
             )
         },
         backgroundColor = Color.White,
@@ -70,7 +73,7 @@ fun ChatScreen(
 }
 
 @Composable
-fun ChatScreenContent(messages: List<Message> , onMessageClick: (text:String) -> Unit) {
+fun ChatScreenContent(messages: List<Message> , onMessageLongClick: (text:String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +92,7 @@ fun ChatScreenContent(messages: List<Message> , onMessageClick: (text:String) ->
                     isMe = message.senderId == Application.currentUserId,
                     text = message.text!!,
                     time = message.time!!,
-                    onMessageClick = { text ->  onMessageClick(text) }
+                    onMessageLongClick = { text ->  onMessageLongClick(text) }
                 )
             }
         }
