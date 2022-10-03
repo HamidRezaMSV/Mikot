@@ -1,6 +1,7 @@
 package hamid.msv.mikot.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,9 +17,10 @@ import hamid.msv.mikot.presentation.screen.splash.SplashScreen
 import hamid.msv.mikot.presentation.screen.welcome.WelcomeScreen
 import hamid.msv.mikot.util.CHAT_SCREEN_ARG_KEY
 
+@Composable
 @ExperimentalPagerApi
 @ExperimentalPermissionsApi
-@Composable
+@ExperimentalComposeUiApi
 fun SetupNavGraph() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Splash.route){

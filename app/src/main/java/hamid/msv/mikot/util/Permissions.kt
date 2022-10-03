@@ -6,26 +6,32 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberPermissionState
 import hamid.msv.mikot.R
 import hamid.msv.mikot.ui.theme.*
 
-@ExperimentalPermissionsApi
 @Composable
+@ExperimentalPermissionsApi
+@ExperimentalComposeUiApi
 fun RequestForReadContactPermission(
     onGranted: @Composable () -> Unit,
 ) {
     val readContactPermission =
         rememberPermissionState(permission = Manifest.permission.READ_CONTACTS)
+
+    val visible = remember{ mutableStateOf(false) }
 
     when (readContactPermission.hasPermission) {
         true -> {
@@ -34,16 +40,18 @@ fun RequestForReadContactPermission(
         }
         false -> {
             Log.d("MIKOT_PERMISSION", "Read Contact permission DENIED")
+            visible.value = true
             val text =
                 if (readContactPermission.shouldShowRationale)
                     stringResource(id = R.string.contact_permission1)
                 else
                     stringResource(id = R.string.contact_permission2)
 
-            RequestPermissionContent(
+            RequestPermissionDialog(
+                visible = visible,
                 text = text,
                 title = stringResource(id = R.string.contact_permission),
-                permission = readContactPermission
+                permission = readContactPermission,
             )
         }
     }
@@ -51,7 +59,23 @@ fun RequestForReadContactPermission(
 
 @Composable
 @ExperimentalPermissionsApi
-fun RequestPermissionContent(text: String, title: String, permission: PermissionState) {
+@ExperimentalComposeUiApi
+fun RequestPermissionDialog(
+    visible: MutableState<Boolean>,
+    text: String,
+    title: String,
+    permission: PermissionState
+) {
+    Dialog(
+        onDismissRequest = { visible.value = false },
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        content = { RequestPermissionContent(text = text, title = title, permission = permission) }
+    )
+}
+
+@Composable
+@ExperimentalPermissionsApi
+private fun RequestPermissionContent(text: String, title: String, permission: PermissionState) {
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -33,9 +34,10 @@ import hamid.msv.mikot.presentation.component.HomeTopBar
 import hamid.msv.mikot.ui.theme.LARGE_PADDING
 import hamid.msv.mikot.util.RequestForReadContactPermission
 
-@ExperimentalPermissionsApi
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
+@ExperimentalPermissionsApi
+@ExperimentalComposeUiApi
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 fun HomeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
