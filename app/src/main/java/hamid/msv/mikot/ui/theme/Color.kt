@@ -69,3 +69,6 @@ val Colors.homeFABContentColor
 
 val Colors.homeTopBarBackgroundColor
     @Composable get() = if (isLight) Color.White else Color.White
+
+val Colors.contactTopBarIconColor
+    @Composable get() = if (isLight) Green_Blue else Green_Blue

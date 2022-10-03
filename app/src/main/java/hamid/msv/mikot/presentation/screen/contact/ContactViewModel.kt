@@ -9,6 +9,7 @@ import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.usecase.GetAllUsersUseCase
+import hamid.msv.mikot.domain.usecase.GetConnectionStateUseCase
 import hamid.msv.mikot.domain.usecase.SaveAllUsersUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ContactViewModel @Inject constructor(
     private val getAllUsersUseCase: GetAllUsersUseCase,
-    private val saveAllUsersUseCase: SaveAllUsersUseCase
+    private val saveAllUsersUseCase: SaveAllUsersUseCase,
+    private val getConnectionStateUseCase: GetConnectionStateUseCase
 ) : ViewModel() {
 
     private val phoneContacts = Application.contactList.map { it.number }
@@ -29,8 +31,12 @@ class ContactViewModel @Inject constructor(
     private val _userList = MutableStateFlow<List<MikotUser>>(emptyList())
     val userList = _userList.asStateFlow()
 
+    private val _connectionState = MutableStateFlow(false)
+    val connectionState = _connectionState.asStateFlow()
+
     init {
         listenForAllUsers()
+        detectConnectionState()
         fetchAllUsersFromDB()
     }
 
@@ -60,6 +66,23 @@ class ContactViewModel @Inject constructor(
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_CONTACT" , response.error.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun detectConnectionState(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getConnectionStateUseCase.execute().collect{
+                it?.let { response ->
+                    when(response){
+                        is FirebaseResource.Success -> {
+                            _connectionState.value = response.data!!
+                        }
+                        is FirebaseResource.Error -> {
+                            Log.d("MIKOT_HOME" , response.error.toString())
                         }
                     }
                 }

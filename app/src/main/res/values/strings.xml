@@ -44,4 +44,6 @@
     <string name="contact_permission">Contact Permission</string>
     <string name="contact_permission1">The CONTACT is important for this app. Please grant the permission.</string>
     <string name="contact_permission2">"Contact permission required for find your friends who has installed MIKOT\nPlease grant the permission."</string>
+    <!--Contact Screen-->
+    <string name="contacts">Contacts</string>
 </resources>

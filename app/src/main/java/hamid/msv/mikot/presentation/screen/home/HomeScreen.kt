@@ -45,18 +45,8 @@ fun HomeScreen(
 
     val connectionState = viewModel.connectionState.collectAsState()
     val lastMessages = viewModel.lastMessages.collectAsState()
-    val context = LocalContext.current
 
-    RequestForReadContactPermission(
-        onGranted = {
-            try {
-                val contacts = viewModel.getPhoneContacts(context)
-                if (contacts.isNotEmpty()) Application.contactList.addAll(contacts)
-            }catch (exception: Exception){
-                Log.d("MIKOT_PERMISSION", exception.message.toString())
-            }
-        }
-    )
+    PrepareContacts(viewModel)
 
     Scaffold(
         floatingActionButton = {
@@ -126,6 +116,23 @@ fun EmptyHomeScreenContent() {
             )
         }
     }
+}
+
+@Composable
+@ExperimentalPermissionsApi
+@ExperimentalComposeUiApi
+private fun PrepareContacts(viewModel: HomeViewModel) {
+    val context = LocalContext.current
+    RequestForReadContactPermission(
+        onGranted = {
+            try {
+                val contacts = viewModel.getPhoneContacts(context)
+                if (contacts.isNotEmpty()) Application.contactList.addAll(contacts)
+            }catch (exception: Exception){
+                Log.d("MIKOT_PERMISSION", exception.message.toString())
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)
