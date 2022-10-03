@@ -1,11 +1,14 @@
 package hamid.msv.mikot.presentation.screen.home
 
+import android.content.Context
 import android.icu.text.SimpleDateFormat
+import android.provider.ContactsContract
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hamid.msv.mikot.Application
+import hamid.msv.mikot.domain.model.Contact
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.domain.usecase.GetAllLastMessagesUseCase
@@ -120,5 +123,33 @@ class HomeViewModel @Inject constructor(
 
     private fun parseTime(time:Long): String{
         return SimpleDateFormat.getPatternInstance("yyyy/MM/dd HH:mm", Locale.ENGLISH).format(Date(time))
+    }
+
+    fun getPhoneContacts(context: Context): List<Contact> {
+        val contactList = mutableListOf<Contact>()
+        val cursor = context.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
+        cursor?.let {
+            if (it.count > 0) {
+                while (it.moveToNext()) {
+                    val id =
+                        it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NAME_RAW_CONTACT_ID))
+                    val name =
+                        it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                    val number =
+                        it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+
+                    val contact = Contact(id, name, number)
+                    contactList.add(contact)
+                }
+            }
+            cursor.close()
+        }
+        return contactList.toList()
     }
 }

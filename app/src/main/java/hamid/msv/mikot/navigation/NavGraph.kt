@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import hamid.msv.mikot.presentation.screen.chat.ChatScreen
 import hamid.msv.mikot.presentation.screen.contact.ContactScreen
 import hamid.msv.mikot.presentation.screen.home.HomeScreen
@@ -16,6 +17,7 @@ import hamid.msv.mikot.presentation.screen.welcome.WelcomeScreen
 import hamid.msv.mikot.util.CHAT_SCREEN_ARG_KEY
 
 @ExperimentalPagerApi
+@ExperimentalPermissionsApi
 @Composable
 fun SetupNavGraph() {
     val navController = rememberNavController()

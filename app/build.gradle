@@ -97,11 +97,12 @@ dependencies {
     //datastore preferences
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
-    // accompanist pager
+    // accompanist
     def ver = "0.24.7-alpha"
     implementation "com.google.accompanist:accompanist-pager:$ver"
     implementation "com.google.accompanist:accompanist-pager-indicators:$ver"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
+    implementation "com.google.accompanist:accompanist-permissions:0.23.1"
 
     // LiveData for Compose
     implementation 'androidx.compose.runtime:runtime-livedata:1.0.0-beta07'

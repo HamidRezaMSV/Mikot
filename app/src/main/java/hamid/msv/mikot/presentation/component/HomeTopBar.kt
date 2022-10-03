@@ -38,6 +38,10 @@ fun HomeTopBar(connectionState : Boolean) {
         stringResource(id = R.string.app_name).uppercase()
         else stringResource(id = R.string.connecting)
 
+    val topBarTextSize =
+        if (connectionState) HOME_TOP_BAR_TEXT_SIZE_CONNECT
+        else HOME_TOP_BAR_TEXT_SIZE_DISCONNECT
+
     LaunchedEffect(key1 = true) {
         delay(500)
         visible.value = true
@@ -67,7 +71,7 @@ fun HomeTopBar(connectionState : Boolean) {
                     Text(
                         modifier = Modifier,
                         text = topBarText,
-                        fontSize = HOME_TOP_BAR_TEXT_SIZE,
+                        fontSize = topBarTextSize,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
