@@ -12,6 +12,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -30,6 +32,7 @@ import hamid.msv.mikot.domain.model.LastMessage
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.presentation.component.HomeFAB
 import hamid.msv.mikot.presentation.component.HomeScreenItem
+import hamid.msv.mikot.presentation.component.HomeScreenMenu
 import hamid.msv.mikot.presentation.component.HomeTopBar
 import hamid.msv.mikot.ui.theme.LARGE_PADDING
 import hamid.msv.mikot.util.RequestForReadContactPermission
@@ -45,6 +48,7 @@ fun HomeScreen(
 
     val connectionState = viewModel.connectionState.collectAsState()
     val lastMessages = viewModel.lastMessages.collectAsState()
+    val menuExpanded = remember{ mutableStateOf(false) }
 
     PrepareContacts(viewModel)
 
@@ -52,7 +56,12 @@ fun HomeScreen(
         floatingActionButton = {
             HomeFAB(onClick = { navController.navigate(Screen.Contact.route) })
         },
-        topBar = { HomeTopBar(connectionState.value) },
+        topBar = {
+            HomeTopBar(
+                connectionState = connectionState.value,
+                onMenuClick = { menuExpanded.value = true }
+            )
+        },
         backgroundColor = Color.White,
         content = {
             HomeScreenContent(
@@ -63,6 +72,13 @@ fun HomeScreen(
                 }
             )
         }
+    )
+
+    HomeScreenMenu(
+        expanded = menuExpanded,
+        onSettingClick = { Log.d("MIKOT_HOME" , "setting") },
+        onProfileClick = { Log.d("MIKOT_HOME" , "profile") },
+        onLogoutClick = { Log.d("MIKOT_HOME" , "logout") }
     )
 }
 
