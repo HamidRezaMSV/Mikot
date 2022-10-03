@@ -4,7 +4,6 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import hamid.msv.mikot.domain.model.Contact
 import hamid.msv.mikot.domain.model.MikotUser
-import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 
 @HiltAndroidApp
 class Application : Application(){

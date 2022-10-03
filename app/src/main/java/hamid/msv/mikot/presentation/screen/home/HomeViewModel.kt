@@ -150,6 +150,20 @@ class HomeViewModel @Inject constructor(
             }
             cursor.close()
         }
-        return contactList.toList()
+        return formatContactNumber(contactList)
+    }
+
+    private fun formatContactNumber(contacts: List<Contact>): List<Contact>{
+        if (contacts.isNotEmpty()){
+            contacts.forEach { contact ->
+                if (contact.number.startsWith("+98")){
+                    contact.number = contact.number.replace(oldValue = "+98", newValue = "0")
+                }
+                if (contact.number.contains(" ")){
+                    contact.number = contact.number.replace(oldValue = " ", newValue = "")
+                }
+            }
+        }
+        return contacts
     }
 }

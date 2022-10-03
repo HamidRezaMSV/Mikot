@@ -45,6 +45,17 @@ fun HomeScreen(
     val lastMessages = viewModel.lastMessages.collectAsState()
     val context = LocalContext.current
 
+    RequestForReadContactPermission(
+        onGranted = {
+            try {
+                val contacts = viewModel.getPhoneContacts(context)
+                if (contacts.isNotEmpty()) Application.contactList.addAll(contacts)
+            }catch (exception: Exception){
+                Log.d("MIKOT_PERMISSION", exception.message.toString())
+            }
+        }
+    )
+
     Scaffold(
         floatingActionButton = {
             HomeFAB(onClick = { navController.navigate(Screen.Contact.route) })
@@ -59,17 +70,6 @@ fun HomeScreen(
                     navController.navigate(Screen.Chat.passReceiverId(userId))
                 }
             )
-        }
-    )
-
-    RequestForReadContactPermission(
-        onGranted = {
-            Log.d("MIKOT_PERMISSION", "onGranted launched")
-            val contacts = viewModel.getPhoneContacts(context)
-            if (contacts.isNotEmpty()) Application.contactList.addAll(contacts)
-            Application.contactList.forEach{
-                Log.d("MIKOT_PERMISSION", it.toString())
-            }
         }
     )
 }

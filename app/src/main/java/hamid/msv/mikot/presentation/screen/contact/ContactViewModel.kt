@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.usecase.GetAllUsersUseCase
@@ -23,28 +24,38 @@ class ContactViewModel @Inject constructor(
     private val saveAllUsersUseCase: SaveAllUsersUseCase
 ) : ViewModel() {
 
+    private val phoneContacts = Application.contactList.map { it.number }
+
+    private val _userList = MutableStateFlow<List<MikotUser>>(emptyList())
+    val userList = _userList.asStateFlow()
+
     init {
         listenForAllUsers()
         fetchAllUsersFromDB()
     }
 
-    private val _userList = MutableStateFlow<List<MikotUser>>(emptyList())
-    val userList = _userList.asStateFlow()
-
     private fun listenForAllUsers(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getAllUsersUseCase.executeFromServer().collect{
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
                             response.data?.let { data ->
-                                val validList = data.map { user ->
-                                    user.createAccountTime = parseTime(user.createAccountTime!!.toLong())
-                                    user.phoneNumber = parsPhoneNumber(user.phoneNumber!!)
-                                    user
+                                val mikotUserList = mutableListOf<MikotUser>()
+                                data.forEach { mikotUser ->
+                                    if (mikotUser.phoneNumber in phoneContacts){
+                                        mikotUserList.add(mikotUser)
+                                    }
                                 }
-                                _userList.value = validList
-                                saveAllUsersUseCase.execute(validList.map { mikotUser -> mikotUser.mapToRoomUser() })
+                                if (mikotUserList.isNotEmpty()){
+                                    val finalUserList =  mikotUserList.map { user ->
+                                        user.createAccountTime = parseTime(user.createAccountTime!!.toLong())
+                                        user.phoneNumber = parsPhoneNumber(user.phoneNumber!!)
+                                        user
+                                    }
+                                    _userList.value = finalUserList
+                                    saveAllUsersUseCase.execute(finalUserList.map { mikotUser -> mikotUser.mapToRoomUser() })
+                                }
                             }
                         }
                         is FirebaseResource.Error -> {
