@@ -37,6 +37,9 @@ class MessageRepositoryImpl
         localDataSource.getAllMessages(path)
 
     override fun getAllLastMessagesFromDB(currentUserId: String): Flow<List<RoomLastMessage>> =
-        localDataSource.getAllLastMessages(currentUserId
-        )
+        localDataSource.getAllLastMessages(currentUserId)
+
+    override suspend fun deleteAllMessagesFromDB() = localDataSource.deleteAllMessages()
+
+    override suspend fun deleteAllLastMessagesFromDB() = localDataSource.deleteAllLastMessages()
 }

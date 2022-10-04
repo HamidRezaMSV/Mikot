@@ -94,4 +94,9 @@ object UseCaseModule {
     fun provideSignOutUserUseCase(userRepository: UserRepository) =
         SignOutUserUseCase(userRepository)
 
+    @Provides
+    @Singleton
+    fun provideDeleteDBUseCase(userRepository: UserRepository,messageRepository: MessageRepository) =
+        DeleteDBUseCase(userRepository,messageRepository)
+
 }

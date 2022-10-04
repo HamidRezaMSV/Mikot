@@ -5,7 +5,6 @@ import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.model.RoomUser
 import hamid.msv.mikot.domain.repository.UserRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UserRepositoryImpl
@@ -41,4 +40,6 @@ class UserRepositoryImpl
     override suspend fun signOutUser() = remoteDataSource.signOutUser()
 
     override fun getUserByIdFromDB(userId: String) = localDataSource.getUserById(userId)
+
+    override suspend fun deleteAllUsersFromDB() = localDataSource.deleteAllUsers()
 }

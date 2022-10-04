@@ -78,7 +78,11 @@ fun HomeScreen(
         expanded = menuExpanded,
         onSettingClick = { navController.navigate(Screen.Setting.route) },
         onProfileClick = { navController.navigate(Screen.Profile.route) },
-        onLogoutClick = { viewModel.signOutUser() }
+        onLogoutClick = {
+            viewModel.signOutUser()
+            navController.popBackStack()
+            navController.navigate(Screen.SignIn.route)
+        }
     )
 }
 

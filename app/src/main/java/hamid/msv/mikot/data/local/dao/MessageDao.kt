@@ -16,4 +16,7 @@ interface MessageDao {
     @Query("SELECT * FROM message_table WHERE `key` = :path")
     fun getAllMessages(path: String): Flow<List<RoomMessage>>
 
+    @Query("DELETE FROM message_table")
+    suspend fun deleteAllMessages()
+
 }

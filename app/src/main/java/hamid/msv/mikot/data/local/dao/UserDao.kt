@@ -19,4 +19,7 @@ interface UserDao {
     @Query("SELECT * FROM user_table WHERE id =:userId")
     fun getUserById(userId: String): Flow<RoomUser>
 
+    @Query("DELETE FROM user_table")
+    fun deleteAllUsers()
+
 }

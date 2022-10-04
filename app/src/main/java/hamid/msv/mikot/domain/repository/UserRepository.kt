@@ -24,5 +24,6 @@ interface UserRepository {
     suspend fun addAllUsersToDB(users: List<RoomUser>)
     fun getAllUsersFromDB(): Flow<List<RoomUser>>
     fun getUserByIdFromDB(userId: String): Flow<RoomUser>
+    suspend fun deleteAllUsersFromDB()
 
 }

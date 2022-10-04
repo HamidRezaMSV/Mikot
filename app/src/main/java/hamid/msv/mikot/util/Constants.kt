@@ -1,8 +1,6 @@
 package hamid.msv.mikot.util
 
 const val FIREBASE_DATABASE_URL = "https://mikot-6393a-default-rtdb.firebaseio.com/"
-const val GET_LAST_MESSAGES_KEY = "get_last_message"
-const val DATABASE_ERROR_KEY = "database_error"
 const val PREFERENCES_NAME = "mikot_preferences"
 const val ON_BOARDING_PREFERENCES_KEY = "on_boarding_key"
 const val LOGIN_PREFERENCES_KEY = "login_key"
