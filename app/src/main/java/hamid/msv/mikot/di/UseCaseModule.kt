@@ -99,4 +99,9 @@ object UseCaseModule {
     fun provideDeleteDBUseCase(userRepository: UserRepository,messageRepository: MessageRepository) =
         DeleteDBUseCase(userRepository,messageRepository)
 
+    @Provides
+    @Singleton
+    fun provideSaveUserToDBUseCase(userRepository: UserRepository) =
+        SaveUserToDBUseCase(userRepository)
+
 }

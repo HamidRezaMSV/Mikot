@@ -4,11 +4,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.usecase.GetConnectionStateUseCase
+import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +22,6 @@ class ProfileViewModel @Inject constructor(
 
     private val _connectionState = MutableStateFlow(false)
     val connectionState = _connectionState.asStateFlow()
-
 
     init {
         detectConnectionState()

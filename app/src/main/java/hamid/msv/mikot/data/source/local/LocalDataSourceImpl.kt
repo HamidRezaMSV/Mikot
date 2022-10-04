@@ -35,4 +35,6 @@ class LocalDataSourceImpl(mikotDatabase: MikotDatabase) : LocalDataSource {
     override suspend fun deleteAllMessages() = messageDao.deleteAllMessages()
 
     override suspend fun deleteAllLastMessages() = lastMessageDao.deleteAllLastMessages()
+
+    override suspend fun addUser(user: RoomUser) = userDao.addUser(user)
 }

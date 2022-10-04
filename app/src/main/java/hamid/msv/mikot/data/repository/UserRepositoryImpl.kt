@@ -42,4 +42,6 @@ class UserRepositoryImpl
     override fun getUserByIdFromDB(userId: String) = localDataSource.getUserById(userId)
 
     override suspend fun deleteAllUsersFromDB() = localDataSource.deleteAllUsers()
+
+    override suspend fun addUserToDB(user: RoomUser) = localDataSource.addUser(user)
 }

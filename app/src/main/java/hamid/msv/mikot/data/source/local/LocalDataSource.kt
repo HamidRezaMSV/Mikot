@@ -19,12 +19,14 @@ interface LocalDataSource {
 
     fun getAllUsers(): Flow<List<RoomUser>>
 
-    fun getUserById(userId: String): Flow<RoomUser>
+    fun getUserById(userId: String): Flow<RoomUser?>
 
     suspend fun deleteAllUsers()
 
     suspend fun deleteAllMessages()
 
     suspend fun deleteAllLastMessages()
+
+    suspend fun addUser(user: RoomUser)
 
 }

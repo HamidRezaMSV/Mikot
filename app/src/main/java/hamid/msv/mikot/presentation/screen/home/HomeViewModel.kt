@@ -11,6 +11,7 @@ import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.Contact
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.LastMessage
+import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.domain.usecase.*
 import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,8 @@ class HomeViewModel @Inject constructor(
     private val saveAllLastMessagesUseCase: SaveAllLastMessagesUseCase,
     private val signOutUserUseCase: SignOutUserUseCase,
     private val saveCurrentUserIdUseCase: SaveCurrentUserIdUseCase,
-    private val deleteDBUseCase: DeleteDBUseCase
+    private val deleteDBUseCase: DeleteDBUseCase,
+    private val saveUserToDBUseCase: SaveUserToDBUseCase
 ): ViewModel(){
 
     private val currentUserId = Application.currentUserId!!
@@ -43,6 +45,7 @@ class HomeViewModel @Inject constructor(
         fetchAllLastMessageFromDB()
         detectConnectionState()
         listenForLastMessages()
+        fetchCurrentUserFromDB()
     }
 
     fun signOutUser(){
@@ -65,7 +68,7 @@ class HomeViewModel @Inject constructor(
                         is FirebaseResource.Success -> {
                             _connectionState.value = response.data!!
                             if (response.data){
-                                fetchCurrentUserInfo(currentUserId)
+                                fetchCurrentUserFromServer(currentUserId)
                             }
                             Log.d("MIKOT_HOME" , "Connection State : ${response.data}")
                         }
@@ -106,14 +109,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCurrentUserInfo(currentUserId: String) {
+    private fun fetchCurrentUserFromServer(currentUserId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             getUserByIdUseCase.executeFromServer(currentUserId).collect{
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
                             Application.currentUser = response.data!!
-                            Log.d("MIKOT_HOME" , "current user info fetched successfully")
+                            saveCurrentUserInDB(response.data)
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_HOME" , response.error.toString())
@@ -124,11 +127,27 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun saveCurrentUserInDB(user: MikotUser){
+        viewModelScope.launch(Dispatchers.IO) {
+            saveUserToDBUseCase.execute(user.mapToRoomUser())
+        }
+    }
+
     private fun fetchAllLastMessageFromDB(){
         viewModelScope.launch(Dispatchers.IO) {
             getAllLastMessagesUseCase.executeFromDB(currentUserId).collect{
                 if (it.isNotEmpty()){
                     _lastMessages.value = it.map { roomLastMessage -> roomLastMessage.mapToLastMessage() }
+                }
+            }
+        }
+    }
+
+    private fun fetchCurrentUserFromDB(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserByIdUseCase.executeFromDB(currentUserId).collect{
+                it?.let { roomUser ->
+                    Application.currentUser = roomUser.mapToMikotUser()
                 }
             }
         }

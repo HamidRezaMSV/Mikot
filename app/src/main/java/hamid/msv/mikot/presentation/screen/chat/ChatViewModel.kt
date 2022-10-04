@@ -93,7 +93,9 @@ class ChatViewModel @Inject constructor(
     private fun fetchReceiverInfoFromDB(){
         viewModelScope.launch(Dispatchers.IO) {
             getUserByIdUseCase.executeFromDB(userId = receiverId).collect{
-                _receiverUser.value = it.mapToMikotUser()
+                it?.let { roomUser ->
+                    _receiverUser.value = roomUser.mapToMikotUser()
+                }
             }
         }
     }

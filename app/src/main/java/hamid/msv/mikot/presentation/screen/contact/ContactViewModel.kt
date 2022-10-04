@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.MikotUser
+import hamid.msv.mikot.domain.model.RoomUser
 import hamid.msv.mikot.domain.usecase.GetAllUsersUseCase
 import hamid.msv.mikot.domain.usecase.GetConnectionStateUseCase
 import hamid.msv.mikot.domain.usecase.SaveAllUsersUseCase
@@ -27,6 +28,7 @@ class ContactViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val phoneContacts = Application.contactList.map { it.number }
+    private val currentUserId = Application.currentUserId!!
 
     private val _userList = MutableStateFlow<List<MikotUser>>(emptyList())
     val userList = _userList.asStateFlow()
@@ -94,7 +96,11 @@ class ContactViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             getAllUsersUseCase.executeFromDB().collectLatest {
                 if (it.isNotEmpty()){
-                    _userList.value = it.map { roomUser -> roomUser.mapToMikotUser() }
+                    val users = mutableListOf<RoomUser>()
+                    it.forEach { roomUser ->
+                        if (roomUser.id != currentUserId) users.add(roomUser)
+                    }
+                    _userList.value = users.map { roomUser -> roomUser.mapToMikotUser() }
                 }
             }
         }
