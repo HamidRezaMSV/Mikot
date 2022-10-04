@@ -40,10 +40,13 @@ fun RegisterScreen(
     val context = LocalContext.current
     val registeredUserId = viewModel.userId.collectAsState()
     val navigateToHomeScreen = viewModel.navigateToHomeScreen.collectAsState()
+    val progressVisible = remember { mutableStateOf(false) }
 
     RegisterContent(
+        progressVisible,
         onRegisterClicked = { fName, uName, pass, cPass, email, phone ->
             if (viewModel.isInputDataValid(fName, uName, pass, cPass, email, phone, context)) {
+                progressVisible.value = true
                 viewModel.currentUser.apply {
                     this.fullName = fName
                     this.userName = uName
@@ -54,12 +57,11 @@ fun RegisterScreen(
                 }
                 viewModel.signUpUser(email, pass)
             }
-        },
-        onLoginClicked = {
-            navController.popBackStack()
-            navController.navigate(Screen.SignIn.route)
         }
-    )
+    ) {
+        navController.popBackStack()
+        navController.navigate(Screen.SignIn.route)
+    }
 
     // Save user in firebase database
     registeredUserId.value?.let {
@@ -78,6 +80,7 @@ fun RegisterScreen(
 
 @Composable
 fun RegisterContent(
+    progressVisible: MutableState<Boolean>,
     onRegisterClicked: (fName: String, uName: String, pass: String, cPass: String, email: String, phone: String) -> Unit,
     onLoginClicked: () -> Unit
 ) {
@@ -90,8 +93,6 @@ fun RegisterContent(
     val phoneNumber = remember { mutableStateOf("") }
 
     val scrollState = rememberScrollState()
-
-    val progressVisible = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
         scrollState.animateScrollTo(
@@ -173,7 +174,6 @@ fun RegisterContent(
         ) {
             Button(
                 onClick = {
-                    progressVisible.value = true
                     onRegisterClicked(
                         fullName.value.trim(),
                         userName.value.trim(),

@@ -35,18 +35,20 @@ fun LoginScreen(
 
     val context = LocalContext.current
     val navigateToHomeScreen = viewModel.navigateToHomeScreen.collectAsState(initial = false)
+    val progressVisible = remember { mutableStateOf(false) }
 
     LoginContent(
+        progressVisible,
         onLoginClicked = { email,password ->
             if (viewModel.isInputDataValid(email, password, context)) {
+                progressVisible.value = true
                 viewModel.signInUser(email, password)
             }
-        },
-        onCreateNewAccClicked = {
-            navController.popBackStack()
-            navController.navigate(Screen.SignUp.route)
         }
-    )
+    ) {
+        navController.popBackStack()
+        navController.navigate(Screen.SignUp.route)
+    }
 
     if (navigateToHomeScreen.value) {
         Toast.makeText(context, context.getString(R.string.welcome), Toast.LENGTH_SHORT).show()
@@ -59,6 +61,7 @@ fun LoginScreen(
 
 @Composable
 fun LoginContent(
+    progressVisible: MutableState<Boolean>,
     onLoginClicked: (email: String, password: String) -> Unit,
     onCreateNewAccClicked: () -> Unit
 ) {
@@ -66,8 +69,6 @@ fun LoginContent(
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
-
-    val progressVisible = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -118,7 +119,6 @@ fun LoginContent(
         ) {
             Button(
                 onClick = {
-                    progressVisible.value = true
                     onLoginClicked(
                         email.value.trim(),
                         password.value.trim()
