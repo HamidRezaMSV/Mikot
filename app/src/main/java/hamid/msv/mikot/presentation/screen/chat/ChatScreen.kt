@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -24,8 +26,8 @@ import hamid.msv.mikot.presentation.component.ChatTopBar
 import hamid.msv.mikot.presentation.component.MessageItem
 import hamid.msv.mikot.ui.theme.SMALL_PADDING
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 fun ChatScreen(
     navController: NavHostController,
     receiverId: String?,
@@ -34,16 +36,14 @@ fun ChatScreen(
 
     val context = LocalContext.current
     if (receiverId == null) {
-        Toast.makeText(
-            context,
-            stringResource(id = R.string.null_receiver_id_error),
-            Toast.LENGTH_SHORT
-        ).show()
+        Toast.makeText(context, stringResource(id = R.string.null_receiver_id_error), Toast.LENGTH_SHORT).show()
         navController.popBackStack()
     }
 
     val messages = viewModel.messages.collectAsState()
     val receiverUser = viewModel.receiverUser.collectAsState()
+
+    val topBarExpanded = remember{ mutableStateOf(false) }
 
     BackHandler {
         navController.popBackStack()
@@ -61,7 +61,16 @@ fun ChatScreen(
             )
         },
         backgroundColor = Color.White,
-        topBar = { receiverUser.value?.let { ChatTopBar(user = it) } },
+        topBar = {
+            receiverUser.value?.let {
+                ChatTopBar(
+                    user = it,
+                    expanded = topBarExpanded,
+                    onBackClick = { navController.popBackStack() },
+                    onExpandClick = { topBarExpanded.value = !topBarExpanded.value }
+                )
+            }
+        },
         bottomBar = {
             ChatTextField(
                 onSendClicked = { text ->
@@ -73,7 +82,10 @@ fun ChatScreen(
 }
 
 @Composable
-fun ChatScreenContent(messages: List<Message> , onMessageLongClick: (text:String) -> Unit) {
+fun ChatScreenContent(
+    messages: List<Message> ,
+    onMessageLongClick: (text:String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()

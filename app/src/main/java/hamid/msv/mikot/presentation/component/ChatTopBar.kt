@@ -1,22 +1,44 @@
 package hamid.msv.mikot.presentation.component
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.ui.theme.*
 
 @Composable
-fun ChatTopBar(user: MikotUser) {
+fun ChatTopBar(
+    user: MikotUser,
+    expanded:MutableState<Boolean>,
+    onBackClick: () -> Unit,
+    onExpandClick: () -> Unit
+) {
+
+    val expandIcon = if (expanded.value) Icons.Default.KeyboardArrowUp
+    else Icons.Default.KeyboardArrowDown
+
+    val enterAnimation = fadeIn(tween(500)) + expandVertically(tween(500))
+    val exitAnimation = fadeOut(tween(500)) + shrinkVertically(tween(500))
+
     Box(
         modifier = Modifier
             .padding(horizontal = SMALL_PADDING)
@@ -24,33 +46,131 @@ fun ChatTopBar(user: MikotUser) {
             .padding(bottom = EXTRA_SMALL_PADDING)
     ) {
         Card(
-            modifier = Modifier.requiredHeight(CHAT_TOP_BAR_HEIGHT),
             shape = RoundedCornerShape(size = CHAT_TOP_BAR_CORNER_RADIUS),
             elevation = CHAT_TOP_BAR_ELEVATION,
             backgroundColor = Color.White
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = SMALL_PADDING),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = user.userName ?: "Unknown",
-                    color = MaterialTheme.colors.chatTopBarTextColor,
-                    fontSize = MaterialTheme.typography.h5.fontSize,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .requiredHeight(CHAT_TOP_BAR_HEIGHT)
+                ){
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(all = SMALL_PADDING)
+                            .padding(top = CHAT_TOP_BAR_PADDING_TOP),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = user.userName ?: "Unknown",
+                            color = MaterialTheme.colors.chatTopBarTextColor,
+                            fontSize = MaterialTheme.typography.h5.fontSize,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    IconButton(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .fillMaxHeight()
+                            .align(Alignment.TopStart),
+                        onClick = { onBackClick() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.contactTopBarIconColor
+                        )
+                    }
+
+                    IconButton(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .fillMaxHeight()
+                            .align(Alignment.TopEnd),
+                        onClick = { onExpandClick() }
+                    ) {
+                        Icon(
+                            imageVector = expandIcon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.contactTopBarIconColor
+                        )
+                    }
+                }
+                AnimatedVisibility(
+                    visible = expanded.value,
+                    enter = enterAnimation ,
+                    exit = exitAnimation
+                ) {
+                    ExpandedChatTopBar(user = user)
+                }
             }
         }
     }
 }
 
 @Composable
-@Preview(showBackground = true)
-fun ChatTopBarPreview() {
-    ChatTopBar(user = MikotUser())
+private fun ExpandedChatTopBar(user: MikotUser){
+
+    val image =
+        if (user.profileImage != null) painterResource(id = R.drawable.img_user)
+        else painterResource(id = R.drawable.img_user)
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(MEDIUM_PADDING),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                .border(
+                    1.dp,
+                    color = Green_Blue,
+                    shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                ),
+            painter = image,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.height(MEDIUM_PADDING))
+
+        TopBarTextField(label = stringResource(id = R.string.full_name), value = user.fullName ?: "Unknown")
+        TopBarTextField(label = stringResource(id = R.string.phoneNumber), value = user.phoneNumber ?: "Unknown")
+        TopBarTextField(label = stringResource(id = R.string.email), value = user.email ?: "Unknown")
+    }
+}
+
+@Composable
+private fun TopBarTextField(
+    label: String,
+    value: String
+) {
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth().padding(bottom = EXTRA_SMALL_PADDING),
+        value = value,
+        readOnly = true,
+        onValueChange = {  },
+        label = { Text(text = label) },
+        singleLine = true,
+        shape = RoundedCornerShape(size = REGISTER_TEXT_FIELD_CORNER_RADIUS),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = Color.Black,
+            backgroundColor = Color.White,
+            focusedBorderColor = Green_Blue,
+            unfocusedBorderColor = Green_Blue,
+            focusedLabelColor = Green_Blue,
+            unfocusedLabelColor = Green_Blue
+        )
+    )
 }
