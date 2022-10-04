@@ -1,9 +1,5 @@
 package hamid.msv.mikot.presentation.component
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -26,26 +22,29 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeTopBar(connectionState : Boolean, onMenuClick: () -> Unit) {
 
-    val visible = remember { mutableStateOf(false) }
-    val enterAnimation =
-        expandVertically(
-            animationSpec = tween(durationMillis = 1500),
-            expandFrom = Alignment.Bottom
-        ) + fadeIn(animationSpec = tween(durationMillis = 2000))
+    var dots by remember { mutableStateOf("") }
+    var dotStateToggle by remember { mutableStateOf(true) }
 
     val topBarTextColor = if (connectionState) Green_Blue else Color.Red
-    val topBarText =
-        if (connectionState)
-        stringResource(id = R.string.app_name).uppercase()
-        else stringResource(id = R.string.connecting)
 
-    val topBarTextSize =
-        if (connectionState) HOME_TOP_BAR_TEXT_SIZE_CONNECT
-        else HOME_TOP_BAR_TEXT_SIZE_DISCONNECT
+    val topBarText = if (connectionState) stringResource(id = R.string.app_name).uppercase()
+    else stringResource(id = R.string.connecting) + dots
 
-    LaunchedEffect(key1 = true) {
-        delay(500)
-        visible.value = true
+    val topBarTextSize = if (connectionState) HOME_TOP_BAR_TEXT_SIZE_CONNECT
+    else HOME_TOP_BAR_TEXT_SIZE_DISCONNECT
+
+    if (!connectionState){
+        LaunchedEffect(key1 = dotStateToggle) {
+            dots = "."
+            delay(400)
+            dots = ".."
+            delay(400)
+            dots = "..."
+            delay(400)
+            dots = ""
+            delay(400)
+            dotStateToggle = !dotStateToggle
+        }
     }
 
     Box(
@@ -69,25 +68,23 @@ fun HomeTopBar(connectionState : Boolean, onMenuClick: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    AnimatedVisibility(
-                        visible = visible.value,
-                        enter = enterAnimation
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(start = MEDIUM_PADDING),
-                            text = topBarText,
-                            fontSize = topBarTextSize,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontFamily = FontFamily.Serif,
-                            textAlign = TextAlign.Start
-                        )
-                    }
+                    Text(
+                        modifier = Modifier.padding(start = MEDIUM_PADDING),
+                        text = topBarText,
+                        fontSize = topBarTextSize,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = FontFamily.Serif,
+                        textAlign = TextAlign.Start
+                    )
+
                 }
 
                 IconButton(
-                    modifier = Modifier.aspectRatio(1f).fillMaxHeight(),
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .fillMaxHeight(),
                     onClick = { onMenuClick() }
                 ) {
                     Icon(
@@ -101,8 +98,8 @@ fun HomeTopBar(connectionState : Boolean, onMenuClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
+@Preview(showBackground = true)
 fun HomeTopBarPreview() {
-    HomeTopBar(true){}
+    HomeTopBar(false){}
 }

@@ -40,7 +40,7 @@
     <string name="no_chat_exists">There is no conversation here</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <!--Home Screen-->
-    <string name="connecting">Connecting…</string>
+    <string name="connecting">Connecting</string>
     <string name="request_permission">Request Permission</string>
     <string name="contact_permission">Contact Permission</string>
     <string name="contact_permission1">The CONTACT is important for this app. Please grant the permission.</string>
