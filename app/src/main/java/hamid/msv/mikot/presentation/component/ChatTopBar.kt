@@ -62,7 +62,7 @@ fun ChatTopBar(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(all = SMALL_PADDING)
-                            .padding(top = CHAT_TOP_BAR_PADDING_TOP),
+                            .padding(top = EXTRA_SMALL_PADDING),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
