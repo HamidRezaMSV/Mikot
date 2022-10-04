@@ -1,5 +1,6 @@
 package hamid.msv.mikot.presentation.screen.register
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -90,10 +91,12 @@ fun RegisterContent(
 
     val scrollState = rememberScrollState()
 
+    val progressVisible = remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = true) {
         scrollState.animateScrollTo(
             scrollState.maxValue,
-            tween(durationMillis = 1000, delayMillis = 500)
+            tween(durationMillis = 1000, delayMillis = 1100)
         )
     }
 
@@ -170,6 +173,7 @@ fun RegisterContent(
         ) {
             Button(
                 onClick = {
+                    progressVisible.value = true
                     onRegisterClicked(
                         fullName.value.trim(),
                         userName.value.trim(),
@@ -179,15 +183,28 @@ fun RegisterContent(
                         phoneNumber.value.trim()
                     )
                 },
+                enabled = !progressVisible.value,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.registerButtonBackgroundColor,
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    disabledBackgroundColor = Dark_Green_Blue,
+                    disabledContentColor = LightGray
                 )
             ) {
                 Text(
                     text = stringResource(id = R.string.register),
                     fontSize = MaterialTheme.typography.h6.fontSize
                 )
+
+                Spacer(modifier = Modifier.width(EXTRA_MEDIUM_PADDING))
+
+                AnimatedVisibility(
+                    visible = progressVisible.value
+                ) {
+                    CircularProgressIndicator(
+                        color = Color.LightGray
+                    )
+                }
             }
         }
 

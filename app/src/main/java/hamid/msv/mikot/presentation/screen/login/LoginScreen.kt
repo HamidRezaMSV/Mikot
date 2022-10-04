@@ -1,6 +1,7 @@
 package hamid.msv.mikot.presentation.screen.login
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -66,6 +67,8 @@ fun LoginContent(
     val password = remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
+    val progressVisible = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -115,20 +118,34 @@ fun LoginContent(
         ) {
             Button(
                 onClick = {
+                    progressVisible.value = true
                     onLoginClicked(
                         email.value.trim(),
                         password.value.trim()
                     )
                 },
+                enabled = !progressVisible.value,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.loginScreenContentColor,
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    disabledContentColor = LightGray,
+                    disabledBackgroundColor = Dark_Red
                 )
             ) {
                 Text(
                     text = stringResource(id = R.string.login),
                     fontSize = MaterialTheme.typography.h6.fontSize
                 )
+
+                Spacer(modifier = Modifier.width(EXTRA_MEDIUM_PADDING))
+
+                AnimatedVisibility(
+                    visible = progressVisible.value
+                ) {
+                    CircularProgressIndicator(
+                        color = Color.LightGray
+                    )
+                }
             }
         }
 
@@ -154,12 +171,8 @@ fun LoginTextField(
 ) {
     var error by remember { mutableStateOf(false) }
     error = when {
-        isPassword -> {
-            value.value.length < 6
-        }
-        else -> {
-            false
-        }
+        isPassword -> { value.value.length < 6 }
+        else -> { false }
     }
 
     val keyboardOption = when {

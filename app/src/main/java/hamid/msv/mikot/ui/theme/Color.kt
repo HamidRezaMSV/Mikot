@@ -16,6 +16,7 @@ val Dark_Gray_2 = Color(0xFF4B4A4A)
 val Green = Color(0xFF4CAF50)
 val Blue = Color(0xFF2196F3)
 val Red= Color(0xFFF75A28)
+val Dark_Red= Color(0xFFA23817)
 val Green_Blue = Color(0xFF009688)
 val Dark_Green_Blue = Color(0xFF015F56)
 
