@@ -50,4 +50,6 @@
     <string name="logout">Logout</string>
     <!--Contact Screen-->
     <string name="contacts">Contacts</string>
+    <!--Profile Screen-->
+    <string name="bio">Bio</string>
 </resources>

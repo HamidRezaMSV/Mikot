@@ -1,5 +1,6 @@
 package hamid.msv.mikot.presentation.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -9,6 +10,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -19,13 +23,17 @@ import hamid.msv.mikot.ui.theme.*
 import kotlinx.coroutines.delay
 
 @Composable
-fun ContactTopBar(connectionState: State<Boolean>, onBackClick: () -> Unit) {
+fun ProfileTopBar(
+    connectionState: State<Boolean>,
+    onBackClick: () -> Unit,
+    onSaveClick: ()-> Unit
+) {
 
     var dots by remember { mutableStateOf("   ") }
     var dotStateToggle by remember { mutableStateOf(true) }
 
     val topBarTextColor = if (connectionState.value) Green_Blue else Color.Red
-    val topBarText = if (connectionState.value) stringResource(id = R.string.contacts).uppercase()
+    val topBarText = if (connectionState.value) stringResource(id = R.string.profile).uppercase()
     else stringResource(id = R.string.connecting) + dots
 
     val topBarTextSize = if (connectionState.value) CONTACT_TOP_BAR_TEXT_SIZE_CONNECT
@@ -57,7 +65,7 @@ fun ContactTopBar(connectionState: State<Boolean>, onBackClick: () -> Unit) {
         ){
             Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart
+                contentAlignment = Alignment.Center
             ) {
                 Row(
                     modifier = Modifier
@@ -79,7 +87,10 @@ fun ContactTopBar(connectionState: State<Boolean>, onBackClick: () -> Unit) {
                 }
 
                 IconButton(
-                    modifier = Modifier.aspectRatio(1f).fillMaxHeight(),
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .fillMaxHeight()
+                        .align(Alignment.CenterStart),
                     onClick = { onBackClick() }
                 ) {
                     Icon(
@@ -88,7 +99,26 @@ fun ContactTopBar(connectionState: State<Boolean>, onBackClick: () -> Unit) {
                         tint = MaterialTheme.colors.contactTopBarIconColor
                     )
                 }
+
+                IconButton(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd),
+                    onClick = { onSaveClick() }
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .requiredHeight(HOME_TOP_BAR_HEIGHT)
+                            .padding(vertical = MEDIUM_PADDING)
+                            .padding(end = PROFILE_TOP_BAR_END_PADDING)
+                            .aspectRatio(1f),
+                        painter = painterResource(id = R.drawable.ic_save),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colors.contactTopBarIconColor)
+                    )
+                }
             }
         }
     }
+
 }
