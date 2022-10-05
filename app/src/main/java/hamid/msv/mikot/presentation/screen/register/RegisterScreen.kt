@@ -1,5 +1,7 @@
 package hamid.msv.mikot.presentation.screen.register
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -30,6 +32,7 @@ import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
 import hamid.msv.mikot.util.REGISTER_PLACEHOLDER_ALPHA
+import kotlinx.coroutines.delay
 
 @Composable
 fun RegisterScreen(
@@ -44,6 +47,7 @@ fun RegisterScreen(
 
     RegisterContent(
         progressVisible,
+        context,
         onRegisterClicked = { fName, uName, pass, cPass, email, phone ->
             if (viewModel.isInputDataValid(fName, uName, pass, cPass, email, phone, context)) {
                 progressVisible.value = true
@@ -81,6 +85,7 @@ fun RegisterScreen(
 @Composable
 fun RegisterContent(
     progressVisible: MutableState<Boolean>,
+    context: Context,
     onRegisterClicked: (fName: String, uName: String, pass: String, cPass: String, email: String, phone: String) -> Unit,
     onLoginClicked: () -> Unit
 ) {
@@ -99,6 +104,14 @@ fun RegisterContent(
             scrollState.maxValue,
             tween(durationMillis = 1000, delayMillis = 1100)
         )
+    }
+
+    if (progressVisible.value){
+        LaunchedEffect(key1 = true){
+            delay(20000)
+            Toast.makeText(context, context.getString(R.string.connection_failed_try_again), Toast.LENGTH_SHORT).show()
+            progressVisible.value = false
+        }
     }
 
     Column(

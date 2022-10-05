@@ -1,5 +1,6 @@
 package hamid.msv.mikot.presentation.screen.login
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -26,6 +27,7 @@ import hamid.msv.mikot.R
 import hamid.msv.mikot.navigation.Screen
 import hamid.msv.mikot.ui.theme.*
 import hamid.msv.mikot.util.REGISTER_PLACEHOLDER_ALPHA
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
@@ -39,6 +41,7 @@ fun LoginScreen(
 
     LoginContent(
         progressVisible,
+        context,
         onLoginClicked = { email,password ->
             if (viewModel.isInputDataValid(email, password, context)) {
                 progressVisible.value = true
@@ -62,6 +65,7 @@ fun LoginScreen(
 @Composable
 fun LoginContent(
     progressVisible: MutableState<Boolean>,
+    context: Context,
     onLoginClicked: (email: String, password: String) -> Unit,
     onCreateNewAccClicked: () -> Unit
 ) {
@@ -69,6 +73,14 @@ fun LoginContent(
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+
+    if (progressVisible.value){
+        LaunchedEffect(key1 = true){
+            delay(20000)
+            Toast.makeText(context, context.getString(R.string.connection_failed_try_again), Toast.LENGTH_SHORT).show()
+            progressVisible.value = false
+        }
+    }
 
     Column(
         modifier = Modifier
