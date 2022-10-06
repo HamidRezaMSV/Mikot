@@ -1,7 +1,7 @@
 package hamid.msv.mikot.presentation.screen.chat
 
 import android.annotation.SuppressLint
-import android.util.Log
+import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
@@ -23,7 +23,7 @@ import hamid.msv.mikot.presentation.component.ChatTextField
 import hamid.msv.mikot.presentation.component.ChatTopBar
 import hamid.msv.mikot.presentation.component.MessageItem
 import hamid.msv.mikot.ui.theme.SMALL_PADDING
-import kotlinx.coroutines.launch
+import hamid.msv.mikot.util.vibratePhone
 
 @Composable
 @ExperimentalMaterialApi
@@ -54,6 +54,7 @@ fun ChatScreen(
         content = {
             ChatScreenContent(
                 messages = messages.value,
+                context = context,
                 onMessageLongClick = { text ->
                     viewModel.copyTextToClipBoard(text,context)
                     Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
@@ -87,9 +88,10 @@ fun ChatScreen(
 @Composable
 @ExperimentalMaterialApi
 fun ChatScreenContent(
-    messages: List<Message> ,
-    onMessageLongClick: (text:String) -> Unit,
-    onReplyMessage: (repliedMessageId:String) -> Unit
+    messages: List<Message>,
+    context: Context,
+    onMessageLongClick: (text: String) -> Unit,
+    onReplyMessage: (repliedMessageId: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -103,8 +105,8 @@ fun ChatScreenContent(
 
             if (swipeState.isDismissed(DismissDirection.StartToEnd)){
                 LaunchedEffect(key1 = true){ swipeState.reset() }
+                context.vibratePhone()
                 onReplyMessage(message.id!!)
-                Log.d("MIKOT_CHAT" , "Should reply message with id : ${message.id}")
             }
 
             SwipeToDismiss(
