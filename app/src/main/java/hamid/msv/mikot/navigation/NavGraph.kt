@@ -3,6 +3,7 @@ package hamid.msv.mikot.navigation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.*
@@ -26,6 +27,7 @@ import hamid.msv.mikot.util.NAVIGATION_ANIMATION_DURATION
 @Composable
 @ExperimentalPagerApi
 @ExperimentalPermissionsApi
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 fun SetupNavGraph() {

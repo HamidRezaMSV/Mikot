@@ -1,16 +1,14 @@
 package hamid.msv.mikot.presentation.screen.chat
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -25,8 +23,10 @@ import hamid.msv.mikot.presentation.component.ChatTextField
 import hamid.msv.mikot.presentation.component.ChatTopBar
 import hamid.msv.mikot.presentation.component.MessageItem
 import hamid.msv.mikot.ui.theme.SMALL_PADDING
+import kotlinx.coroutines.launch
 
 @Composable
+@ExperimentalMaterialApi
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 fun ChatScreen(
     navController: NavHostController,
@@ -57,6 +57,9 @@ fun ChatScreen(
                 onMessageLongClick = { text ->
                     viewModel.copyTextToClipBoard(text,context)
                     Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+                },
+                onReplyMessage = { repliedMessageId ->
+                    // todo : implement logic for reply to specific message
                 }
             )
         },
@@ -82,24 +85,34 @@ fun ChatScreen(
 }
 
 @Composable
+@ExperimentalMaterialApi
 fun ChatScreenContent(
     messages: List<Message> ,
-    onMessageLongClick: (text:String) -> Unit
+    onMessageLongClick: (text:String) -> Unit,
+    onReplyMessage: (repliedMessageId:String) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(bottom = 56.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+        reverseLayout = true,
+        contentPadding = PaddingValues(bottom = SMALL_PADDING)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            reverseLayout = true,
-            contentPadding = PaddingValues(bottom = SMALL_PADDING)
-        ) {
-            items(messages.reversed()) { message ->
+        items(messages.reversed()) { message ->
+            val swipeState = rememberDismissState()
+
+            if (swipeState.isDismissed(DismissDirection.StartToEnd)){
+                LaunchedEffect(key1 = true){ swipeState.reset() }
+                onReplyMessage(message.id!!)
+                Log.d("MIKOT_CHAT" , "Should reply message with id : ${message.id}")
+            }
+
+            SwipeToDismiss(
+                state = swipeState,
+                directions = setOf(DismissDirection.StartToEnd),
+                dismissThresholds = { direction -> FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.2f else 0.05f) },
+                background = { Surface(color = Color.White) {} },
+            ){
                 MessageItem(
                     isMe = message.senderId == Application.currentUserId,
                     text = message.text!!,
