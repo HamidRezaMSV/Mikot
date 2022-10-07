@@ -48,8 +48,8 @@ class ChatViewModel @Inject constructor(
         listenForSendNewMessageResponse()
     }
 
-    fun sendNewMessage(text: String, receiverUser: MikotUser){
-        viewModelScope.launch {
+    fun sendNewMessage(text: String, receiverUser: MikotUser,isReply: Boolean = false , repliedMessageId: String? = null){
+        viewModelScope.launch(Dispatchers.IO) {
             if (senderId != USER_IS_NOT_LOGIN){
                 val message = Message(
                     id = UUID.randomUUID().toString(),
@@ -58,7 +58,9 @@ class ChatViewModel @Inject constructor(
                     senderId = senderId ,
                     receiverId = receiverId,
                     senderUsername = Application.currentUser!!.userName,
-                    receiverUsername = receiverUser.userName
+                    receiverUsername = receiverUser.userName,
+                    isReply = isReply,
+                    repliedMessageId = repliedMessageId
                 )
                 sendNewMessageUseCase.execute(message,senderId,receiverId)
             }else{
@@ -101,7 +103,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun fetchMessagesFromDB(){
-        val path = receiverId + senderId
+        val path = senderId + receiverId
         viewModelScope.launch(Dispatchers.IO) {
             getAllMessagesUseCase.executeFromDB(path).collectLatest {
                 if (it.isNotEmpty()){
@@ -122,9 +124,9 @@ class ChatViewModel @Inject constructor(
                                     if (!message.time!!.contains(":")){
                                         message.time = parseTime(message.time!!.toLong())
                                     }
+                                    Log.d("MIKOT_HAMID" , message.key.toString())
                                     message
                                 }
-                                _messages.value = validList
                                 saveAllMessagesUseCase.execute(validList.map { message -> message.mapToRoomMessage() })
                             }
                         }

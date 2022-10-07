@@ -1,5 +1,6 @@
 package hamid.msv.mikot.data.source.remote
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -85,8 +86,35 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     }
 
     override suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String) {
-        val msg1 = message.apply { key = senderId+receiverId }
-        val msg2 = message.apply { key = receiverId+senderId }
+        val msg1 = Message(
+            id = message.id,
+            text = message.text,
+            time = message.time,
+            senderId = message.senderId,
+            senderUsername = message.senderUsername,
+            receiverId = message.receiverId,
+            receiverUsername = message.receiverUsername,
+            isEdited = message.isEdited,
+            editTime = message.editTime,
+            isReply = message.isReply,
+            repliedMessageId = message.repliedMessageId,
+            key = senderId + receiverId
+        )
+        val msg2 = Message(
+            id = message.id,
+            text = message.text,
+            time = message.time,
+            senderId = message.senderId,
+            senderUsername = message.senderUsername,
+            receiverId = message.receiverId,
+            receiverUsername = message.receiverUsername,
+            isEdited = message.isEdited,
+            editTime = message.editTime,
+            isReply = message.isReply,
+            repliedMessageId = message.repliedMessageId,
+            key = receiverId + senderId
+        )
+
         MESSAGE_DATABASE.child(senderId+receiverId).push().setValue(msg1)
             .addOnCompleteListener { response1 ->
                 if (response1.isSuccessful){
@@ -155,6 +183,7 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         MESSAGE_DATABASE.child(child).addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val data = snapshot.children.map { it.getValue(Message::class.java) ?: return }
+                data.forEach { Log.d("test_test" , it.key.toString()) }
                _messages.value = FirebaseResource.Success(data = data)
             }
 

@@ -32,6 +32,8 @@ data class Message(
             id = id!!,
             text = text!!,
             time = time!!,
+            isReply = isReply,
+            repliedMessageId = repliedMessageId,
             senderId = senderId!!,
             senderUsername = senderUsername!!,
             receiverId = receiverId!!,

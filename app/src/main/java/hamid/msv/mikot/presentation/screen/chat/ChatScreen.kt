@@ -2,6 +2,7 @@ package hamid.msv.mikot.presentation.screen.chat
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
@@ -45,9 +46,11 @@ fun ChatScreen(
 
     val topBarExpanded = remember{ mutableStateOf(false) }
 
-    BackHandler {
-        navController.popBackStack()
-    }
+    val hasReply = remember{ mutableStateOf(false) }
+    val repliedMessageText: MutableState<String?> = remember { mutableStateOf(null) }
+    val repliedMessageId: MutableState<String?> = remember { mutableStateOf(null) }
+
+    BackHandler { navController.popBackStack() }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -59,8 +62,10 @@ fun ChatScreen(
                     viewModel.copyTextToClipBoard(text,context)
                     Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
                 },
-                onReplyMessage = { repliedMessageId ->
-                    // todo : implement logic for reply to specific message
+                onReplyMessage = { repliedMsgId,repliedMsgText ->
+                    hasReply.value = true
+                    repliedMessageText.value = repliedMsgText
+                    repliedMessageId.value = repliedMsgId
                 }
             )
         },
@@ -77,8 +82,22 @@ fun ChatScreen(
         },
         bottomBar = {
             ChatTextField(
+                hasReply = hasReply,
+                repliedMessageText = repliedMessageText.value ,
                 onSendClicked = { text ->
-                    receiverUser.value?.let { viewModel.sendNewMessage(text = text, receiverUser = it) }
+                    if (hasReply.value){
+                        receiverUser.value?.let {
+                            Log.d("MIKOT_CHAT" , "send with reply executed")
+                            viewModel.sendNewMessage(
+                                text = text,
+                                receiverUser = it,
+                                isReply = true,
+                                repliedMessageId = repliedMessageId.value!!
+                            )
+                        }
+                    }else{
+                        receiverUser.value?.let { viewModel.sendNewMessage(text = text, receiverUser = it) }
+                    }
                 }
             )
         }
@@ -91,12 +110,12 @@ fun ChatScreenContent(
     messages: List<Message>,
     context: Context,
     onMessageLongClick: (text: String) -> Unit,
-    onReplyMessage: (repliedMessageId: String) -> Unit
+    onReplyMessage: (repliedMessageId: String,repliedMessageText: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 56.dp),
+            .padding(bottom = 78.dp),
         reverseLayout = true,
         contentPadding = PaddingValues(bottom = SMALL_PADDING)
     ) {
@@ -106,7 +125,7 @@ fun ChatScreenContent(
             if (swipeState.isDismissed(DismissDirection.StartToEnd)){
                 LaunchedEffect(key1 = true){ swipeState.reset() }
                 context.vibratePhone()
-                onReplyMessage(message.id!!)
+                onReplyMessage(message.id!!,message.text!!)
             }
 
             SwipeToDismiss(
@@ -115,12 +134,27 @@ fun ChatScreenContent(
                 dismissThresholds = { direction -> FractionalThreshold(if (direction == DismissDirection.StartToEnd) 0.2f else 0.05f) },
                 background = { Surface(color = Color.White) {} },
             ){
-                MessageItem(
-                    isMe = message.senderId == Application.currentUserId,
-                    text = message.text!!,
-                    time = message.time!!,
-                    onMessageLongClick = { text ->  onMessageLongClick(text) }
-                )
+                if (message.isReply){
+                    var repliedMessageText by remember { mutableStateOf("") }
+                    LaunchedEffect(key1 = true){
+                        repliedMessageText = messages.first { it.id == message.repliedMessageId }.text.toString()
+                    }
+                    MessageItem(
+                        isMe = message.senderId == Application.currentUserId,
+                        text = message.text!!,
+                        time = message.time!!,
+                        hasReply = true,
+                        repliedMessageText = repliedMessageText,
+                        onMessageLongClick = { text ->  onMessageLongClick(text) }
+                    )
+                }else{
+                    MessageItem(
+                        isMe = message.senderId == Application.currentUserId,
+                        text = message.text!!,
+                        time = message.time!!,
+                        onMessageLongClick = { text ->  onMessageLongClick(text) }
+                    )
+                }
             }
         }
     }

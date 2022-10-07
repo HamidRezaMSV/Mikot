@@ -1,6 +1,8 @@
 package hamid.msv.mikot.presentation.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hamid.msv.mikot.ui.theme.*
@@ -22,6 +25,8 @@ fun MessageItem(
     isMe: Boolean,
     text: String,
     time: String,
+    hasReply: Boolean = false,
+    repliedMessageText: String? = null,
     onMessageLongClick: (text: String) -> Unit
 ) {
     if (isMe) {
@@ -40,9 +45,6 @@ fun MessageItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
-                    modifier = Modifier.pointerInput(Unit) {
-                        detectTapGestures(onLongPress = { onMessageLongClick(text) })
-                    },
                     shape = RoundedCornerShape(
                         topStart = MESSAGE_ITEM_CORNER_RADIUS,
                         bottomStart = MESSAGE_ITEM_CORNER_RADIUS,
@@ -54,15 +56,44 @@ fun MessageItem(
                         color = Dark_Gray_2
                     )
                 ) {
-                    Text(
+                    Column(
                         modifier = Modifier
                             .padding(SMALL_PADDING)
                             .padding(horizontal = EXTRA_SMALL_PADDING),
-                        text = text,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = MaterialTheme.typography.body1.fontSize
-                    )
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        AnimatedVisibility(visible = hasReply) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.End
+                            ){
+                                Box(
+                                    modifier = Modifier
+                                        .size(width = 3.dp, height = 35.dp)
+                                        .padding(vertical = EXTRA_SMALL_PADDING)
+                                        .background(Green_Blue)
+                                ){}
+                                Text(
+                                    modifier = Modifier.padding(start = EXTRA_SMALL_PADDING),
+                                    text = repliedMessageText!!,
+                                    color = Color.Black.copy(alpha = 0.4f),
+                                    maxLines = 1 ,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+
+                        Text(
+                            modifier = Modifier
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onLongPress = { onMessageLongClick(text) })
+                                },
+                            text = text,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = MaterialTheme.typography.body1.fontSize
+                        )
+                    }
                 }
             }
 
@@ -89,9 +120,6 @@ fun MessageItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
-                    modifier = Modifier.pointerInput(Unit) {
-                        detectTapGestures(onLongPress = { onMessageLongClick(text) })
-                    },
                     shape = RoundedCornerShape(
                         topEnd = MESSAGE_ITEM_CORNER_RADIUS,
                         bottomStart = MESSAGE_ITEM_CORNER_RADIUS,
@@ -103,16 +131,43 @@ fun MessageItem(
                         color = MaterialTheme.colors.chatItemBorderColor
                     )
                 ) {
-                    Text(
-                        modifier = Modifier.padding(
-                            vertical = SMALL_PADDING,
-                            horizontal = MEDIUM_PADDING
-                        ),
-                        text = text,
-                        color = Color.White,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = MaterialTheme.typography.body1.fontSize
-                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(SMALL_PADDING)
+                            .padding(horizontal = EXTRA_SMALL_PADDING),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        AnimatedVisibility(visible = hasReply) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start
+                            ){
+                                Box(
+                                    modifier = Modifier
+                                        .size(width = 3.dp, height = 35.dp)
+                                        .padding(vertical = EXTRA_SMALL_PADDING)
+                                        .background(Green)
+                                ){}
+                                Text(
+                                    modifier = Modifier.padding(start = EXTRA_SMALL_PADDING),
+                                    text = repliedMessageText!!,
+                                    color = Color.White.copy(alpha = 0.6f),
+                                    maxLines = 1 ,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+
+                        Text(
+                            modifier = Modifier.pointerInput(Unit) {
+                                detectTapGestures(onLongPress = { onMessageLongClick(text) })
+                            },
+                            text = text,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = MaterialTheme.typography.body1.fontSize
+                        )
+                    }
                 }
             }
 

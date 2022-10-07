@@ -21,11 +21,11 @@ data class RoomMessage(
     @ColumnInfo(name = "is_edited")
     var isEdited: Boolean = false,
     @ColumnInfo(name = "edit_time")
-    var editTime: String = "NO_VALUE",
+    var editTime: String? = null,
     @ColumnInfo(name = "is_reply")
     var isReply: Boolean = false,
     @ColumnInfo(name = "replied_msg_id")
-    var repliedMessageId: String = "NO_VALUE",
+    var repliedMessageId: String? = null,
     val key: String
 ) {
 
@@ -34,6 +34,8 @@ data class RoomMessage(
             id = id,
             text = text,
             time = time,
+            isReply = isReply,
+            repliedMessageId = repliedMessageId,
             senderId = senderId,
             senderUsername = senderUsername,
             receiverId = receiverId,
