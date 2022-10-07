@@ -3,6 +3,7 @@ package hamid.msv.mikot.presentation.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import hamid.msv.mikot.ui.theme.*
 
@@ -27,7 +27,9 @@ fun MessageItem(
     time: String,
     hasReply: Boolean = false,
     repliedMessageText: String? = null,
-    onMessageLongClick: (text: String) -> Unit
+    repliedMessageId: String? = null,
+    onMessageLongClick: (text: String) -> Unit,
+    onRepliedMessageClick: (repliedMessageId:String)-> Unit
 ) {
     if (isMe) {
         Column(
@@ -64,6 +66,7 @@ fun MessageItem(
                     ) {
                         AnimatedVisibility(visible = hasReply) {
                             Row(
+                                modifier = Modifier.clickable { onRepliedMessageClick(repliedMessageId!!) },
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.End
                             ){
@@ -139,6 +142,7 @@ fun MessageItem(
                     ) {
                         AnimatedVisibility(visible = hasReply) {
                             Row(
+                                modifier = Modifier.clickable { onRepliedMessageClick(repliedMessageId!!) },
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Start
                             ){
@@ -180,24 +184,4 @@ fun MessageItem(
         }
     }
 
-}
-
-@Composable
-@Preview(showBackground = true)
-fun MessageItem1() {
-    MessageItem(
-        isMe = true,
-        text = "Salam",
-        time = "02:20"
-    ) {}
-}
-
-@Composable
-@Preview(showBackground = true)
-fun MessageItem2() {
-    MessageItem(
-        isMe = false,
-        text = "haj Hamid",
-        time = "02:20"
-    ) {}
 }

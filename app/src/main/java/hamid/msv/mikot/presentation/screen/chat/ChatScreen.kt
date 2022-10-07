@@ -8,6 +8,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import hamid.msv.mikot.presentation.component.ChatTopBar
 import hamid.msv.mikot.presentation.component.MessageItem
 import hamid.msv.mikot.ui.theme.SMALL_PADDING
 import hamid.msv.mikot.util.vibratePhone
+import kotlinx.coroutines.launch
 
 @Composable
 @ExperimentalMaterialApi
@@ -112,10 +114,12 @@ fun ChatScreenContent(
     onMessageLongClick: (text: String) -> Unit,
     onReplyMessage: (repliedMessageId: String,repliedMessageText: String) -> Unit
 ) {
+    val listState = rememberLazyListState()
+    val coroutine = rememberCoroutineScope()
+
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 78.dp),
+        modifier = Modifier.fillMaxSize().padding(bottom = 78.dp),
+        state = listState,
         reverseLayout = true,
         contentPadding = PaddingValues(bottom = SMALL_PADDING)
     ) {
@@ -145,14 +149,23 @@ fun ChatScreenContent(
                         time = message.time!!,
                         hasReply = true,
                         repliedMessageText = repliedMessageText,
-                        onMessageLongClick = { text ->  onMessageLongClick(text) }
+                        repliedMessageId = message.repliedMessageId,
+                        onMessageLongClick = { text ->  onMessageLongClick(text) },
+                        onRepliedMessageClick = { repliedMessageId ->
+                            coroutine.launch {
+                                val msg = messages.reversed().first{ it.repliedMessageId == repliedMessageId }
+                                val msgIndex = messages.indexOf(msg)
+                                listState.animateScrollToItem(index = msgIndex)
+                            }
+                        }
                     )
                 }else{
                     MessageItem(
                         isMe = message.senderId == Application.currentUserId,
                         text = message.text!!,
                         time = message.time!!,
-                        onMessageLongClick = { text ->  onMessageLongClick(text) }
+                        onMessageLongClick = { text ->  onMessageLongClick(text) },
+                        onRepliedMessageClick = {  }
                     )
                 }
             }
