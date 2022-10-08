@@ -41,6 +41,9 @@ class ChatViewModel @Inject constructor(
     private val _connectionState = MutableStateFlow(false)
     val connectionState = _connectionState.asStateFlow()
 
+    private val _receiverUserConnectionState = MutableStateFlow(false)
+    val receiverUserConnectionState = _receiverUserConnectionState.asStateFlow()
+
     init {
         fetchReceiverInfoFromServer()
         detectConnectionState()
@@ -84,8 +87,11 @@ class ChatViewModel @Inject constructor(
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
-                            _receiverUser.value = response.data!!
-                            saveUserToDBUseCase.execute(response.data.mapToRoomUser())
+                            response.data?.let { user ->
+                                _receiverUser.value = user
+                                _receiverUserConnectionState.value = user.isOnline
+                                saveUserToDBUseCase.execute(user.mapToRoomUser())
+                            }
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_CHAT" , response.error.toString())

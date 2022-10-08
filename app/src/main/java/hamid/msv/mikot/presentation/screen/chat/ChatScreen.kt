@@ -45,6 +45,7 @@ fun ChatScreen(
     val messages = viewModel.messages.collectAsState()
     val receiverUser = viewModel.receiverUser.collectAsState()
     val connectionState = viewModel.connectionState.collectAsState()
+    val receiverUserConnectionState = viewModel.receiverUserConnectionState.collectAsState()
 
     val topBarExpanded = remember{ mutableStateOf(false) }
 
@@ -77,6 +78,7 @@ fun ChatScreen(
                 ChatTopBar(
                     user = it,
                     expanded = topBarExpanded,
+                    isOnline = receiverUserConnectionState.value,
                     onBackClick = { navController.popBackStack() },
                     onExpandClick = { topBarExpanded.value = !topBarExpanded.value }
                 )

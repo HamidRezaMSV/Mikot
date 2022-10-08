@@ -29,12 +29,15 @@ import hamid.msv.mikot.ui.theme.*
 fun ChatTopBar(
     user: MikotUser,
     expanded:MutableState<Boolean>,
+    isOnline: Boolean,
     onBackClick: () -> Unit,
     onExpandClick: () -> Unit
 ) {
 
     val expandIcon = if (expanded.value) Icons.Default.KeyboardArrowUp
     else Icons.Default.KeyboardArrowDown
+
+    val expandIconColor = if (isOnline) Green_Blue else Red
 
     val enterAnimation = fadeIn(tween(500)) + expandVertically(tween(500))
     val exitAnimation = fadeOut(tween(500)) + shrinkVertically(tween(500))
@@ -100,7 +103,7 @@ fun ChatTopBar(
                         Icon(
                             imageVector = expandIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colors.contactTopBarIconColor
+                            tint = expandIconColor
                         )
                     }
                 }
