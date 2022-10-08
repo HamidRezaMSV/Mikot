@@ -10,10 +10,7 @@ import hamid.msv.mikot.Application
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.Message
 import hamid.msv.mikot.domain.model.MikotUser
-import hamid.msv.mikot.domain.usecase.GetAllMessagesUseCase
-import hamid.msv.mikot.domain.usecase.GetUserByIdUseCase
-import hamid.msv.mikot.domain.usecase.SaveAllMessagesUseCase
-import hamid.msv.mikot.domain.usecase.SendNewMessageUseCase
+import hamid.msv.mikot.domain.usecase.*
 import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 import hamid.msv.mikot.util.copyTextToClipBoard
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +24,8 @@ class ChatViewModel @Inject constructor(
     private val getAllMessagesUseCase: GetAllMessagesUseCase,
     private val sendNewMessageUseCase: SendNewMessageUseCase,
     private val getUserByIdUseCase: GetUserByIdUseCase,
-    private val saveAllMessagesUseCase: SaveAllMessagesUseCase
+    private val saveAllMessagesUseCase: SaveAllMessagesUseCase,
+    private val getConnectionStateUseCase: GetConnectionStateUseCase
 ): ViewModel() {
 
     private val receiverId = Application.receiverId!!
@@ -39,8 +37,12 @@ class ChatViewModel @Inject constructor(
     private val _receiverUser = MutableStateFlow<MikotUser?>(null)
     val receiverUser = _receiverUser.asStateFlow()
 
+    private val _connectionState = MutableStateFlow(false)
+    val connectionState = _connectionState.asStateFlow()
+
     init {
         fetchReceiverInfoFromServer()
+        detectConnectionState()
         fetchReceiverInfoFromDB()
         listenForMessages()
         fetchMessagesFromDB()
@@ -142,6 +144,23 @@ class ChatViewModel @Inject constructor(
     private fun listenForMessages(){
         viewModelScope.launch {
             getAllMessagesUseCase.executeFromServer(senderId+receiverId)
+        }
+    }
+
+    private fun detectConnectionState(){
+        viewModelScope.launch(Dispatchers.IO) {
+            getConnectionStateUseCase.execute().collectLatest {
+                it?.let { response ->
+                    when(response){
+                        is FirebaseResource.Success -> {
+                            _connectionState.value = response.data!!
+                        }
+                        is FirebaseResource.Error -> {
+                            Log.d("MIKOT_CHAT" , response.error.toString())
+                        }
+                    }
+                }
+            }
         }
     }
 

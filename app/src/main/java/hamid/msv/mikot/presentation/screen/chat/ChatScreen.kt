@@ -2,7 +2,6 @@ package hamid.msv.mikot.presentation.screen.chat
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
@@ -45,6 +44,7 @@ fun ChatScreen(
 
     val messages = viewModel.messages.collectAsState()
     val receiverUser = viewModel.receiverUser.collectAsState()
+    val connectionState = viewModel.connectionState.collectAsState()
 
     val topBarExpanded = remember{ mutableStateOf(false) }
 
@@ -87,18 +87,17 @@ fun ChatScreen(
                 hasReply = hasReply,
                 repliedMessageText = repliedMessageText.value ,
                 onSendClicked = { text ->
-                    if (hasReply.value){
+                    if (connectionState.value){
                         receiverUser.value?.let {
-                            Log.d("MIKOT_CHAT" , "send with reply executed")
                             viewModel.sendNewMessage(
                                 text = text,
                                 receiverUser = it,
-                                isReply = true,
-                                repliedMessageId = repliedMessageId.value!!
+                                isReply = hasReply.value,
+                                repliedMessageId = repliedMessageId.value
                             )
                         }
                     }else{
-                        receiverUser.value?.let { viewModel.sendNewMessage(text = text, receiverUser = it) }
+                        Toast.makeText(context,context.getString(R.string.connection_failed), Toast.LENGTH_SHORT).show()
                     }
                 }
             )
@@ -118,7 +117,9 @@ fun ChatScreenContent(
     val coroutine = rememberCoroutineScope()
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(bottom = 78.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 78.dp),
         state = listState,
         reverseLayout = true,
         contentPadding = PaddingValues(bottom = SMALL_PADDING)
