@@ -184,4 +184,11 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        _receiverUser.value = null
+        _messages.value = emptyList()
+    }
+
 }

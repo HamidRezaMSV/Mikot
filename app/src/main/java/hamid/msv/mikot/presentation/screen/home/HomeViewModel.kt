@@ -96,7 +96,6 @@ class HomeViewModel @Inject constructor(
                                         }
                                         lastMessage
                                     }
-                                _lastMessages.value = validList
                                 saveAllLastMessagesUseCase.execute(validList.map { lastMessage-> lastMessage.mapToRoomLastMessage() })
                             }
                         }
