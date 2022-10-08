@@ -32,6 +32,9 @@ class UserRepositoryImpl
 
     override fun getConnectionState() = remoteDataSource.getConnectionState()
 
+    override suspend fun updateCurrentUser(updatedUser: MikotUser) =
+        remoteDataSource.updateCurrentUser(updatedUser)
+
     override suspend fun addAllUsersToDB(users: List<RoomUser>) =
         localDataSource.addAllUsers(users)
 

@@ -216,4 +216,18 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     }
 
     override suspend fun signOutUser() { authentication.signOut() }
+
+    override suspend fun updateCurrentUser(updatedUser: MikotUser): StateFlow<FirebaseResource<String>?> {
+        val response = MutableStateFlow<FirebaseResource<String>?>(null)
+        USER_DATABASE.child(updatedUser.id!!).setValue(updatedUser).addOnCompleteListener {
+            if (it.isSuccessful){
+                response.value = FirebaseResource.Success(data = "OK")
+            }else{
+                response.value = FirebaseResource.Error(error = it.exception!!.message.toString())
+            }
+        }
+
+        return response.asStateFlow()
+    }
+
 }

@@ -9,7 +9,8 @@ data class MikotUser(
     var bio : String? = null ,
     var profileImage : String? = null,
     var createAccountTime : String? = null ,
-    var phoneNumber : String? = null
+    var phoneNumber : String? = null,
+    var isOnline: Boolean = false
 ){
 
     fun mapToRoomUser() =

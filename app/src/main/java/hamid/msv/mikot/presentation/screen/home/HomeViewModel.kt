@@ -17,6 +17,7 @@ import hamid.msv.mikot.util.USER_IS_NOT_LOGIN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -30,7 +31,8 @@ class HomeViewModel @Inject constructor(
     private val signOutUserUseCase: SignOutUserUseCase,
     private val saveCurrentUserIdUseCase: SaveCurrentUserIdUseCase,
     private val deleteDBUseCase: DeleteDBUseCase,
-    private val saveUserToDBUseCase: SaveUserToDBUseCase
+    private val saveUserToDBUseCase: SaveUserToDBUseCase,
+    private val updateCurrentUserUseCase: UpdateCurrentUserUseCase
 ): ViewModel(){
 
     private val currentUserId = Application.currentUserId!!
@@ -42,10 +44,10 @@ class HomeViewModel @Inject constructor(
     val lastMessages = _lastMessages.asStateFlow()
 
     init {
+        fetchCurrentUserFromDB()
         fetchAllLastMessageFromDB()
         detectConnectionState()
         listenForLastMessages()
-        fetchCurrentUserFromDB()
     }
 
     fun signOutUser(){
@@ -66,11 +68,31 @@ class HomeViewModel @Inject constructor(
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
-                            _connectionState.value = response.data!!
-                            if (response.data){
-                                fetchCurrentUserFromServer(currentUserId)
+                            response.data?.let { isOnline ->
+                                _connectionState.value = isOnline
+                                Application.currentUser?.let { currentUser ->
+                                    currentUser.isOnline = isOnline
+                                    sendUserConnectionStateToServer(updatedUser = currentUser)
+                                }
+                                if (isOnline) fetchCurrentUserFromServer(currentUserId)
                             }
-                            Log.d("MIKOT_HOME" , "Connection State : ${response.data}")
+                        }
+                        is FirebaseResource.Error -> {
+                            Log.d("MIKOT_HOME" , response.error.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun sendUserConnectionStateToServer(updatedUser: MikotUser){
+        viewModelScope.launch(Dispatchers.IO) {
+            updateCurrentUserUseCase.execute(updatedUser).collectLatest {
+                it?.let { response ->
+                    when(response){
+                        is FirebaseResource.Success -> {
+                            Log.d("MIKOT_HOME" , "Update user response is ${response.data}")
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_HOME" , response.error.toString())
@@ -196,6 +218,14 @@ class HomeViewModel @Inject constructor(
             }
         }
         return contacts
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Application.currentUser?.let {
+            it.isOnline = false
+            sendUserConnectionStateToServer(updatedUser = it)
+        }
     }
 
 }

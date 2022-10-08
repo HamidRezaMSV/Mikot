@@ -104,4 +104,9 @@ object UseCaseModule {
     fun provideSaveUserToDBUseCase(userRepository: UserRepository) =
         SaveUserToDBUseCase(userRepository)
 
+    @Provides
+    @Singleton
+    fun provideUpdateCurrentUserUseCase(userRepository: UserRepository) =
+        UpdateCurrentUserUseCase(userRepository)
+
 }

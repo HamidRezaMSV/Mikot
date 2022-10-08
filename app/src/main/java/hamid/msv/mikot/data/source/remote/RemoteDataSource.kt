@@ -20,6 +20,7 @@ interface RemoteDataSource {
     suspend fun saveNewUserInFirebase(user: MikotUser)
     suspend fun signInUser(email: String, password: String)
     suspend fun signOutUser()
+    suspend fun updateCurrentUser(updatedUser: MikotUser): StateFlow<FirebaseResource<String>?>
     fun getAllUsers(): StateFlow<FirebaseResource<List<MikotUser>>?>
     fun getUserById(id: String) : StateFlow<FirebaseResource<MikotUser>?>
 

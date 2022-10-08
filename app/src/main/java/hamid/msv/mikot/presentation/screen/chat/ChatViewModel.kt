@@ -25,7 +25,8 @@ class ChatViewModel @Inject constructor(
     private val sendNewMessageUseCase: SendNewMessageUseCase,
     private val getUserByIdUseCase: GetUserByIdUseCase,
     private val saveAllMessagesUseCase: SaveAllMessagesUseCase,
-    private val getConnectionStateUseCase: GetConnectionStateUseCase
+    private val getConnectionStateUseCase: GetConnectionStateUseCase,
+    private val saveUserToDBUseCase: SaveUserToDBUseCase
 ): ViewModel() {
 
     private val receiverId = Application.receiverId!!
@@ -84,6 +85,7 @@ class ChatViewModel @Inject constructor(
                     when(response){
                         is FirebaseResource.Success -> {
                             _receiverUser.value = response.data!!
+                            saveUserToDBUseCase.execute(response.data.mapToRoomUser())
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_CHAT" , response.error.toString())
