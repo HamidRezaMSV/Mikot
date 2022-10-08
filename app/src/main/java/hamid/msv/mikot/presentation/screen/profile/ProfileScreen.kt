@@ -1,7 +1,15 @@
 package hamid.msv.mikot.presentation.screen.profile
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
 import hamid.msv.mikot.Application
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
@@ -62,8 +76,15 @@ private fun ProfileScreenContent(user: MikotUser) {
     val fullName = remember{ mutableStateOf(user.fullName!!) }
     val username = remember{ mutableStateOf(user.userName!!) }
     val phoneNumber = remember{ mutableStateOf(user.phoneNumber!!) }
-    val bio = remember{ mutableStateOf(user.bio) }
-    val profileImage = remember{ mutableStateOf(user.profileImage) }
+//    val bio = remember{ mutableStateOf(user.bio) }
+//    val profileImage = remember{ mutableStateOf(user.profileImage) }
+
+    val launchImagePicker = remember { mutableStateOf(false) }
+    val imagePickerBitmap = remember { mutableStateOf<Bitmap?>(null) }
+
+    imagePickerBitmap.value?.let {
+        // todo : implement logic for update current user profile
+    }
 
     Column(
         modifier = Modifier
@@ -74,18 +95,36 @@ private fun ProfileScreenContent(user: MikotUser) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            modifier = Modifier
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
-                .border(
-                    1.dp,
-                    color = Green_Blue,
-                    shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
-                ),
-            painter = image,
-            contentDescription = null
-        )
+        if (imagePickerBitmap.value != null){
+            val bitmap = imagePickerBitmap.value!!.asImageBitmap()
+            Image(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clickable { launchImagePicker.value = true }
+                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                    .border(
+                        1.dp,
+                        color = Green_Blue,
+                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                    ),
+                bitmap = bitmap,
+                contentDescription = null
+            )
+        }else{
+            Image(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clickable { launchImagePicker.value = true }
+                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                    .border(
+                        1.dp,
+                        color = Green_Blue,
+                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                    ),
+                painter = image,
+                contentDescription = null
+            )
+        }
 
         Spacer(modifier = Modifier.height(MEDIUM_PADDING))
 
@@ -106,13 +145,18 @@ private fun ProfileScreenContent(user: MikotUser) {
             isPhoneNumber = true
         )
     }
+
+    ImageSelectorAndCropper(
+        launchImagePicker = launchImagePicker,
+        imagePickerBitmap = imagePickerBitmap
+    )
+
 }
 
 @Composable
 private fun ProfileTextField(label: String, text: MutableState<String>, hint: Int, isPhoneNumber: Boolean = false) {
 
     var error by remember { mutableStateOf(false) }
-
     error = when {
         isPhoneNumber -> { text.value.length != PHONE_NUMBER_CHARACTER_COUNT }
         else -> { false }
@@ -155,4 +199,52 @@ private fun ProfileTextField(label: String, text: MutableState<String>, hint: In
             unfocusedLabelColor = errorColor
         )
     )
+}
+
+@Composable
+private fun ImageSelectorAndCropper(
+    launchImagePicker: MutableState<Boolean>,
+    imagePickerBitmap: MutableState<Bitmap?>
+){
+
+    val context = LocalContext.current
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val bitmap = remember { mutableStateOf<Bitmap?>(null) }
+
+    val imageCropLauncher = rememberLauncherForActivityResult(CropImageContract()){ cropResult ->
+        if (cropResult.isSuccessful){
+            imageUri = cropResult.uriContent
+        }else{
+            Log.d("MIKOT_PROFILE" , cropResult.error!!.message.toString())
+        }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){ uri: Uri? ->
+        val cropOptions = CropImageContractOptions(uri, CropImageOptions())
+        cropOptions.apply {
+            setAspectRatio(1,1)
+            setFixAspectRatio(true)
+            setGuidelines(CropImageView.Guidelines.ON_TOUCH)
+            setImageSource(includeGallery = true,includeCamera = false)
+        }
+        imageCropLauncher.launch(cropOptions)
+    }
+
+    imageUri?.let { uri ->
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P){
+            @Suppress("DEPRECATION")
+            bitmap.value = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            imagePickerBitmap.value = bitmap.value
+        }else{
+            val source = ImageDecoder.createSource(context.contentResolver,uri)
+            bitmap.value = ImageDecoder.decodeBitmap(source)
+            imagePickerBitmap.value = bitmap.value
+        }
+    }
+
+    if (launchImagePicker.value) {
+        imagePickerLauncher.launch("image/*")
+        launchImagePicker.value = false
+    }
+
 }

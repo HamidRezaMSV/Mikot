@@ -107,4 +107,10 @@ dependencies {
 
     // LiveData for Compose
     implementation 'androidx.compose.runtime:runtime-livedata:1.0.0-beta07'
+
+    // Image Cropper
+    implementation "com.github.CanHub:Android-Image-Cropper:4.1.0"
+
+    // AppCompat for Image Cropper theme
+    implementation 'androidx.appcompat:appcompat:1.4.2'
 }
