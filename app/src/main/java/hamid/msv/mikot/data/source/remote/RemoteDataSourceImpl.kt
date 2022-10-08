@@ -115,10 +115,10 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
             key = receiverId + senderId
         )
 
-        MESSAGE_DATABASE.child(senderId+receiverId).push().setValue(msg1)
+        MESSAGE_DATABASE.child(senderId).child(receiverId).push().setValue(msg1)
             .addOnCompleteListener { response1 ->
                 if (response1.isSuccessful){
-                    MESSAGE_DATABASE.child(receiverId+senderId).push().setValue(msg2)
+                    MESSAGE_DATABASE.child(receiverId).child(senderId).push().setValue(msg2)
                         .addOnCompleteListener { response2 ->
                             if (response2.isSuccessful){
                                 LAST_MESSAGE_DATABASE.child(senderId+receiverId).setValue(msg1.mapToLastMessage())
