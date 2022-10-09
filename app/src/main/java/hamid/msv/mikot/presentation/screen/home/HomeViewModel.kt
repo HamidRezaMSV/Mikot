@@ -70,11 +70,11 @@ class HomeViewModel @Inject constructor(
                         is FirebaseResource.Success -> {
                             response.data?.let { isOnline ->
                                 _connectionState.value = isOnline
+                                if (isOnline){ fetchCurrentUserFromServer(currentUserId) }
                                 Application.currentUser?.let { currentUser ->
                                     currentUser.isOnline = isOnline
                                     sendUserConnectionStateToServer(updatedUser = currentUser)
                                 }
-                                if (isOnline) fetchCurrentUserFromServer(currentUserId)
                             }
                         }
                         is FirebaseResource.Error -> {
@@ -136,8 +136,12 @@ class HomeViewModel @Inject constructor(
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
-                            Application.currentUser = response.data!!
-                            saveCurrentUserInDB(response.data)
+                            response.data?.let { mikotUser ->
+                                Application.currentUser = mikotUser
+                                Application.currentUser!!.isOnline = connectionState.value
+                                sendUserConnectionStateToServer(updatedUser = Application.currentUser!!)
+                                saveCurrentUserInDB(mikotUser)
+                            }
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_HOME" , response.error.toString())
