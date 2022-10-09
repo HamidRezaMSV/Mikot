@@ -21,8 +21,8 @@ class MessageRepositoryImpl
     override suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String) =
         remoteDataSource.sendNewMessage(message, senderId, receiverId)
 
-    override fun listenForMessages(child : String) =
-        remoteDataSource.listenForMessages(child)
+    override fun listenForMessages(senderId: String, receiverId: String) =
+        remoteDataSource.listenForMessages(senderId, receiverId)
 
     override suspend fun getAllLastMessages(currentUserId: String) =
         remoteDataSource.getAllLastMessages(currentUserId)

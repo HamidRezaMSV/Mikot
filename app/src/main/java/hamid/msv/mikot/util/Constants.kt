@@ -15,3 +15,4 @@ const val ROOM_DATABASE_VERSION = 1
 const val ROOM_DATABASE_NAME = "mikot_database"
 const val NAVIGATION_ANIMATION_DURATION = 800
 const val VIBRATION_DURATION = 80L
+const val COMPRESS_QUALITY = 40

@@ -37,6 +37,7 @@ import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.presentation.component.ProfileTopBar
 import hamid.msv.mikot.ui.theme.*
+import hamid.msv.mikot.util.COMPRESS_QUALITY
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
 import hamid.msv.mikot.util.REGISTER_PLACEHOLDER_ALPHA
 
@@ -226,6 +227,7 @@ private fun ImageSelectorAndCropper(
             setFixAspectRatio(true)
             setGuidelines(CropImageView.Guidelines.ON_TOUCH)
             setImageSource(includeGallery = true,includeCamera = false)
+            setOutputCompressQuality(COMPRESS_QUALITY)
         }
         imageCropLauncher.launch(cropOptions)
     }

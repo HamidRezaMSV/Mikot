@@ -24,7 +24,7 @@ interface RemoteDataSource {
     fun getAllUsers(): StateFlow<FirebaseResource<List<MikotUser>>?>
     fun getUserById(id: String) : StateFlow<FirebaseResource<MikotUser>?>
 
-    fun listenForMessages(child: String)
+    fun listenForMessages(senderId: String, receiverId: String)
     suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String)
     suspend fun getAllLastMessages(currentUserId : String): StateFlow<FirebaseResource<List<LastMessage>>?>
 }

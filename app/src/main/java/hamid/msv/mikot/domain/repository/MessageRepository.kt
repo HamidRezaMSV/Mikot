@@ -11,7 +11,7 @@ interface MessageRepository {
 
     suspend fun sendNewMessage(message: Message, senderId: String, receiverId: String)
 
-    fun listenForMessages(child : String)
+    fun listenForMessages(senderId: String, receiverId: String)
 
     suspend fun getAllLastMessages(currentUserId : String): StateFlow<FirebaseResource<List<LastMessage>>?>
 

@@ -7,7 +7,7 @@ class GetAllMessagesUseCase @Inject constructor(private val messageRepository: M
 
     val messagesFromServer = messageRepository.messages
 
-    fun executeFromServer(child : String) = messageRepository.listenForMessages(child)
+    fun executeFromServer(senderId: String, receiverId: String) = messageRepository.listenForMessages(senderId, receiverId)
 
     fun executeFromDB(path: String) = messageRepository.getAllMessagesFromDB(path)
 }

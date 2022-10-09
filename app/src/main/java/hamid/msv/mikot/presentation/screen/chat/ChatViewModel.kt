@@ -151,7 +151,7 @@ class ChatViewModel @Inject constructor(
 
     private fun listenForMessages(){
         viewModelScope.launch {
-            getAllMessagesUseCase.executeFromServer(senderId+receiverId)
+            getAllMessagesUseCase.executeFromServer(senderId,receiverId)
         }
     }
 
