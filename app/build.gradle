@@ -115,4 +115,8 @@ dependencies {
 
     // AppCompat for Image Cropper theme
     implementation 'androidx.appcompat:appcompat:1.4.2'
+
+    // Coil
+    implementation "io.coil-kt:coil-compose:2.0.0-rc01"
+
 }

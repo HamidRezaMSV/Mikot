@@ -32,11 +32,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
-import hamid.msv.mikot.Application
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.presentation.component.ProfileTopBar
@@ -51,7 +52,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
 
-    val currentUser = Application.currentUser!!
+    val currentUser by viewModel.currentUser.collectAsState()
     val connectionState = viewModel.connectionState.collectAsState()
 
     val context = LocalContext.current
@@ -96,9 +97,6 @@ private fun ProfileScreenContent(
     val username = remember{ mutableStateOf(user.userName!!) }
     val phoneNumber = remember{ mutableStateOf(user.phoneNumber!!) }
 
-    val image = if (user.profileImage != null) painterResource(id = R.drawable.img_user)
-    else painterResource(id = R.drawable.img_user)
-
     val launchImagePicker = remember { mutableStateOf(false) }
 
     // OnSaveClick Logic:
@@ -126,19 +124,48 @@ private fun ProfileScreenContent(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            modifier = Modifier
-                .aspectRatio(1.0f)
-                .clickable { launchImagePicker.value = true }
-                .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
-                .border(
-                    1.dp,
-                    color = Green_Blue,
-                    shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
-                ),
-            painter = image,
-            contentDescription = null
-        )
+        if (user.profileImage != null){
+            AsyncImage(
+                modifier = Modifier
+                    .aspectRatio(1.0f)
+                    .clickable { launchImagePicker.value = true }
+                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                    .border(
+                        1.dp,
+                        color = Green_Blue,
+                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                    ),
+                model = user.profileImage,
+                onState = {
+                    when(it){
+                        is AsyncImagePainter.State.Loading -> {
+                            Log.d("MIKOT_COIL" , "Loading")
+                        }
+                        is AsyncImagePainter.State.Success -> {
+                            Log.d("MIKOT_COIL" , "Success")
+                        }
+                        else -> {
+                            Log.d("MIKOT_COIL" , "Error")
+                        }
+                    }
+                },
+                contentDescription = null
+            )
+        }else{
+            Image(
+                modifier = Modifier
+                    .aspectRatio(1.0f)
+                    .clickable { launchImagePicker.value = true }
+                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                    .border(
+                        1.dp,
+                        color = Green_Blue,
+                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                    ),
+                painter = painterResource(id = R.drawable.img_user),
+                contentDescription = null
+            )
+        }
 
         Spacer(modifier = Modifier.height(MEDIUM_PADDING))
 
