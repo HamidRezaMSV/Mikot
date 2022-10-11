@@ -1,5 +1,6 @@
 package hamid.msv.mikot.data.repository
 
+import android.net.Uri
 import hamid.msv.mikot.data.source.local.LocalDataSource
 import hamid.msv.mikot.data.source.remote.RemoteDataSource
 import hamid.msv.mikot.domain.model.MikotUser
@@ -34,6 +35,9 @@ class UserRepositoryImpl
 
     override suspend fun updateCurrentUser(updatedUser: MikotUser) =
         remoteDataSource.updateCurrentUser(updatedUser)
+
+    override suspend fun updateProfileImage(uri: Uri, currentUserId: String) =
+        remoteDataSource.updateProfileImage(uri, currentUserId)
 
     override suspend fun addAllUsersToDB(users: List<RoomUser>) =
         localDataSource.addAllUsers(users)

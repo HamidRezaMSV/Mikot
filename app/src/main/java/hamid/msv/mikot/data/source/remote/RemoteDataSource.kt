@@ -8,6 +8,7 @@ import hamid.msv.mikot.domain.model.MikotUser
 import kotlinx.coroutines.flow.StateFlow
 
 interface RemoteDataSource {
+
     val signUpResponse: StateFlow<FirebaseResource<String>?>
 
     val saveNewUserResponse: StateFlow<FirebaseResource<String>?>
@@ -40,6 +41,6 @@ interface RemoteDataSource {
 
     suspend fun getAllLastMessages(currentUserId : String): StateFlow<FirebaseResource<List<LastMessage>>?>
 
-    suspend fun uploadImageToStorage(uri: Uri,userId: String)
+    suspend fun updateProfileImage(uri: Uri,currentUserId: String): StateFlow<FirebaseResource<String>?>
 
 }

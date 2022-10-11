@@ -12,6 +12,9 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -221,12 +224,14 @@ private fun ImageSelectorAndCropper(
 ){
 
     val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
     var bitmap: Bitmap
+    val imageUri = remember { mutableStateOf<Uri?>(null) }
+
+    val showProgressBar by viewModel.showProgressBar.collectAsState()
 
     val imageCropLauncher = rememberLauncherForActivityResult(CropImageContract()){ cropResult ->
         if (cropResult.isSuccessful){
-            imageUri = cropResult.uriContent
+            imageUri.value = cropResult.uriContent
         }else{
             Log.d("MIKOT_PROFILE" , cropResult.error!!.message.toString())
         }
@@ -244,7 +249,7 @@ private fun ImageSelectorAndCropper(
         imageCropLauncher.launch(cropOptions)
     }
 
-    imageUri?.let { uri ->
+    imageUri.value?.let { uri ->
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P){
             @Suppress("DEPRECATION")
             bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
@@ -254,15 +259,28 @@ private fun ImageSelectorAndCropper(
         }
 
         if (isOnline){
-            viewModel.updateProfileImage(bitmap)
+            viewModel.updateProfileImage(bitmap,context)
         }else{
             Toast.makeText(context, context.getString(R.string.connection_failed_try_again), Toast.LENGTH_SHORT).show()
         }
+
+        imageUri.value = null
     }
 
     if (launchImagePicker.value) {
         imagePickerLauncher.launch("image/*")
         launchImagePicker.value = false
+    }
+
+    AnimatedVisibility(visible = showProgressBar, enter = fadeIn(), exit = fadeOut()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ){
+            Box(modifier = Modifier.wrapContentSize()){
+                CircularProgressIndicator(color = Green_Blue)
+            }
+        }
     }
 
 }

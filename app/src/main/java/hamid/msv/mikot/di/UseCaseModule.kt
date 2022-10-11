@@ -109,4 +109,9 @@ object UseCaseModule {
     fun provideUpdateCurrentUserUseCase(userRepository: UserRepository) =
         UpdateCurrentUserUseCase(userRepository)
 
+    @Provides
+    @Singleton
+    fun provideUpdateProfileImageUseCase(userRepository: UserRepository) =
+        UpdateProfileImageUseCase(userRepository)
+
 }

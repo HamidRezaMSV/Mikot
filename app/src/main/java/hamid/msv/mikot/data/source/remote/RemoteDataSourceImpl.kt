@@ -232,7 +232,33 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         return response.asStateFlow()
     }
 
-    override suspend fun uploadImageToStorage(uri: Uri, userId: String) {
+    override suspend fun updateProfileImage(uri: Uri, currentUserId: String): StateFlow<FirebaseResource<String>?> {
 
+        val output = MutableStateFlow<FirebaseResource<String>?>(null)
+
+        val path = PROFILE_IMAGE_STORAGE.child(currentUserId)
+        path.putFile(uri).addOnCompleteListener { response1 ->
+            if (response1.isSuccessful){
+                path.downloadUrl.addOnCompleteListener { response2 ->
+                    if (response2.isSuccessful){
+                        val map = mapOf("profileImage" to response2.result.toString())
+                        USER_DATABASE.child(currentUserId).updateChildren(map).addOnCompleteListener { response3 ->
+                            if (response3.isSuccessful){
+                                output.value = FirebaseResource.Success(data = "OK")
+                            }else{
+                                output.value = FirebaseResource.Error(error = response3.exception!!.message.toString())
+                            }
+                        }
+                    }else{
+                        output.value = FirebaseResource.Error(error = response2.exception!!.message.toString())
+                    }
+                }
+            }else{
+                output.value = FirebaseResource.Error(error = response1.exception!!.message.toString())
+            }
+        }
+
+        return output.asStateFlow()
     }
+
 }

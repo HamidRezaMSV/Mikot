@@ -10,16 +10,17 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hamid.msv.mikot.Application
 import hamid.msv.mikot.R
-import hamid.msv.mikot.data.remote.FirebaseApi
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.usecase.GetConnectionStateUseCase
 import hamid.msv.mikot.domain.usecase.UpdateCurrentUserUseCase
+import hamid.msv.mikot.domain.usecase.UpdateProfileImageUseCase
 import hamid.msv.mikot.util.COMPRESS_QUALITY
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -28,7 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getConnectionStateUseCase: GetConnectionStateUseCase,
-    private val updateCurrentUserUseCase: UpdateCurrentUserUseCase
+    private val updateCurrentUserUseCase: UpdateCurrentUserUseCase,
+    private val updateProfileImageUseCase: UpdateProfileImageUseCase
 ) : ViewModel(){
 
     private val currentUserId = Application.currentUserId!!
@@ -36,21 +38,32 @@ class ProfileViewModel @Inject constructor(
     private val _connectionState = MutableStateFlow(false)
     val connectionState = _connectionState.asStateFlow()
 
+    private val _showProgressBar = MutableStateFlow(false)
+    val showProgressBar = _showProgressBar.asStateFlow()
+
     init {
         detectConnectionState()
     }
 
-    fun updateProfileImage(bitmap: Bitmap){
-        Log.d("MIKOT_PROFILE" , "Method execute")
-        val imageUri = getImageUriFromBitmap(bitmap)
-        val path = FirebaseApi.PROFILE_IMAGE_STORAGE.child(currentUserId)
-        path.putFile(imageUri).addOnCompleteListener {
-            if (it.isSuccessful){
-                path.downloadUrl.addOnCompleteListener { result ->
-                    Log.d("MIKOT_PROFILE" , result.result.toString())
+    fun updateProfileImage(bitmap: Bitmap,context: Context){
+        _showProgressBar.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            val imageUri = getImageUriFromBitmap(bitmap)
+            updateProfileImageUseCase.execute(imageUri,currentUserId).collect{
+                it?.let { response ->
+                    when(response){
+                        is FirebaseResource.Success -> {
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(context, context.getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
+                            }
+                            Log.d("MIKOT_PROFILE" , "update profile image response is ${response.data}")
+                        }
+                        is FirebaseResource.Error -> {
+                            Log.d("MIKOT_PROFILE" , response.error.toString())
+                        }
+                    }
+                    _showProgressBar.value = false
                 }
-            }else{
-                Log.d("MIKOT_PROFILE" , it.exception!!.message.toString())
             }
         }
     }

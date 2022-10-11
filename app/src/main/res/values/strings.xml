@@ -54,4 +54,5 @@
     <string name="contacts">Contacts</string>
     <!--Profile Screen-->
     <string name="bio">Bio</string>
+    <string name="profile_updated_successfully">Profile updated successfully</string>
 </resources>
