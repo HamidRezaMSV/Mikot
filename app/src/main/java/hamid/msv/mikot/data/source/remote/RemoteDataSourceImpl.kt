@@ -1,5 +1,6 @@
 package hamid.msv.mikot.data.source.remote
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -9,6 +10,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import hamid.msv.mikot.data.remote.FirebaseApi.LAST_MESSAGE_DATABASE
 import hamid.msv.mikot.data.remote.FirebaseApi.MESSAGE_DATABASE
+import hamid.msv.mikot.data.remote.FirebaseApi.PROFILE_IMAGE_STORAGE
 import hamid.msv.mikot.data.remote.FirebaseApi.USER_DATABASE
 import hamid.msv.mikot.domain.model.FirebaseResource
 import hamid.msv.mikot.domain.model.LastMessage
@@ -230,4 +232,7 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
         return response.asStateFlow()
     }
 
+    override suspend fun uploadImageToStorage(uri: Uri, userId: String) {
+
+    }
 }

@@ -1,12 +1,14 @@
 package hamid.msv.mikot.presentation.screen.profile
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,7 +38,6 @@ import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.presentation.component.ProfileTopBar
 import hamid.msv.mikot.ui.theme.*
-import hamid.msv.mikot.util.COMPRESS_QUALITY
 import hamid.msv.mikot.util.PHONE_NUMBER_CHARACTER_COUNT
 import hamid.msv.mikot.util.REGISTER_PLACEHOLDER_ALPHA
 
@@ -51,6 +51,10 @@ fun ProfileScreen(
     val currentUser = Application.currentUser!!
     val connectionState = viewModel.connectionState.collectAsState()
 
+    val context = LocalContext.current
+
+    val saveClicked = remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         backgroundColor = Color.White ,
@@ -58,10 +62,18 @@ fun ProfileScreen(
             ProfileTopBar(
                 connectionState = connectionState,
                 onBackClick = { navController.popBackStack() },
-                onSaveClick = {  }
+                onSaveClick = { saveClicked.value = true }
             )
         },
-        content = { ProfileScreenContent(user = currentUser) }
+        content = {
+            ProfileScreenContent(
+                viewModel = viewModel,
+                user = currentUser,
+                context = context,
+                saveClicked = saveClicked,
+                isOnline = connectionState.value
+            )
+        }
     )
 
     BackHandler { navController.popBackStack() }
@@ -69,22 +81,37 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileScreenContent(user: MikotUser) {
-
-    val image = if (user.profileImage != null) painterResource(id = R.drawable.img_user)
-    else painterResource(id = R.drawable.img_user)
+private fun ProfileScreenContent(
+    viewModel: ProfileViewModel,
+    user: MikotUser,
+    context: Context,
+    saveClicked: MutableState<Boolean>,
+    isOnline: Boolean
+) {
 
     val fullName = remember{ mutableStateOf(user.fullName!!) }
     val username = remember{ mutableStateOf(user.userName!!) }
     val phoneNumber = remember{ mutableStateOf(user.phoneNumber!!) }
-//    val bio = remember{ mutableStateOf(user.bio) }
-//    val profileImage = remember{ mutableStateOf(user.profileImage) }
+
+    val image = if (user.profileImage != null) painterResource(id = R.drawable.img_user)
+    else painterResource(id = R.drawable.img_user)
 
     val launchImagePicker = remember { mutableStateOf(false) }
-    val imagePickerBitmap = remember { mutableStateOf<Bitmap?>(null) }
 
-    imagePickerBitmap.value?.let {
-        // todo : implement logic for update current user profile
+    // OnSaveClick Logic:
+    if (saveClicked.value){
+        if (isOnline){
+            viewModel.updateCurrentUser(
+                fullName = fullName.value,
+                username = username.value,
+                phone = phoneNumber.value,
+                context = context
+            )
+        }else{
+            Toast.makeText(context, context.getString(R.string.connection_failed_try_again), Toast.LENGTH_SHORT).show()
+        }
+
+        saveClicked.value = false
     }
 
     Column(
@@ -96,36 +123,19 @@ private fun ProfileScreenContent(user: MikotUser) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (imagePickerBitmap.value != null){
-            val bitmap = imagePickerBitmap.value!!.asImageBitmap()
-            Image(
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .clickable { launchImagePicker.value = true }
-                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
-                    .border(
-                        1.dp,
-                        color = Green_Blue,
-                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
-                    ),
-                bitmap = bitmap,
-                contentDescription = null
-            )
-        }else{
-            Image(
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .clickable { launchImagePicker.value = true }
-                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
-                    .border(
-                        1.dp,
-                        color = Green_Blue,
-                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
-                    ),
-                painter = image,
-                contentDescription = null
-            )
-        }
+        Image(
+            modifier = Modifier
+                .aspectRatio(1.0f)
+                .clickable { launchImagePicker.value = true }
+                .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                .border(
+                    1.dp,
+                    color = Green_Blue,
+                    shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                ),
+            painter = image,
+            contentDescription = null
+        )
 
         Spacer(modifier = Modifier.height(MEDIUM_PADDING))
 
@@ -148,8 +158,9 @@ private fun ProfileScreenContent(user: MikotUser) {
     }
 
     ImageSelectorAndCropper(
-        launchImagePicker = launchImagePicker,
-        imagePickerBitmap = imagePickerBitmap
+        viewModel = viewModel,
+        isOnline = isOnline,
+        launchImagePicker = launchImagePicker
     )
 
 }
@@ -204,13 +215,14 @@ private fun ProfileTextField(label: String, text: MutableState<String>, hint: In
 
 @Composable
 private fun ImageSelectorAndCropper(
-    launchImagePicker: MutableState<Boolean>,
-    imagePickerBitmap: MutableState<Bitmap?>
+    viewModel: ProfileViewModel,
+    isOnline: Boolean,
+    launchImagePicker: MutableState<Boolean>
 ){
 
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val bitmap = remember { mutableStateOf<Bitmap?>(null) }
+    var bitmap: Bitmap
 
     val imageCropLauncher = rememberLauncherForActivityResult(CropImageContract()){ cropResult ->
         if (cropResult.isSuccessful){
@@ -227,7 +239,7 @@ private fun ImageSelectorAndCropper(
             setFixAspectRatio(true)
             setGuidelines(CropImageView.Guidelines.ON_TOUCH)
             setImageSource(includeGallery = true,includeCamera = false)
-            setOutputCompressQuality(COMPRESS_QUALITY)
+            setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
         }
         imageCropLauncher.launch(cropOptions)
     }
@@ -235,12 +247,16 @@ private fun ImageSelectorAndCropper(
     imageUri?.let { uri ->
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P){
             @Suppress("DEPRECATION")
-            bitmap.value = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-            imagePickerBitmap.value = bitmap.value
+            bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
         }else{
             val source = ImageDecoder.createSource(context.contentResolver,uri)
-            bitmap.value = ImageDecoder.decodeBitmap(source)
-            imagePickerBitmap.value = bitmap.value
+            bitmap = ImageDecoder.decodeBitmap(source)
+        }
+
+        if (isOnline){
+            viewModel.updateProfileImage(bitmap)
+        }else{
+            Toast.makeText(context, context.getString(R.string.connection_failed_try_again), Toast.LENGTH_SHORT).show()
         }
     }
 

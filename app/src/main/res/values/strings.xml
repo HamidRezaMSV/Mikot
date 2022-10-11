@@ -26,7 +26,7 @@
     <string name="invalid_email_message">input email is in wrong format!</string>
     <string name="invalid_password_message">password must be at least 6 characters</string>
     <string name="invalid_name_message">full name can not be empty</string>
-    <string name="invalid_phone_message">phone number can not be empty</string>
+    <string name="invalid_phone_message">phone number is not valid</string>
     <string name="invalid_username_message">username can not be empty</string>
     <string name="invalid_confirm_password_message">confirm password is wrong!</string>
     <!--Login Screen-->
