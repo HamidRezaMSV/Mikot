@@ -24,12 +24,12 @@ class LoginViewModel @Inject constructor(
     private val signInUserUseCase: SignInUserUseCase
 ) : ViewModel() {
 
+    private val _navigateToHomeScreen = MutableSharedFlow<Boolean>()
+    val navigateToHomeScreen = _navigateToHomeScreen.asSharedFlow()
+
     init {
         collectSignInResponse()
     }
-
-    private val _navigateToHomeScreen = MutableSharedFlow<Boolean>()
-    val navigateToHomeScreen = _navigateToHomeScreen.asSharedFlow()
 
     fun signInUser(email: String, password: String) {
         viewModelScope.launch {

@@ -56,8 +56,8 @@ class ProfileViewModel @Inject constructor(
                 it?.let { response ->
                     when(response){
                         is FirebaseResource.Success -> {
+                            fetchCurrentUserFromServer()
                             withContext(Dispatchers.Main){
-                                fetchCurrentUserFromServer()
                                 Toast.makeText(context, context.getString(R.string.profile_updated_successfully), Toast.LENGTH_SHORT).show()
                             }
                             Log.d("MIKOT_PROFILE" , "update profile image response is ${response.data}")

@@ -236,7 +236,7 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
 
         val output = MutableStateFlow<FirebaseResource<String>?>(null)
 
-        val path = PROFILE_IMAGE_STORAGE.child(currentUserId)
+        val path = PROFILE_IMAGE_STORAGE.child("$currentUserId/")
         path.putFile(uri).addOnCompleteListener { response1 ->
             if (response1.isSuccessful){
                 path.downloadUrl.addOnCompleteListener { response2 ->

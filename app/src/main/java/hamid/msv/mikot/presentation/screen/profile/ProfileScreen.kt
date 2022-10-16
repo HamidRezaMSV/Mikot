@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
@@ -130,26 +129,18 @@ private fun ProfileScreenContent(
                     .aspectRatio(1.0f)
                     .clickable { launchImagePicker.value = true }
                     .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                    .background(Color.White)
                     .border(
                         1.dp,
                         color = Green_Blue,
                         shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
                     ),
                 model = user.profileImage,
-                onState = {
-                    when(it){
-                        is AsyncImagePainter.State.Loading -> {
-                            Log.d("MIKOT_COIL" , "Loading")
-                        }
-                        is AsyncImagePainter.State.Success -> {
-                            Log.d("MIKOT_COIL" , "Success")
-                        }
-                        else -> {
-                            Log.d("MIKOT_COIL" , "Error")
-                        }
-                    }
-                },
-                contentDescription = null
+                onLoading = { Log.d("MIKOT_COIL" , "Loading") },
+                onError = { Log.d("MIKOT_COIL" , it.result.throwable.message.toString()) },
+                placeholder = painterResource(id = R.drawable.img_user),
+                fallback = painterResource(id = R.drawable.img_user),
+                contentDescription = null,
             )
         }else{
             Image(
@@ -196,7 +187,12 @@ private fun ProfileScreenContent(
 }
 
 @Composable
-private fun ProfileTextField(label: String, text: MutableState<String>, hint: Int, isPhoneNumber: Boolean = false) {
+private fun ProfileTextField(
+    label: String,
+    text: MutableState<String>,
+    hint: Int,
+    isPhoneNumber: Boolean = false
+) {
 
     var error by remember { mutableStateOf(false) }
     error = when {
