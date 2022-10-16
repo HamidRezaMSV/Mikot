@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.ui.theme.*
@@ -122,10 +123,6 @@ fun ChatTopBar(
 @Composable
 private fun ExpandedChatTopBar(user: MikotUser){
 
-    val image =
-        if (user.profileImage != null) painterResource(id = R.drawable.img_user)
-        else painterResource(id = R.drawable.img_user)
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,18 +130,36 @@ private fun ExpandedChatTopBar(user: MikotUser){
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            modifier = Modifier
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
-                .border(
-                    1.dp,
-                    color = Green_Blue,
-                    shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
-                ),
-            painter = image,
-            contentDescription = null
-        )
+        if (user.profileImage != null){
+            AsyncImage(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                    .border(
+                        1.dp,
+                        color = Green_Blue,
+                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                    ),
+                model = user.profileImage,
+                placeholder = painterResource(id = R.drawable.img_user),
+                error = painterResource(id = R.drawable.img_user),
+                fallback = painterResource(id = R.drawable.img_user),
+                contentDescription = null
+            )
+        }else{
+            Image(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS))
+                    .border(
+                        1.dp,
+                        color = Green_Blue,
+                        shape = RoundedCornerShape(CHAT_TOP_BAR_IMAGE_CORNER_RADIUS)
+                    ),
+                painter = painterResource(id = R.drawable.img_user),
+                contentDescription = null
+            )
+        }
 
         Spacer(modifier = Modifier.height(MEDIUM_PADDING))
 
@@ -160,7 +175,9 @@ private fun TopBarTextField(
     value: String
 ) {
     OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().padding(bottom = EXTRA_SMALL_PADDING),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = EXTRA_SMALL_PADDING),
         value = value,
         readOnly = true,
         onValueChange = {  },

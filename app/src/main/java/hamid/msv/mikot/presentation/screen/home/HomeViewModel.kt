@@ -118,11 +118,36 @@ class HomeViewModel @Inject constructor(
                                         }
                                         lastMessage
                                     }
+                                //fetchPartnersProfileImage(validList)
                                 saveAllLastMessagesUseCase.execute(validList.map { lastMessage-> lastMessage.mapToRoomLastMessage() })
                             }
                         }
                         is FirebaseResource.Error -> {
                             Log.d("MIKOT_HOME" , response.error.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchPartnersProfileImage(lastMessages: List<LastMessage>){
+        viewModelScope.launch(Dispatchers.IO) {
+            lastMessages.forEach { lastMessage ->
+                val secondUserId = if (lastMessage.senderId == Application.currentUserId) lastMessage.receiverId
+                else lastMessage.senderId
+
+                getUserByIdUseCase.executeFromServer(secondUserId!!).collectLatest {
+                    it?.let { response ->
+                        when(response){
+                            is FirebaseResource.Success -> {
+                                response.data?.let { mikotUser ->
+
+                                }
+                            }
+                            is FirebaseResource.Error -> {
+                                Log.d("MIKOT_HOME" ,"fetchPartnersProfileImage:: error : ${response.error}")
+                            }
                         }
                     }
                 }

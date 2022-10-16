@@ -1,8 +1,8 @@
 package hamid.msv.mikot.data.source.remote
 
 import android.net.Uri
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -182,17 +182,44 @@ class RemoteDataSourceImpl @Inject constructor(private val authentication: Fireb
     }
 
     override fun listenForMessages(senderId: String, receiverId: String){
-        MESSAGE_DATABASE.child(senderId).child(receiverId).addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val data = snapshot.children.map { it.getValue(Message::class.java) ?: return }
-                data.forEach { Log.d("test_test" , it.key.toString()) }
-               _messages.value = FirebaseResource.Success(data = data)
+        val messageList = mutableListOf<Message>()
+        MESSAGE_DATABASE.child(senderId).child(receiverId).addChildEventListener(object : ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val message = snapshot.getValue(Message::class.java) ?: return
+                messageList.add(message)
+                _messages.value = FirebaseResource.Success(data = messageList)
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
             }
 
             override fun onCancelled(error: DatabaseError) {
                 _messages.value = FirebaseResource.Error(error = error.message)
             }
         })
+
+
+
+//        MESSAGE_DATABASE.child(senderId).child(receiverId).addValueEventListener(object : ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                val data = snapshot.children.map { it.getValue(Message::class.java) ?: return }
+//                data.forEach { Log.d("test_test" , it.key.toString()) }
+//               _messages.value = FirebaseResource.Success(data = data)
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                _messages.value = FirebaseResource.Error(error = error.message)
+//            }
+//        })
     }
 
     override suspend fun getAllLastMessages(currentUserId : String): StateFlow<FirebaseResource<List<LastMessage>>?> {

@@ -124,7 +124,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun formatReceivedMessages() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getAllMessagesUseCase.messagesFromServer.collect{
                 it?.let { response ->
                     when(response){
@@ -134,7 +134,6 @@ class ChatViewModel @Inject constructor(
                                     if (!message.time!!.contains(":")){
                                         message.time = parseTime(message.time!!.toLong())
                                     }
-                                    Log.d("MIKOT_HAMID" , message.key.toString())
                                     message
                                 }
                                 saveAllMessagesUseCase.execute(validList.map { message -> message.mapToRoomMessage() })

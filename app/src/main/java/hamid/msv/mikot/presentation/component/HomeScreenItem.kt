@@ -39,6 +39,8 @@ fun HomeScreenItem(lastMessage: LastMessage, onItemSelected : (userId:String) ->
         lastMessage.senderUsername
     }
 
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth()

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import hamid.msv.mikot.R
 import hamid.msv.mikot.domain.model.MikotUser
 import hamid.msv.mikot.ui.theme.*
@@ -41,15 +42,30 @@ fun ContactScreenItem(user: MikotUser, onItemSelected: (userId: String) -> Unit)
                 .padding(SMALL_PADDING),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                modifier = Modifier
-                    .size(CONTACT_SCREEN_ITEM_IMAGE_SIZE)
-                    .aspectRatio(1f)
-                    .clip(CircleShape)
-                    .border(width = 1.dp, color = Color.Black, shape = CircleShape),
-                painter = painterResource(id = R.drawable.img_user),
-                contentDescription = null
-            )
+            if (user.profileImage != null){
+                AsyncImage(
+                    modifier = Modifier
+                        .size(CONTACT_SCREEN_ITEM_IMAGE_SIZE)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                        .border(width = 1.dp, color = Color.Black, shape = CircleShape),
+                    model = user.profileImage,
+                    placeholder = painterResource(id = R.drawable.img_user),
+                    error = painterResource(id = R.drawable.img_user),
+                    fallback = painterResource(id = R.drawable.img_user),
+                    contentDescription = null
+                )
+            }else{
+                Image(
+                    modifier = Modifier
+                        .size(CONTACT_SCREEN_ITEM_IMAGE_SIZE)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                        .border(width = 1.dp, color = Color.Black, shape = CircleShape),
+                    painter = painterResource(id = R.drawable.img_user),
+                    contentDescription = null
+                )
+            }
 
             Spacer(modifier = Modifier.width(SMALL_PADDING))
 

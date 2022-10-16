@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface MessageRepository {
+
     val messages : StateFlow<FirebaseResource<List<Message>>?>
 
     val sendNewMessageResponse: StateFlow<FirebaseResource<String>?>
